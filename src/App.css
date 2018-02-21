@@ -1,26 +1,77 @@
+.SimpleMap {
+  height: 90vh;
+  width: 100vw;
+}
+
 .App {
   text-align: center;
 }
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+  height: 10vh;
+  float: left;
 }
 
 .App-header {
   background-color: #222;
-  height: 150px;
-  padding: 20px;
+  height: 10vh;
+  padding: 1vh;
   color: white;
+  /*text-align: left;*/
+
+  display: flex;
+  /*justify-content: space-between;*/
 }
 
 .App-title {
   font-size: 1.5em;
 }
 
+.Header-link-box {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* vertical positioning of flex items in div */
+  width: 100vw;
+
+}
+
 .App-intro {
   font-size: large;
 }
+
+.Logo-box {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+div > h3 {
+  vertical-align: bottom;
+  /*display: flex;
+  align-items: flex-end;*/
+}
+
+#Random {
+  /*float: left;*/
+  /*width: 10%;*/
+  /*flex-grow: 1;*/
+}
+
+#About {
+  /*float: left;*/
+  /*width: 10%;*/
+  /*flex-grow: 1;*/
+}
+
+#Search-bar {
+  /*float:left;*/
+  /*flex-grow: 1;*/
+}
+
+
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
