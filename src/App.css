@@ -34,7 +34,13 @@
   justify-content: space-between;
   align-items: flex-end; /* vertical positioning of flex items in div */
   width: 100vw;
+}
 
+/* Links in header box */
+.Header-link-box > div > a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .App-intro {
@@ -71,6 +77,10 @@ div > h3 {
   /*flex-grow: 1;*/
 }
 
+.active {
+  font-weight: bolder;
+  color: yellow;
+}
 
 
 @keyframes App-logo-spin {

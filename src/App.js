@@ -5,8 +5,31 @@ import './App.css';
 // my imports
 import GoogleMapReact from 'google-map-react';
 import Pin from './Pin'
+import { BrowserRouter as Router, Route, NavLink, IndexRoute, hashHistory, Switch } from 'react-router-dom'
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
+
+class About extends Component {
+  render() {
+    return (
+      <div>
+        <div className="AboutPage">
+          About text here
+        </div>
+      </div>
+    );
+  }
+}
+
+class NotFound extends Component {
+  render() {
+    return (
+      <div>
+        Not Found
+      </div>
+    );
+  }
+}
 
 class SimpleMap extends Component {
   static defaultProps = {
@@ -17,16 +40,20 @@ class SimpleMap extends Component {
 
   render() {
     return (
-      <GoogleMapReact
-        defaultCenter={this.props.center}
-        defaultZoom={this.props.zoom}
-        bootstrapURLKeys={{
-          key: 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY',
-        }}
-      >
-        <Pin lat={59.955413} lng={30.337844} text={'A'}/>
-        <Pin {...this.props.pinCoords} text={'B'}/>
-      </GoogleMapReact>
+      <div className="SimpleMap">
+
+        <GoogleMapReact
+          defaultCenter={this.props.center}
+          defaultZoom={this.props.zoom}
+          bootstrapURLKeys={{
+            key: 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY',
+          }}
+        >
+          <Pin lat={59.955413} lng={30.337844} text={'A'}/>
+          <Pin {...this.props.pinCoords} text={'B'}/>
+        </GoogleMapReact>
+
+      </div>
     );
   }
 }
@@ -45,10 +72,10 @@ class Header extends Component {
         </div>
         <div className="Header-link-box">
           <div className="Header-link">
-            <h3>Random</h3>
+            <NavLink to="random">Random</NavLink> 
           </div>
           <div className="Header-link">
-            <h3>About</h3>
+            <NavLink to="about">About</NavLink> 
           </div>
           <div className="Header-link">
             <h3>Search-bar</h3>
@@ -60,20 +87,37 @@ class Header extends Component {
 }
 
 
-class App extends Component {
+// class App extends Component {
+//   render() {
+//     return (
+//       <div>
+//         <div className="App">
+//            <Header />
+//         </div>
+//         <div className="SimpleMap">
+//           <SimpleMap />
+//         </div>
+//       </div>
+//     ); // close return
+//   } // close render()
+// }
+
+class AppRouter extends Component {
   render() {
     return (
-      <div>
-        <div className="App">
-           <Header />
+      <Router>
+        <div>
+          <Header />
+          <Switch>
+            <Route path="/about" component={About} />
+            <Route exact path="/" component={SimpleMap} />
+            <Route component={NotFound} />
+          </Switch>
         </div>
-        <div className="SimpleMap">
-          <SimpleMap />
-        </div>
-      </div>
-    ); // close return
-  } // close render()
+      </Router>
+
+    );
+  }
 }
 
-
-export default App;
+export default AppRouter;
