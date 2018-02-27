@@ -78,6 +78,7 @@ class SimpleMap extends Component {
           defaultZoom={this.props.zoom}
           bootstrapURLKeys={{
             key: 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY',
+            v: '3.30'
           }}
         >
 

@@ -1,5 +1,5 @@
-const K_WIDTH = 40;
-const K_HEIGHT = 40;
+const K_WIDTH = 1;
+const K_HEIGHT = 1;
 
 const pinStyle = {
   // initially any map object has left top corner at lat lng coordinates
@@ -10,8 +10,8 @@ const pinStyle = {
   left: -K_WIDTH / 2,
   top: -K_HEIGHT / 2,
 
-  border: '5px solid #f44336',
-  borderRadius: K_HEIGHT,
+  border: '3px solid #000000',
+  borderRadius: 10,
   backgroundColor: 'white',
   textAlign: 'center',
   color: '#3f51b5',
