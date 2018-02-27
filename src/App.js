@@ -4,8 +4,9 @@ import './App.css';
 
 // my imports
 import GoogleMapReact from 'google-map-react';
-import Pin from './Pin'
-import { BrowserRouter as Router, Route, NavLink, IndexRoute, hashHistory, Switch } from 'react-router-dom'
+import Pin from './Pin';
+import { BrowserRouter as Router, Route, NavLink, IndexRoute, hashHistory, Switch } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
@@ -32,13 +33,43 @@ class NotFound extends Component {
 }
 
 class SimpleMap extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
+  getPins() {
+    return([
+      {lat: 37.027718, lng: -95.625},
+      {lat: 35.027718, lng: -95.625}
+    ]);
+  }
+
   static defaultProps = {
     center: {lat: 35.027718, lng: -95.625},
     zoom: 5,
-    pinCoords: {lat: 59.724465, lng: 30.080121},
+    pinCoords: [{lat: 37.027718, lng: -95.625}],
   };
 
+  test() {
+    return (
+      <Pin lat={59.955413} lng={30.337844} text={'A'}/>
+    )
+  }
+
+  pinListToComponents(pinList) {
+    return (
+      pinList.map(pin => <Pin lat={pin.lat} lng={pin.lng}/>)
+    );
+  }
+
   render() {
+
+
+    var pinList = this.getPins();
+
+    console.log(pinList);
+
     return (
       <div className="SimpleMap">
 
@@ -49,8 +80,8 @@ class SimpleMap extends Component {
             key: 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY',
           }}
         >
-          <Pin lat={59.955413} lng={30.337844} text={'A'}/>
-          <Pin {...this.props.pinCoords} text={'B'}/>
+
+          {this.pinListToComponents(pinList)}
         </GoogleMapReact>
 
       </div>
