@@ -32,6 +32,7 @@ class NotFound extends Component {
   }
 }
 
+// The map itself + pins
 class SimpleMap extends Component {
 
   constructor(props) {
@@ -41,7 +42,8 @@ class SimpleMap extends Component {
   getPins() {
     return([
       {lat: 37.027718, lng: -95.625},
-      {lat: 35.027718, lng: -95.625}
+      {lat: 35.027718, lng: -95.625},
+      {lat: 38.904510, lng: -77.050137}
     ]);
   }
 
@@ -51,20 +53,17 @@ class SimpleMap extends Component {
     pinCoords: [{lat: 37.027718, lng: -95.625}],
   };
 
-  test() {
-    return (
-      <Pin lat={59.955413} lng={30.337844} text={'A'}/>
-    )
-  }
-
   pinListToComponents(pinList) {
     return (
-      pinList.map(pin => <Pin lat={pin.lat} lng={pin.lng}/>)
+      pinList.map(pin => <Pin lat={pin.lat} lng={pin.lng} onPinClick={this.handlePinClick}/>)
     );
   }
 
-  render() {
+  handlePinClick(clickedPin) {
+    alert(clickedPin);
+  }
 
+  render() {
 
     var pinList = this.getPins();
 
@@ -90,6 +89,7 @@ class SimpleMap extends Component {
   }
 }
 
+// Site header bar
 class Header extends Component {
   render() {
     return (
@@ -118,21 +118,50 @@ class Header extends Component {
   } // close render()
 }
 
+class InfoWindow extends Component {
 
-// class App extends Component {
-//   render() {
-//     return (
-//       <div>
-//         <div className="App">
-//            <Header />
-//         </div>
-//         <div className="SimpleMap">
-//           <SimpleMap />
-//         </div>
-//       </div>
-//     ); // close return
-//   } // close render()
-// }
+  render() {
+    return (
+      <div>
+        {this.props.clickedPin}
+      </div>
+    );
+  }
+
+}
+
+// Everything under the header bar (map + pin info panels)
+class MapBox extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showInfoWindow : false,
+      clickedPin : null,
+    };
+  }
+
+  render() {
+
+    const mapOnly = (
+      <div>
+        <SimpleMap />
+      </div>
+    )
+
+    const infoWindow = (
+      <div>
+        <InfoWindow clickedPin={this.state.clickedPin} />
+        <SimpleMap />
+      </div>
+    )
+
+    return (
+      this.state.showInfoWindow ? infoWindow : mapOnly
+    );
+  }
+}
 
 class AppRouter extends Component {
   render() {
@@ -142,7 +171,7 @@ class AppRouter extends Component {
           <Header />
           <Switch>
             <Route path="/about" component={About} />
-            <Route exact path="/" component={SimpleMap} />
+            <Route exact path="/" component={MapBox} />
             <Route component={NotFound} />
           </Switch>
         </div>

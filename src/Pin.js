@@ -9,15 +9,25 @@ export default class Pin extends Component {
     text: PropTypes.string
   };
 
-  static defaultProps = {};
+  static defaultProps = {
+    text : 'test',
+  };
 
   // shouldComponentUpdate = shouldPureComponentUpdate;
 
+  clickAction() {
+    alert('alert>@>>');
+  }
+
   render() {
     return (
-       <div style={pinStyle}>
-          {this.props.text}
-       </div>
+
+        <div className="Pin-container">
+            <div className="Pin-body" onClick={() => this.props.onPinClick('PIN ID')}>
+                {this.props.text}
+            </div>
+        </div>
+
     );
   }
 }
