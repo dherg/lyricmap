@@ -8,8 +8,6 @@ import Pin from './Pin';
 import { BrowserRouter as Router, Route, NavLink, IndexRoute, hashHistory, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
-
 class About extends Component {
   render() {
     return (
@@ -37,6 +35,7 @@ class SimpleMap extends Component {
 
   constructor(props) {
     super(props);
+    this.handlePinClick = this.handlePinClick.bind(this);
   }
 
   getPins() {
@@ -55,12 +54,12 @@ class SimpleMap extends Component {
 
   pinListToComponents(pinList) {
     return (
-      pinList.map(pin => <Pin lat={pin.lat} lng={pin.lng} onPinClick={this.handlePinClick}/>)
+      pinList.map(pin => <Pin lat={pin.lat} lng={pin.lng} text={pin.lat + pin.lng} onPinClick={this.handlePinClick}/>)
     );
   }
 
   handlePinClick(clickedPin) {
-    alert(clickedPin);
+    this.props.onPinClick(clickedPin);
   }
 
   render() {
@@ -120,6 +119,14 @@ class Header extends Component {
 
 class InfoWindow extends Component {
 
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+    // load pin info
+  }
+
   render() {
     return (
       <div>
@@ -135,6 +142,7 @@ class MapBox extends Component {
 
   constructor(props) {
     super(props);
+    this.handlePinClick = this.handlePinClick.bind(this);
 
     this.state = {
       showInfoWindow : false,
@@ -142,23 +150,30 @@ class MapBox extends Component {
     };
   }
 
+  handlePinClick(clickedPin) {
+    this.setState({
+      showInfoWindow : true,
+      clickedPin : clickedPin,
+    });
+  }
+
   render() {
 
-    const mapOnly = (
+    const boxMapOnly = (
       <div>
-        <SimpleMap />
+        <SimpleMap onPinClick={this.handlePinClick}/>
       </div>
     )
 
-    const infoWindow = (
+    const boxWithInfoWindow = (
       <div>
         <InfoWindow clickedPin={this.state.clickedPin} />
-        <SimpleMap />
+        <SimpleMap onPinClick={this.handlePinClick}/>
       </div>
     )
 
     return (
-      this.state.showInfoWindow ? infoWindow : mapOnly
+      this.state.showInfoWindow ? boxWithInfoWindow : boxMapOnly
     );
   }
 }
