@@ -129,7 +129,9 @@ class InfoWindow extends Component {
 
   render() {
     return (
-      <div>
+      <div id='InfoWindow'>
+        <span id='CloseInfoWindow'
+              onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
         {this.props.clickedPin}
       </div>
     );
@@ -143,7 +145,7 @@ class MapBox extends Component {
   constructor(props) {
     super(props);
     this.handlePinClick = this.handlePinClick.bind(this);
-
+    this.handleCloseInfoWindowClick = this.handleCloseInfoWindowClick.bind(this);
     this.state = {
       showInfoWindow : false,
       clickedPin : null,
@@ -157,6 +159,13 @@ class MapBox extends Component {
     });
   }
 
+  handleCloseInfoWindowClick() {
+    this.setState({
+      showInfoWindow : false,
+      clickedPin : null,
+    });
+  }
+
   render() {
 
     const boxMapOnly = (
@@ -166,8 +175,9 @@ class MapBox extends Component {
     )
 
     const boxWithInfoWindow = (
-      <div>
-        <InfoWindow clickedPin={this.state.clickedPin} />
+      <div id="BoxWithInfoWindow">
+        <InfoWindow clickedPin={this.state.clickedPin} 
+                    onCloseInfoWindowClick={this.handleCloseInfoWindowClick}/>
         <SimpleMap onPinClick={this.handlePinClick}/>
       </div>
     )

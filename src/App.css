@@ -60,21 +60,20 @@ div > h3 {
   align-items: flex-end;*/
 }
 
-#Random {
-  /*float: left;*/
-  /*width: 10%;*/
-  /*flex-grow: 1;*/
+#BoxWithInfoWindow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
 
-#About {
-  /*float: left;*/
-  /*width: 10%;*/
-  /*flex-grow: 1;*/
+#InfoWindow {
+  border: 5px solid gray;
+  
 }
 
-#Search-bar {
-  /*float:left;*/
-  /*flex-grow: 1;*/
+#CloseInfoWindow {
+  float: right;
+  border: 1px solid gray;
 }
 
 .active {
