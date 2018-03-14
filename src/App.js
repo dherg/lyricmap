@@ -121,10 +121,39 @@ class InfoWindow extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      spotifyembed: null,
+      title: null,
+      artist: null,
+      album: null,
+      year: null,
+      lyrics: null,
+      genre: null,
+    };
   }
 
   componentDidMount() {
-    // load pin info
+    // TODO: fetch pin info
+    const spotifyembed = (
+      <iframe src="https://open.spotify.com/embed/track/07gqJjvwwuZ1assFLKbiNn" width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+      );
+    const title = "Dance Music";
+    const artist = "The Mountain Goats";
+    const album = "The Sunset Tree";
+    const year = "2005";
+    const lyrics = "Alright, I'm on Johnson Avenue in San Luis Obispo\nAnd I'm five years old, or six, maybe";
+    const genre = "Alternative";
+
+    this.setState({
+      spotifyembed: spotifyembed,
+      title: title,
+      artist: artist,
+      album: album,
+      year: year,
+      lyrics: lyrics,
+      genre: genre,
+    });
   }
 
   render() {
@@ -132,7 +161,30 @@ class InfoWindow extends Component {
       <div id='InfoWindow'>
         <span id='CloseInfoWindow'
               onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
-        {this.props.clickedPin}
+        <div>
+          {this.props.clickedPin}
+        </div>
+        <div>
+          {this.state.spotifyembed}
+        </div>
+        <div>
+          {this.state.title}
+        </div>
+        <div>
+          {this.state.artist}
+        </div>
+        <div>
+          {this.state.album}
+        </div>
+        <div>
+          {this.state.year}
+        </div>
+        <div>
+          {this.state.lyrics}
+        </div>
+        <div>
+          {this.state.genre}
+        </div>
 
       </div>
     );
@@ -148,40 +200,40 @@ class MapBox extends Component {
     this.handlePinClick = this.handlePinClick.bind(this);
     this.handleCloseInfoWindowClick = this.handleCloseInfoWindowClick.bind(this);
     this.state = {
-      showInfoWindow : false,
-      clickedPin : null,
+      showInfoWindow: false,
+      clickedPin: null,
     };
   }
 
   handlePinClick(clickedPin) {
     this.setState({
-      showInfoWindow : true,
-      clickedPin : clickedPin,
+      showInfoWindow: true,
+      clickedPin: clickedPin,
     });
   }
 
   handleCloseInfoWindowClick() {
     this.setState({
-      showInfoWindow : false,
-      clickedPin : null,
+      showInfoWindow: false,
+      clickedPin: null,
     });
   }
 
   render() {
 
-    const boxMapOnly = (
-      <div>
-        <SimpleMap onPinClick={this.handlePinClick}/>
-      </div>
-    )
+    // const boxMapOnly = (
+    //   <div>
+    //     <SimpleMap onPinClick={this.handlePinClick}/>
+    //   </div>
+    // )
 
-    const boxWithInfoWindow = (
-      <div id="BoxWithInfoWindow">
-        <InfoWindow clickedPin={this.state.clickedPin} 
-                    onCloseInfoWindowClick={this.handleCloseInfoWindowClick}/>
-        <SimpleMap onPinClick={this.handlePinClick}/>
-      </div>
-    )
+    // const boxWithInfoWindow = (
+    //   <div id="BoxWithInfoWindow">
+    //     <InfoWindow clickedPin={this.state.clickedPin} 
+    //                 onCloseInfoWindowClick={this.handleCloseInfoWindowClick}/>
+    //     <SimpleMap onPinClick={this.handlePinClick}/>
+    //   </div>
+    // )
 
     const infoWindow = (
       <InfoWindow clickedPin={this.state.clickedPin} 
@@ -189,7 +241,7 @@ class MapBox extends Component {
     )
 
     return (
-      <div id="BoxWithInfoWindow">
+      <div id="MapBoxWithInfoWindow">
         {this.state.showInfoWindow ? infoWindow : null}
         <SimpleMap onPinClick={this.handlePinClick}/>
       </div>

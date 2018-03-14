@@ -60,17 +60,21 @@ div > h3 {
   align-items: flex-end;*/
 }
 
-#BoxWithInfoWindow {
+#MapBoxWithInfoWindow {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
 }
 
 #InfoWindow {
-  border: 5px solid gray;
+  border: 1vh solid gray;
   position: absolute;
   left: 0px;
+  width: 20vw;
+  height: 86vh;
   z-index: 1;
+  background: black;
+  color: white;
 }
 
 #CloseInfoWindow {
