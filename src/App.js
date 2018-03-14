@@ -133,6 +133,7 @@ class InfoWindow extends Component {
         <span id='CloseInfoWindow'
               onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
         {this.props.clickedPin}
+
       </div>
     );
   }
@@ -182,8 +183,17 @@ class MapBox extends Component {
       </div>
     )
 
+    const infoWindow = (
+      <InfoWindow clickedPin={this.state.clickedPin} 
+                  onCloseInfoWindowClick={this.handleCloseInfoWindowClick}/>
+    )
+
     return (
-      this.state.showInfoWindow ? boxWithInfoWindow : boxMapOnly
+      <div id="BoxWithInfoWindow">
+        {this.state.showInfoWindow ? infoWindow : null}
+        <SimpleMap onPinClick={this.handlePinClick}/>
+      </div>
+
     );
   }
 }

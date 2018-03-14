@@ -68,7 +68,9 @@ div > h3 {
 
 #InfoWindow {
   border: 5px solid gray;
-  
+  position: absolute;
+  left: 0px;
+  z-index: 1;
 }
 
 #CloseInfoWindow {
