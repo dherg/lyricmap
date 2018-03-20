@@ -117,6 +117,7 @@ class Header extends Component {
   } // close render()
 }
 
+// side panel with info about clicked pin
 class InfoWindow extends Component {
 
   constructor(props) {
@@ -161,31 +162,30 @@ class InfoWindow extends Component {
       <div id='InfoWindow'>
         <span id='CloseInfoWindow'
               onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
-        <div>
-          {this.props.clickedPin}
+        <div id='PinLyrics'>
+          " {this.state.lyrics} "
         </div>
-        <div>
+        <div id='SpotifyEmbed'>
           {this.state.spotifyembed}
         </div>
-        <div>
+        <div id='PinTitle'>
           {this.state.title}
         </div>
-        <div>
-          {this.state.artist}
+        <div id='PinArtist'>
+          by <b>{this.state.artist}</b>
         </div>
-        <div>
-          {this.state.album}
+        <div class="PinDetail">
+          Album: <b>{this.state.album}</b>
         </div>
-        <div>
-          {this.state.year}
+        <div class="PinDetail">
+          Year: <b>{this.state.year}</b>
         </div>
-        <div>
-          {this.state.lyrics}
+        <div class="PinDetail">
+          Genre: <b>{this.state.genre}</b>
         </div>
-        <div>
-          {this.state.genre}
+        <div class="PinDetail">
+          PinID: {this.props.clickedPin}
         </div>
-
       </div>
     );
   }
@@ -245,7 +245,6 @@ class MapBox extends Component {
         {this.state.showInfoWindow ? infoWindow : null}
         <SimpleMap onPinClick={this.handlePinClick}/>
       </div>
-
     );
   }
 }
