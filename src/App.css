@@ -67,19 +67,17 @@ div > h3 {
 }
 
 #InfoWindow {
-  /*border: 3px solid #f44277;*/
-  border: 3px solid black;
   position: absolute;
   left: 0px;
-  min-width: 300px;
+  min-width: 250px;
   width: 30vw;
   height: 88vh;
   z-index: 1;
-  background: #222;
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   text-align: center;
   overflow: scroll;
-  padding: 25px;
+  padding: 10px;
   line-height: 2em;
 }
 
@@ -111,8 +109,8 @@ div > h3 {
 #CloseInfoWindow {
   float: right;
   border: 1px solid gray;
-  margin-right: -25px;
-  margin-top: -25px;
+  margin-right: -10px;
+  margin-top: -10px;
 }
 
 .active {

@@ -36,9 +36,21 @@ class SimpleMap extends Component {
   constructor(props) {
     super(props);
     this.handlePinClick = this.handlePinClick.bind(this);
+    this.state = {
+      center: {lat: 35.027718, lng: -95.625},
+      zoom: 5,
+      pinList: null,
+    }
+  }
+
+  componentDidMount() {
+    this.setState({
+      pinList: this.getPins(),
+    });
   }
 
   getPins() {
+    // TODO: make api call
     return([
       {lat: 37.027718, lng: -95.625},
       {lat: 35.027718, lng: -95.625},
@@ -46,20 +58,25 @@ class SimpleMap extends Component {
     ]);
   }
 
-  static defaultProps = {
-    center: {lat: 35.027718, lng: -95.625},
-    zoom: 5,
-    pinCoords: [{lat: 37.027718, lng: -95.625}],
-  };
-
   pinListToComponents(pinList) {
     return (
       pinList.map(pin => <Pin lat={pin.lat} lng={pin.lng} text={pin.lat + pin.lng} onPinClick={this.handlePinClick}/>)
     );
   }
 
-  handlePinClick(clickedPin) {
-    this.props.onPinClick(clickedPin);
+  handlePinClick(clickedPinLat, clickedPinLng) {
+    console.log("clickedPin", clickedPinLat, clickedPinLng);
+    // open InfoWindow
+    this.props.onPinClick(clickedPinLat);
+
+    // set clicked pin to center
+    this.setState({
+      center: {lat: clickedPinLat, lng: clickedPinLng},
+    })
+  }
+
+  addPin(x, y, lat, lng, event) {
+    console.log('addPin: ', x, y, lat, lng, event);
   }
 
   render() {
@@ -72,12 +89,14 @@ class SimpleMap extends Component {
       <div className="SimpleMap">
 
         <GoogleMapReact
-          defaultCenter={this.props.center}
-          defaultZoom={this.props.zoom}
+          defaultCenter={this.state.center}
+          defaultZoom={this.state.zoom}
+          center={this.state.center}
           bootstrapURLKeys={{
             key: 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY',
             v: '3.30'
           }}
+          onClick={this.addPin}
         >
 
           {this.pinListToComponents(pinList)}
@@ -220,20 +239,6 @@ class MapBox extends Component {
   }
 
   render() {
-
-    // const boxMapOnly = (
-    //   <div>
-    //     <SimpleMap onPinClick={this.handlePinClick}/>
-    //   </div>
-    // )
-
-    // const boxWithInfoWindow = (
-    //   <div id="BoxWithInfoWindow">
-    //     <InfoWindow clickedPin={this.state.clickedPin} 
-    //                 onCloseInfoWindowClick={this.handleCloseInfoWindowClick}/>
-    //     <SimpleMap onPinClick={this.handlePinClick}/>
-    //   </div>
-    // )
 
     const infoWindow = (
       <InfoWindow clickedPin={this.state.clickedPin} 
