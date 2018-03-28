@@ -8,6 +8,8 @@ import Pin from './Pin';
 import { BrowserRouter as Router, Route, NavLink, IndexRoute, hashHistory, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+const google = window.google;
+
 class About extends Component {
   render() {
     return (
@@ -107,6 +109,72 @@ class SimpleMap extends Component {
   }
 }
 
+// Search bar
+class SearchBar extends Component {
+
+  constructor(props) {
+    super(props);
+    this.geocodeAddress = this.geocodeAddress.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.state = {
+      text: 'Enter location',
+    }
+  }
+
+  // componentDidMount() {
+
+  //   var geocoder = new google.maps.Geocoder();
+
+  //   // document.getElementById('submit').addEventListener('click', function() {
+  //   //   this.geocodeAddress(geocoder);
+  //   // });
+  // }
+
+  geocodeAddress(address) {
+    var geocoder = new google.maps.Geocoder();
+    var address = document.getElementById('address').value;
+    geocoder.geocode({'address': address}, function(results, status) {
+      if (status == 'OK') {
+        // TODO: set center of map here
+        // map.setCenter(results[0].geometry.location);
+        return(results[0].geometry.location)
+      } else {
+        console.log('Geocode was not successful for the following reason: ' + status);
+        return(null)
+      }
+    }); 
+  }
+
+  // handle change in text box
+  handleChange(event) {
+    this.setState({text: event.target.value});
+  }
+
+  // handle clicking the "submit" button
+  handleSubmit() {
+    var location = this.geocodeAddress(this.state.text); // location = results[0].geometry.location
+    if (location != null) {
+      // set center of the map to the location
+      
+    } else {
+      // TODO: display try a different search message
+    }
+
+  }
+
+
+  render() {
+    return(
+      <div id="floating-panel">
+        <input id="address" type="textbox" value={this.state.text} onChange={this.handleChange}/>
+        <input id="submit" type="button" value="Search" onClick={this.handleSubmit}/>
+      </div>
+    )
+  }
+}
+
 // Site header bar
 class Header extends Component {
   render() {
@@ -127,9 +195,7 @@ class Header extends Component {
           <div className="Header-link">
             <NavLink to="about">About</NavLink> 
           </div>
-          <div className="Header-link">
-            <h3>Search-bar</h3>
-          </div>
+          <SearchBar />
         </div>
       </div>
     ); // close return
