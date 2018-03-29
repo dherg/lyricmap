@@ -45,6 +45,14 @@ class SimpleMap extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.center != nextProps.center) {
+      this.setState({
+        center: nextProps.center,
+      });
+    }
+  }
+
   componentDidMount() {
     this.setState({
       pinList: this.getPins(),
@@ -155,11 +163,13 @@ class SearchBar extends Component {
   // handle clicking the "submit" button
   handleSubmit() {
     var location = this.geocodeAddress(this.state.text); // location = results[0].geometry.location
+    console.log('')
     if (location != null) {
       // set center of the map to the location
-      
+      this.props.changeMapCenter(location);
     } else {
       // TODO: display try a different search message
+      alert('error: try a different search');
     }
 
   }
@@ -177,6 +187,11 @@ class SearchBar extends Component {
 
 // Site header bar
 class Header extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
       <div className="App-header">
@@ -195,7 +210,7 @@ class Header extends Component {
           <div className="Header-link">
             <NavLink to="about">About</NavLink> 
           </div>
-          <SearchBar />
+          <SearchBar changeMapCenter={this.props.changeMapCenter}/>
         </div>
       </div>
     ); // close return
@@ -290,6 +305,12 @@ class MapBox extends Component {
     };
   }
 
+  // componentWillReceiveProps(nextProps) {
+  //   if nextProps.center != this.props.center {
+
+  //   }
+  // }
+
   handlePinClick(clickedPin) {
     this.setState({
       showInfoWindow: true,
@@ -314,21 +335,50 @@ class MapBox extends Component {
     return (
       <div id="MapBoxWithInfoWindow">
         {this.state.showInfoWindow ? infoWindow : null}
-        <SimpleMap onPinClick={this.handlePinClick}/>
+        <SimpleMap onPinClick={this.handlePinClick} 
+                   center={this.props.center}/>
+      </div>
+    );
+  }
+}
+
+// the header + MapBox
+class MapPage extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      center: null,
+    }
+  }
+
+  changeMapCenter(location) {
+    // TODO
+    this.setState({
+      center: location,
+    })
+  }
+
+  render() {
+    return(
+      <div>
+        <Header changeMapCenter={this.changeMapCenter}/>
+        <MapBox center={this.state.center}/>
       </div>
     );
   }
 }
 
 class AppRouter extends Component {
+
   render() {
     return (
       <Router>
         <div>
-          <Header />
           <Switch>
             <Route path="/about" component={About} />
-            <Route exact path="/" component={MapBox} />
+            <Route exact path="/" component={MapPage} />
             <Route component={NotFound} />
           </Switch>
         </div>
