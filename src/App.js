@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Route, NavLink, IndexRoute, hashHistory, Switc
 import PropTypes from 'prop-types';
 
 const google = window.google;
+const GOOGLE_KEY = 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY';
 
 class About extends Component {
   render() {
@@ -103,7 +104,7 @@ class SimpleMap extends Component {
           defaultZoom={this.state.zoom}
           center={this.state.center}
           bootstrapURLKeys={{
-            key: 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY',
+            key: GOOGLE_KEY,
             v: '3.30'
           }}
           onClick={this.addPin}
@@ -144,12 +145,15 @@ class SearchBar extends Component {
     var geocoder = new google.maps.Geocoder();
     var address = document.getElementById('address').value;
     geocoder.geocode({'address': address}, function(results, status) {
+      console.log('Results: ' + results[0]);
       if (status == 'OK') {
+        console.log('status OK. results: ' + console.log(results[0].formatted_address));
         // TODO: set center of map here
         // map.setCenter(results[0].geometry.location);
         return(results[0].geometry.location)
       } else {
-        console.log('Geocode was not successful for the following reason: ' + status);
+        console.log('Geocode was not successful. ')
+        console.log('Status: ' + status);
         return(null)
       }
     }); 
@@ -163,13 +167,13 @@ class SearchBar extends Component {
   // handle clicking the "submit" button
   handleSubmit() {
     var location = this.geocodeAddress(this.state.text); // location = results[0].geometry.location
-    console.log('')
+    console.log('geocoded');
     if (location != null) {
       // set center of the map to the location
       this.props.changeMapCenter(location);
     } else {
       // TODO: display try a different search message
-      alert('error: try a different search');
+      console.log('ERROR: TRY DIFFERENT SEARCH')
     }
 
   }
