@@ -100,7 +100,8 @@ class SimpleMap extends Component {
       <div className="SimpleMap">
 
         <GoogleMapReact
-          defaultCenter={this.state.center}
+          // defaultCenter={{lat: 35.027718, 
+          //                 lng: -95.625}}
           defaultZoom={this.state.zoom}
           center={this.state.center}
           bootstrapURLKeys={{
@@ -136,10 +137,11 @@ class SearchBar extends Component {
 
   // take in geometry object and update the map center with .location and .viewport
   changeMapCenter(geometry) {
+    // TODO: use these vals to change map center
     console.log('@changeMapCenter: geometry: ' + geometry);
     console.log('geometry.location: ' + geometry.location);
     console.log('geometry.viewport: ' + geometry.viewport);
-
+    this.props.changeMapCenter(geometry);
   }
 
   // handle change in text box
@@ -149,15 +151,24 @@ class SearchBar extends Component {
 
   geocodeAddress(address) {
     var geocoder = new google.maps.Geocoder();
-    var self = this;
-    geocoder.geocode({'address': address}, function(results, status) {
+    // var self = this;
+    // geocoder.geocode({'address': address}, function(results, status) {
+    //   console.log('Results: ' + results[0]);
+    //   if (status === 'OK') {
+    //     console.log('status OK. results: ' + results[0].formatted_address);
+    //     console.log('results[0].geometry.location: ' + results[0].geometry.location);
+    //     self.changeMapCenter(results[0].geometry);
+    //   } else {
+    //     console.log('Geocode was not successful.');
+    //     console.log('Status: ' + status);
+    //   }
+    // }); 
+    geocoder.geocode({'address': address}, (results, status) => {
       console.log('Results: ' + results[0]);
       if (status === 'OK') {
         console.log('status OK. results: ' + results[0].formatted_address);
         console.log('results[0].geometry.location: ' + results[0].geometry.location);
-        // TODO: set center of map here. pass results[0].geometry (which contains location and bounds)
-        // https://developers.google.com/maps/documentation/javascript/geocoding
-        self.changeMapCenter(results[0].geometry);
+        this.changeMapCenter(results[0].geometry);
       } else {
         console.log('Geocode was not successful.');
         console.log('Status: ' + status);
@@ -361,18 +372,26 @@ class MapPage extends Component {
       center: null,
     }
   }
-
-  changeMapCenter(location) {
+  // geometry: {
+  //   location: LatLng,
+  //   location_type: GeocoderLocationType
+  //   viewport: LatLngBounds,
+  //   bounds: LatLngBounds
+  // }
+  changeMapCenter(geometry) {
     // TODO
+    console.log('@MapPage, geometry: ' + geometry)
+
     this.setState({
-      center: location,
+      center: {lat: geometry.location.lat(),
+               lng: geometry.location.lng()}
     })
   }
 
   render() {
     return(
       <div>
-        <Header changeMapCenter={this.changeMapCenter}/>
+        <Header changeMapCenter={(g) => this.changeMapCenter(g)}/>
         <MapBox center={this.state.center}/>
       </div>
     );
