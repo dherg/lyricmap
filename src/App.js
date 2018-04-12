@@ -4,6 +4,7 @@ import './App.css';
 
 // my imports
 import GoogleMapReact from 'google-map-react';
+import { fitBounds } from 'google-map-react/utils';
 import Pin from './Pin';
 import { BrowserRouter as Router, Route, NavLink, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -51,6 +52,11 @@ class SimpleMap extends Component {
       this.setState({
         center: nextProps.center,
       });
+    }
+    if (this.props.zoom !== nextProps.zoom) {
+      this.setState({
+        zoom: nextProps.zoom,
+      })
     }
   }
 
@@ -102,8 +108,9 @@ class SimpleMap extends Component {
         <GoogleMapReact
           // defaultCenter={{lat: 35.027718, 
           //                 lng: -95.625}}
-          defaultZoom={this.state.zoom}
+          // defaultZoom={this.state.zoom}
           center={this.state.center}
+          zoom={this.state.zoom}
           bootstrapURLKeys={{
             key: GOOGLE_KEY,
             v: '3.30'
@@ -152,18 +159,7 @@ class SearchBar extends Component {
 
   geocodeAddress(address) {
     var geocoder = new google.maps.Geocoder();
-    // var self = this;
-    // geocoder.geocode({'address': address}, function(results, status) {
-    //   console.log('Results: ' + results[0]);
-    //   if (status === 'OK') {
-    //     console.log('status OK. results: ' + results[0].formatted_address);
-    //     console.log('results[0].geometry.location: ' + results[0].geometry.location);
-    //     self.changeMapCenter(results[0].geometry);
-    //   } else {
-    //     console.log('Geocode was not successful.');
-    //     console.log('Status: ' + status);
-    //   }
-    // }); 
+
     geocoder.geocode({'address': address}, (results, status) => {
       console.log('Results: ' + results[0]);
       if (status === 'OK') {
@@ -180,19 +176,6 @@ class SearchBar extends Component {
   // handle clicking the "submit" button
   handleSubmit() {
     this.geocodeAddress(this.state.text);
-
-    // var location = this.geocodeAddress(this.state.text); // location = results[0].geometry
-    // console.log('location: ' + location);
-    // if (location != null && location !== undefined) {
-    //   console.log('geocoded');
-    //   console.log(location.location);
-    //   // set center of the map to the location
-    //   this.props.changeMapCenter(location);
-    // } else {
-    //   // TODO: display try a different search message
-    //   console.log('ERROR: TRY DIFFERENT SEARCH')
-    // }
-
   }
 
   handleKeyPress(e) {
@@ -324,19 +307,21 @@ class MapBox extends Component {
 
   constructor(props) {
     super(props);
+
     this.handlePinClick = this.handlePinClick.bind(this);
     this.handleCloseInfoWindowClick = this.handleCloseInfoWindowClick.bind(this);
+
     this.state = {
       showInfoWindow: false,
       clickedPin: null,
     };
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   if nextProps.center != this.props.center {
-
-  //   }
-  // }
+  componentDidMount() {
+    var mapwidth = this.divElement.clientWidth;
+    var mapheight = this.divElement.clientHeight;
+    this.props.setMapDimensions(mapwidth, mapheight);
+  }
 
   handlePinClick(clickedPin) {
     this.setState({
@@ -360,10 +345,14 @@ class MapBox extends Component {
     )
 
     return (
-      <div id="MapBoxWithInfoWindow">
+      <div id="MapBoxWithInfoWindow"
+           ref={ (divElement) => {this.divElement = divElement}}
+      >
         {this.state.showInfoWindow ? infoWindow : null}
         <SimpleMap onPinClick={this.handlePinClick} 
-                   center={this.props.center}/>
+                   center={this.props.center}
+                   zoom={this.props.zoom}
+                   setMapDimensions={this.setMapDimensions}/>
       </div>
     );
   }
@@ -377,21 +366,42 @@ class MapPage extends Component {
 
     this.state = {
       center: null,
+      mapwidth: null,
+      mapheight: null,
     }
   }
-  // geometry: {
-  //   location: LatLng,
-  //   location_type: GeocoderLocationType
-  //   viewport: LatLngBounds,
-  //   bounds: LatLngBounds
-  // }
+
+  setMapDimensions(mapwidth, mapheight) {
+    this.setState({
+      mapwidth: mapwidth,
+      mapheight: mapheight,
+    });
+  }
+
   changeMapCenter(geometry) {
-    // TODO
-    console.log('@MapPage, geometry: ' + geometry)
+    var bounds_ne = geometry.viewport.getNorthEast();
+    var bounds_sw = geometry.viewport.getSouthWest();
+    const bounds = {
+      ne: {
+        lat: bounds_ne.lat(),
+        lng: bounds_ne.lng(),
+      },
+      sw: {
+        lat: bounds_sw.lat(),
+        lng: bounds_sw.lng(),
+      }
+    }
+
+    const size = {
+      width: this.state.mapwidth,
+      height: this.state.mapheight
+    }
+
+    const {center, zoom} = fitBounds(bounds, size)
 
     this.setState({
-      center: {lat: geometry.location.lat(),
-               lng: geometry.location.lng()}
+      center: center,
+      zoom: zoom,
     })
   }
 
@@ -399,7 +409,10 @@ class MapPage extends Component {
     return(
       <div>
         <Header changeMapCenter={(g) => this.changeMapCenter(g)}/>
-        <MapBox center={this.state.center}/>
+        <MapBox center={this.state.center} 
+                zoom={this.state.zoom}
+                setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
+                />
       </div>
     );
   }
