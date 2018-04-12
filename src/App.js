@@ -129,9 +129,10 @@ class SearchBar extends Component {
     this.geocodeAddress = this.geocodeAddress.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
 
     this.state = {
-      text: 'Enter location',
+      text: '',
     }
   }
 
@@ -194,11 +195,17 @@ class SearchBar extends Component {
 
   }
 
+  handleKeyPress(e) {
+    if (e.key === 'Enter' && this.state.text != '') {
+      this.handleSubmit();
+    }
+  }
+
 
   render() {
     return(
       <div id="floating-panel">
-        <input id="address" type="textbox" value={this.state.text} onChange={this.handleChange}/>
+        <input id="address" type="textbox" placeholder="Enter location" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
         <input id="submit" type="button" value="Search" onClick={this.handleSubmit}/>
       </div>
     )
