@@ -116,6 +116,7 @@ class SimpleMap extends Component {
             v: '3.30'
           }}
           onClick={this.addPin}
+          options={{streetViewControl: true}}
         >
 
           {this.pinListToComponents(pinList)}
