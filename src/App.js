@@ -146,10 +146,6 @@ class SearchBar extends Component {
 
   // take in geometry object and update the map center with .location and .viewport
   changeMapCenter(geometry) {
-    // TODO: use these vals to change map center
-    console.log('@changeMapCenter: geometry: ' + geometry);
-    console.log('geometry.location: ' + geometry.location);
-    console.log('geometry.viewport: ' + geometry.viewport);
     this.props.changeMapCenter(geometry);
   }
 
