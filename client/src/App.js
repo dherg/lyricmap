@@ -68,6 +68,10 @@ class SimpleMap extends Component {
 
   getPins() {
     // TODO: make api call
+
+    var apihost = process.env.REACT_APP_LYRICMAP_API_HOST;
+    
+
     return([
       {lat: 37.027718, lng: -95.625},
       {lat: 35.027718, lng: -95.625},
