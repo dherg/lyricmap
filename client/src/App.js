@@ -61,28 +61,52 @@ class SimpleMap extends Component {
   }
 
   componentDidMount() {
-    this.setState({
-      pinList: this.getPins(),
+    console.log('did mount');
+    this.getPins().then(data => {
+      console.log('here in setState');
+      console.log(data);
+      this.setState({
+        pinList: data,
+      });
     });
+    console.log('this.state.pinList: ' + this.state.pinList);
   }
 
   getPins() {
-    // TODO: make api call
 
-    var apihost = process.env.REACT_APP_LYRICMAP_API_HOST;
-    
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+    console.log("Fetch " + url);
 
-    return([
-      {lat: 37.027718, lng: -95.625},
-      {lat: 35.027718, lng: -95.625},
-      {lat: 38.904510, lng: -77.050137}
-    ]);
+    var pinData;
+
+    return fetch(url)
+      .then(function(response) {
+        if (response.status >= 400) {
+          throw new Error("Bad response from server");
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        console.log('saving pinData time: ' + (new Date).getTime());
+        pinData = data;
+        console.log(pinData);
+        return data;
+      });
   }
 
   pinListToComponents(pinList) {
-    return (
-      pinList.map(pin => <Pin lat={pin.lat} lng={pin.lng} text={pin.lat + pin.lng} onPinClick={this.handlePinClick}/>)
-    );
+    console.log("calling pinListToComponents()");
+    console.log("pinList = " + pinList);
+    if (pinList === null) {
+      return;
+    } else {
+      console.log(typeof pinList);
+      console.log( pinList[0]);
+      // pinList.map(pin => console.log(pin.Lat));
+      return (
+        pinList.map(pin => <Pin key={pin.PinId} pinId={pin.PinId} lat={Number(pin.Lat)} lng={Number(pin.Lng)} text={pin.Lat + pin.Lng} onPinClick={this.handlePinClick}/>)
+      );
+    }
   }
 
   handlePinClick(clickedPinLat, clickedPinLng) {
@@ -102,10 +126,6 @@ class SimpleMap extends Component {
 
   render() {
 
-    var pinList = this.getPins();
-
-    console.log(pinList);
-
     return (
       <div className="SimpleMap">
 
@@ -123,7 +143,7 @@ class SimpleMap extends Component {
           options={{streetViewControl: true}}
         >
 
-          {this.pinListToComponents(pinList)}
+          {this.pinListToComponents(this.state.pinList)}
         </GoogleMapReact>
 
       </div>
@@ -180,7 +200,7 @@ class SearchBar extends Component {
   }
 
   handleKeyPress(e) {
-    if (e.key === 'Enter' && this.state.text != '') {
+    if (e.key === 'Enter' && this.state.text !== '') {
       this.handleSubmit();
     }
   }

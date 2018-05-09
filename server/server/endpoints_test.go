@@ -28,7 +28,7 @@ func TestPinsHandler(t *testing.T) {
     }
 
     // Check the response body is what we expect.
-    expected := ``
+    expected := `[{"PinId":"1","Lat":"37.027718","Lng":"-95.625"},{"PinId":"2","Lat":"35.027718","Lng":"-95.625"},{"PinId":"3","Lat":"38.904510","Lng":"-77.050137"}]`
     if rr.Body.String() != expected {
         t.Errorf("PinsHandler returned unexpected body: got %v want %v",
             rr.Body.String(), expected)

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 export default class Pin extends Component {
   static propTypes = {
+    pinId: PropTypes.string,
     lat: PropTypes.number,
     lng: PropTypes.number,
     text: PropTypes.string,
