@@ -40,6 +40,7 @@ class SimpleMap extends Component {
   constructor(props) {
     super(props);
     this.handlePinClick = this.handlePinClick.bind(this);
+    this.addPin = this.addPin.bind(this);
     this.state = {
       center: {lat: 35.027718, lng: -95.625},
       zoom: 5,
@@ -61,10 +62,7 @@ class SimpleMap extends Component {
   }
 
   componentDidMount() {
-    console.log('did mount');
     this.getPins().then(data => {
-      console.log('here in setState');
-      console.log(data);
       this.setState({
         pinList: data,
       });
@@ -75,7 +73,6 @@ class SimpleMap extends Component {
   getPins() {
 
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
-    console.log("Fetch " + url);
 
     var pinData;
 
@@ -95,14 +92,9 @@ class SimpleMap extends Component {
   }
 
   pinListToComponents(pinList) {
-    console.log("calling pinListToComponents()");
-    console.log("pinList = " + pinList);
     if (pinList === null) {
       return;
     } else {
-      console.log(typeof pinList);
-      console.log( pinList[0]);
-      // pinList.map(pin => console.log(pin.Lat));
       return (
         pinList.map(pin => <Pin key={pin.PinId} pinId={pin.PinId} lat={Number(pin.Lat)} lng={Number(pin.Lng)} text={pin.Lat + pin.Lng} onPinClick={this.handlePinClick}/>)
       );
@@ -121,7 +113,12 @@ class SimpleMap extends Component {
   }
 
   addPin(x, y, lat, lng, event) {
-    console.log('addPin: ', x, y, lat, lng, event);
+    if (this.props.isAddingPin) {
+      console.log('addPin: ', x, y, lat, lng, event);
+      this.props.handleAddPin();
+    } else {
+
+    }
   }
 
   render() {
@@ -130,9 +127,6 @@ class SimpleMap extends Component {
       <div className="SimpleMap">
 
         <GoogleMapReact
-          // defaultCenter={{lat: 35.027718, 
-          //                 lng: -95.625}}
-          // defaultZoom={this.state.zoom}
           center={this.state.center}
           zoom={this.state.zoom}
           bootstrapURLKeys={{
@@ -212,8 +206,28 @@ class SearchBar extends Component {
         <input id="address" type="textbox" placeholder="Enter location" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
         <input id="submit" type="button" value="Search" onClick={this.handleSubmit}/>
       </div>
-    )
+    );
   }
+}
+
+class AddPinButton extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      text: 'Click to add',
+    };
+  }
+
+  render() {
+    return(
+      <div id="add-pin-button-container">
+        <input id="add-pin-button" type="button" value={this.props.isAddingPin ? "Adding Pin..." : "Add a Pin"} onClick={this.props.handleAddPinButton} />
+      </div>
+    );
+  }
+
 }
 
 // Site header bar
@@ -241,7 +255,8 @@ class Header extends Component {
           <div className="Header-link">
             <NavLink to="about">About</NavLink> 
           </div>
-          <SearchBar changeMapCenter={this.props.changeMapCenter}/>
+          <AddPinButton handleAddPinButton={this.props.handleAddPinButton} />
+          <SearchBar changeMapCenter={this.props.changeMapCenter} />
         </div>
       </div>
     ); // close return
@@ -373,7 +388,9 @@ class MapBox extends Component {
         <SimpleMap onPinClick={this.handlePinClick} 
                    center={this.props.center}
                    zoom={this.props.zoom}
-                   setMapDimensions={this.setMapDimensions}/>
+                   setMapDimensions={this.setMapDimensions}
+                   isAddingPin={this.props.isAddingPin}
+                   handleAddPin={this.props.handleAddPin}/>
       </div>
     );
   }
@@ -384,11 +401,14 @@ class MapPage extends Component {
 
   constructor(props) {
     super(props);
+    this.handleAddPinButton = this.handleAddPinButton.bind(this);
+    this.handleAddPin = this.handleAddPin.bind(this);
 
     this.state = {
       center: null,
       mapwidth: null,
       mapheight: null,
+      isAddingPin: false,
     }
   }
 
@@ -426,14 +446,27 @@ class MapPage extends Component {
     })
   }
 
+  handleAddPinButton() {
+    this.setState({
+      isAddingPin: true,
+    });
+  }
+
+  handleAddPin() {
+    this.setState({
+      isAddingPin: false,
+    });
+  }
+
   render() {
     return(
       <div>
-        <Header changeMapCenter={(g) => this.changeMapCenter(g)}/>
+        <Header changeMapCenter={(g) => this.changeMapCenter(g)} handleAddPinButton={this.handleAddPinButton}/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
-                />
+                isAddingPin={this.state.isAddingPin}
+                handleAddPin={this.handleAddPin}/>
       </div>
     );
   }
