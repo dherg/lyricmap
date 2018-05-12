@@ -28,6 +28,10 @@
   font-size: 1.5em;
 }
 
+#add-pin-button {
+  background-color: white;
+}
+
 .Header-link-box {
   position: relative;
   display: flex;
@@ -99,6 +103,17 @@ div > h3 {
   overflow: scroll;
   padding: 10px;
   line-height: 2em;
+}
+
+#add-pin-window {
+  width:30vw;
+  height: 40vh;
+  bottom:10vh;
+  left: 30vw;
+  position: fixed;
+  z-index: 13;
+  background-color: black;
+  color: white;
 }
 
 #PinTitle {

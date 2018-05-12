@@ -112,12 +112,9 @@ class SimpleMap extends Component {
     })
   }
 
-  addPin(x, y, lat, lng, event) {
+  addPin(event) {
     if (this.props.isAddingPin) {
-      console.log('addPin: ', x, y, lat, lng, event);
-      this.props.handleAddPin();
-    } else {
-
+      this.props.handleAddPin(event.lat, event.lng);
     }
   }
 
@@ -221,9 +218,15 @@ class AddPinButton extends Component {
   }
 
   render() {
+
+    const button = (
+      this.props.isAddingPin ? 
+      <input id="add-pin-button" type="button" value="Click on map to add pin..." disabled /> : 
+      <input id="add-pin-button" type="button" value="Add a Pin" onClick={this.props.handleAddPinButton} />
+    );
     return(
       <div id="add-pin-button-container">
-        <input id="add-pin-button" type="button" value={this.props.isAddingPin ? "Adding Pin..." : "Add a Pin"} onClick={this.props.handleAddPinButton} />
+        {button}
       </div>
     );
   }
@@ -255,7 +258,7 @@ class Header extends Component {
           <div className="Header-link">
             <NavLink to="about">About</NavLink> 
           </div>
-          <AddPinButton handleAddPinButton={this.props.handleAddPinButton} />
+          <AddPinButton handleAddPinButton={this.props.handleAddPinButton} isAddingPin={this.props.isAddingPin}/>
           <SearchBar changeMapCenter={this.props.changeMapCenter} />
         </div>
       </div>
@@ -378,7 +381,7 @@ class MapBox extends Component {
     const infoWindow = (
       <InfoWindow clickedPin={this.state.clickedPin} 
                   onCloseInfoWindowClick={this.handleCloseInfoWindowClick}/>
-    )
+    );
 
     return (
       <div id="MapBoxWithInfoWindow"
@@ -390,10 +393,26 @@ class MapBox extends Component {
                    zoom={this.props.zoom}
                    setMapDimensions={this.setMapDimensions}
                    isAddingPin={this.props.isAddingPin}
-                   handleAddPin={this.props.handleAddPin}/>
+                   handleAddPin={(lat, lng) => this.props.handleAddPin(lat, lng)}/>
       </div>
     );
   }
+}
+
+class AddPinWindow extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return(
+      <div id="add-pin-window">
+        Add Pin Window
+      </div>
+    );
+  }
+
 }
 
 // the header + MapBox
@@ -409,6 +428,7 @@ class MapPage extends Component {
       mapwidth: null,
       mapheight: null,
       isAddingPin: false,
+      showAddPinWindow: false,
     }
   }
 
@@ -447,26 +467,35 @@ class MapPage extends Component {
   }
 
   handleAddPinButton() {
+    console.log('setting isAddingPin to true')
     this.setState({
       isAddingPin: true,
     });
   }
 
-  handleAddPin() {
+  handleAddPin(lat, lng) {
+    console.log("adding pin at " + lat + ", " + lng);
     this.setState({
       isAddingPin: false,
+      showAddPinWindow: true,
     });
   }
 
   render() {
+
+    const addPinWindow = (
+      <AddPinWindow />
+    );
+
     return(
       <div>
-        <Header changeMapCenter={(g) => this.changeMapCenter(g)} handleAddPinButton={this.handleAddPinButton}/>
+        <Header changeMapCenter={(g) => this.changeMapCenter(g)} handleAddPinButton={this.handleAddPinButton} isAddingPin={this.state.isAddingPin}/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
                 isAddingPin={this.state.isAddingPin}
-                handleAddPin={this.handleAddPin}/>
+                handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}/>
+        {this.state.showAddPinWindow ? addPinWindow : null}
       </div>
     );
   }
