@@ -105,15 +105,20 @@ div > h3 {
   line-height: 2em;
 }
 
-#add-pin-window {
-  width:30vw;
-  height: 40vh;
-  bottom:10vh;
+#AddPinWindow {
+  position: absolute;
   left: 30vw;
-  position: fixed;
-  z-index: 13;
-  background-color: black;
+  top: 20vh;
+  min-width: 250px;
+  width: 40vw;
+  height: 60vh;
+  z-index: 300;
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
+  text-align: center;
+  overflow: scroll;
+  padding: 10px;
+  line-height: 2em;
 }
 
 #PinTitle {

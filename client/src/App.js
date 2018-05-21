@@ -286,7 +286,7 @@ class InfoWindow extends Component {
   componentDidMount() {
     // TODO: fetch pin info
     const spotifyembed = (
-      <iframe src="https://open.spotify.com/embed/track/07gqJjvwwuZ1assFLKbiNn" width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
+      <iframe src="https://open.spotify.com/embed/track/07gqJjvwwuZ1assFLKbiNn" width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
       );
     const title = "Dance Music";
     const artist = "The Mountain Goats";
@@ -323,16 +323,16 @@ class InfoWindow extends Component {
         <div id='PinArtist'>
           by <b>{this.state.artist}</b>
         </div>
-        <div class="PinDetail">
+        <div className="PinDetail">
           Album: <b>{this.state.album}</b>
         </div>
-        <div class="PinDetail">
+        <div className="PinDetail">
           Year: <b>{this.state.year}</b>
         </div>
-        <div class="PinDetail">
+        <div className="PinDetail">
           Genre: <b>{this.state.genre}</b>
         </div>
-        <div class="PinDetail">
+        <div className="PinDetail">
           PinID: {this.props.clickedPin}
         </div>
       </div>
@@ -403,12 +403,96 @@ class AddPinWindow extends Component {
 
   constructor(props) {
     super(props);
+    this.handleTitleChange = this.handleTitleChange.bind(this);
+    this.handleArtistChange = this.handleArtistChange.bind(this);
+    this.handleLyricChange = this.handleLyricChange.bind(this);
+    this.validateSubmission = this.validateSubmission.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.state = {
+      title: "",
+      artist: "",
+      lyric: ""
+    };
+  }
+
+  handleTitleChange(event) {
+    this.setState({
+      songName: event.target.value
+    });
+  }
+
+  handleArtistChange(event) {
+    this.setState({
+      artist: event.target.value
+    });
+  }
+
+  handleLyricChange(event) {
+    this.setState({
+      lyric: event.target.value
+    });
+  }
+
+  validateSubmission() {
+    if (this.state.songName === "") {
+      alert("Song Name cannot be blank.");
+      return(false);
+    }
+    if (this.state.artist === "") {
+      alert("Artist cannot be blank.");
+      return(false);
+    }
+    if (this.state.lyric === "") {
+      alert("Lyric cannot be blank.");
+      return(false);
+    }
+    return(true);
+  }
+
+  handleSubmit() {
+    // validate the text, do nothing if submission not valid
+    if (!this.validateSubmission()) {
+      return;
+    }
+
+
+    // Post data to api
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        lat: "",
+        lng: "",
+        title: this.state.title,
+        artist: this.state.artist,
+        lyric: this.state.lyric,
+      })
+    });
+
   }
 
   render() {
     return(
-      <div id="add-pin-window">
-        Add Pin Window
+      <div id="AddPinWindow">
+        <div id="addPinTitleBox">
+          {"Song Title: "}
+          <input id="addPinTitle" type="textbox" onChange={this.handleTitleChange}/>
+        </div>
+        <div id="addPinArtistBox">
+          {"Artist: "}
+          <input id="addPinArtist" type="textbox" onChange={this.handleArtistChange}/>
+        </div>
+        <div id="addPinLyric">
+          {"Lyric: "}
+          <input id="addPinLyric" type="textbox" onChange={this.handleLyricChange}/>
+        </div>
+        <input id="addPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
       </div>
     );
   }

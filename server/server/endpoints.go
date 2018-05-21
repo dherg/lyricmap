@@ -33,8 +33,8 @@ func getPins(pinId string) []Pin {
     } 
 }
 
-func addPins() {
-
+func addPins(r *http.Request) {
+    fmt.Println(r.PostForm["lng"])
 }
 
 func updatePins() {
@@ -56,15 +56,17 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
     switch r.Method {
     case "GET":
         pinData = getPins("")
+        // set header response content type to JSON
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(pinData)
     case "POST":
-        addPins()
+        addPins(r)
+        r.ParseForm()
+        w.Header().Set("Content-Type", "application/json")
     case "PUT":
         updatePins()
     }
 
-    // set header response content type to JSON
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(pinData)
 
 }
 
