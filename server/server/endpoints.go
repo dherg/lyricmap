@@ -3,8 +3,10 @@ package main
 import (
     "log"
     "fmt"
+    // "strings"
     "net/http"
     "encoding/json"
+    "io/ioutil"
 
     "github.com/gorilla/mux"
 )
@@ -13,11 +15,22 @@ type Pin struct {
     PinId string
     Lat string
     Lng string
+    Title string
+    Artist string
+    Lyric string
 }
 
 type MyServer struct {
     r *mux.Router
 }
+
+// type test_struct struct {
+//     Lat string
+//     Lng string
+//     Title string
+//     Artist string
+//     Lyric string
+// }
 
 func getPins(pinId string) []Pin {
     // Right now returns all pins
@@ -34,7 +47,22 @@ func getPins(pinId string) []Pin {
 }
 
 func addPins(r *http.Request) {
-    fmt.Println(r.PostForm["lng"])
+
+    // read body into byte array
+    body, err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        panic(err)
+    }
+    log.Printf("received: %v\n", string(body))
+
+    // unpack json
+    var p Pin
+    err = json.Unmarshal(body, &p)
+    if err != nil {
+        panic(err)
+    }
+    log.Printf("%v", p.Artist)
+    
 }
 
 func updatePins() {
@@ -61,8 +89,6 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
         json.NewEncoder(w).Encode(pinData)
     case "POST":
         addPins(r)
-        r.ParseForm()
-        w.Header().Set("Content-Type", "application/json")
     case "PUT":
         updatePins()
     }
