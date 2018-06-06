@@ -309,7 +309,7 @@ class InfoWindow extends Component {
   render() {
     return (
       <div id='InfoWindow'>
-        <span id='CloseInfoWindow'
+        <span class='CloseWindow'
               onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
         <div id='PinLyrics'>
           " {this.state.lyrics} "
@@ -480,6 +480,8 @@ class AddPinWindow extends Component {
   render() {
     return(
       <div id="AddPinWindow">
+        <span class='CloseWindow'
+              onClick={this.props.onCloseAddPinWindowClick}>X</span>
         <div id="addPinTitleBox">
           {"Song Title: "}
           <input id="addPinTitle" type="textbox" onChange={this.handleTitleChange}/>
@@ -506,6 +508,7 @@ class MapPage extends Component {
     super(props);
     this.handleAddPinButton = this.handleAddPinButton.bind(this);
     this.handleAddPin = this.handleAddPin.bind(this);
+    this.handleCloseAddPinWindowClick = this.handleCloseAddPinWindowClick.bind(this);
 
     this.state = {
       center: null,
@@ -565,10 +568,17 @@ class MapPage extends Component {
     });
   }
 
+  handleCloseAddPinWindowClick() {
+    this.setState({
+      isAddingPin: false,
+      showAddPinWindow: false,
+    });
+  }
+
   render() {
 
     const addPinWindow = (
-      <AddPinWindow />
+      <AddPinWindow onCloseAddPinWindowClick={this.handleCloseAddPinWindowClick}/>
     );
 
     return(

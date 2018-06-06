@@ -146,7 +146,7 @@ div > h3 {
 
 }
 
-#CloseInfoWindow {
+.CloseWindow {
   float: right;
   border: 1px solid gray;
   margin-right: -10px;
