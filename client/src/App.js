@@ -410,7 +410,7 @@ class AddPinWindow extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
-      title: "",
+      songName: "",
       artist: "",
       lyric: ""
     };
@@ -456,7 +456,6 @@ class AddPinWindow extends Component {
       return;
     }
 
-
     // Post data to api
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
 
@@ -474,6 +473,9 @@ class AddPinWindow extends Component {
         lyric: this.state.lyric,
       })
     });
+
+    // set adding pin and show addpinwindow to false
+    this.props.onCloseAddPinWindowClick();
 
   }
 
