@@ -13,8 +13,8 @@ import (
 
 type Pin struct {
     PinId string
-    Lat string
-    Lng string
+    Lat float32
+    Lng float32
     Title string
     Artist string
     Lyric string
@@ -38,12 +38,23 @@ func getPins(pinId string) []Pin {
     if pinId != "" { // return info for specific pin
         return nil
     } else { // return all pins
-        retPins := []Pin{{PinId: "1", Lat: "37.027718", Lng: "-95.625"},
-                         {PinId: "2", Lat: "35.027718", Lng: "-95.625"},
-                         {PinId: "3", Lat: "38.904510", Lng: "-77.050137"}}
+        retPins := []Pin{{PinId: "1", Lat: 37.027718, Lng: -95.625},
+                         {PinId: "2", Lat: 35.027718, Lng: -95.625},
+                         {PinId: "3", Lat: 38.904510, Lng: -77.050137}}
 
         return retPins
     } 
+}
+
+func validatePin(p Pin) bool {
+    // TODO: validate pin submission
+    return true
+}
+
+func storePin(p Pin) {
+    // add pin metadata
+
+    // add pin to db
 }
 
 func addPins(r *http.Request) {
@@ -62,6 +73,13 @@ func addPins(r *http.Request) {
         panic(err)
     }
     log.Printf("%v", p.Artist)
+
+    if !validatePin(p) {
+        log.Printf("pin %v invalid\n", p)
+        return
+    }
+
+    go storePin(p)
     
 }
 

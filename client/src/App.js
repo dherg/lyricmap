@@ -466,8 +466,8 @@ class AddPinWindow extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        lat: "",
-        lng: "",
+        lat: this.props.lat,
+        lng: this.props.lng,
         title: this.state.title,
         artist: this.state.artist,
         lyric: this.state.lyric,
@@ -482,7 +482,7 @@ class AddPinWindow extends Component {
   render() {
     return(
       <div id="AddPinWindow">
-        <span class='CloseWindow'
+        <span className='CloseWindow'
               onClick={this.props.onCloseAddPinWindowClick}>X</span>
         <div id="addPinTitleBox">
           {"Song Title: "}
@@ -567,6 +567,8 @@ class MapPage extends Component {
     this.setState({
       isAddingPin: false,
       showAddPinWindow: true,
+      addingPinLat: lat,
+      addingPinLng: lng,
     });
   }
 
@@ -580,7 +582,7 @@ class MapPage extends Component {
   render() {
 
     const addPinWindow = (
-      <AddPinWindow onCloseAddPinWindowClick={this.handleCloseAddPinWindowClick}/>
+      <AddPinWindow onCloseAddPinWindowClick={this.handleCloseAddPinWindowClick} lat={this.state.addingPinLat} lng={this.state.addingPinLng}/>
     );
 
     return(
