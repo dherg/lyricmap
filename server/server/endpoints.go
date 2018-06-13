@@ -7,8 +7,12 @@ import (
     "net/http"
     "encoding/json"
     "io/ioutil"
+    "context"
+    "os"
 
     "github.com/gorilla/mux"
+    "github.com/zmb3/spotify"
+    "golang.org/x/oauth2/clientcredentials"
 )
 
 type Pin struct {
@@ -23,6 +27,9 @@ type Pin struct {
 type MyServer struct {
     r *mux.Router
 }
+
+// set Spotify api client variable
+var client spotify.Client
 
 // type test_struct struct {
 //     Lat string
@@ -53,8 +60,20 @@ func validatePin(p Pin) bool {
 
 func storePin(p Pin) {
     // add pin metadata
+    log.Println("calling storePin with pin: %p", p)
+    // example call vv
+    msg, page, err := client.FeaturedPlaylists()
+    if err != nil {
+        log.Fatalf("couldn't get features playlists: %v", err)
+    }
+    fmt.Println(msg)
+    for _, playlist := range page.Playlists {
+        fmt.Println("  ", playlist.Name)
+    }
+    // example call ^^
 
     // add pin to db
+
 }
 
 func addPins(r *http.Request) {
@@ -137,7 +156,25 @@ func (s *MyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
     s.r.ServeHTTP(rw, req)
 }
 
+// request api token for spotify
+func getSpotifyClient() spotify.Client {
+    config := &clientcredentials.Config{
+        ClientID:     os.Getenv("SPOTIFY_ID"),
+        ClientSecret: os.Getenv("SPOTIFY_SECRET"),
+        TokenURL:     spotify.TokenURL,
+    }
+    token, err := config.Token(context.Background())
+    if err != nil {
+        log.Fatalf("couldn't get token: %v", err)
+    }
+
+    return spotify.Authenticator{}.NewClient(token)
+
+}
+
 func main() {
+
+    client = getSpotifyClient()
 
     r := mux.NewRouter()
     r.HandleFunc("/pins", PinsHandler)
