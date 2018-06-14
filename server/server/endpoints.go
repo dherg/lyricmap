@@ -9,6 +9,7 @@ import (
     "io/ioutil"
     "context"
     "os"
+    "errors"
 
     "github.com/gorilla/mux"
     "github.com/zmb3/spotify"
@@ -22,6 +23,8 @@ type Pin struct {
     Title string
     Artist string
     Lyric string
+    SpotifyID string
+
 }
 
 type MyServer struct {
@@ -58,18 +61,73 @@ func validatePin(p Pin) bool {
     return true
 }
 
+// searchSpotify searches Spotify for complete track info given a pointer to a Pin with Title and Artist fields
+func searchSpotify (p *Pin) error {
+
+    if p.Artist == "" || p.Title == "" {
+        return errors.New("searchSpotify: provided Pin has no Title or no Artist")
+    }
+
+    // search for track info
+    query := fmt.Sprintf("track:%v%%20artist:%v", p.Title, p.Artist)
+    results, err := client.Search(query, spotify.SearchTypeTrack)
+    if err != nil {
+        log.Println("Error searching Spotify track info: ", err)
+        return err
+    }
+    log.Printf("search results: %v", results)
+    if results.Albums != nil {
+        fmt.Println("Albums:")
+        for _, item := range results.Albums.Albums {
+            fmt.Println("   ", item.Name)
+        }
+    }
+
+    // // search for album info (year)
+    // results, err := client.Search("", spotify.SearchTypeAlbum)
+    // if err != nil {
+    //     log.Println("Error searching Spotify track info: ", err)
+    //     return err
+    // }
+
+    // // handle album results
+    // if results.Albums != nil {
+    //     fmt.Println("Albums:")
+    //     for _, item := range results.Albums.Albums {
+    //         fmt.Println("   ", item.Name)
+    //     }
+    // }
+    // // handle playlist results
+    // if results.Playlists != nil {
+    //     fmt.Println("Playlists:")
+    //     for _, item := range results.Playlists.Playlists {
+    //         fmt.Println("   ", item.Name)
+    //     }
+    // }
+
+    // indicate no errors
+    return nil
+}
+
 func storePin(p Pin) {
     // add pin metadata
-    log.Println("calling storePin with pin: %p", p)
-    // example call vv
-    msg, page, err := client.FeaturedPlaylists()
+    log.Println("calling storePin with pin: %v", p)
+
+    // get spotify info (what info do I want? at least year, spotify embed, album, genre)
+    err := searchSpotify(&p)
     if err != nil {
-        log.Fatalf("couldn't get features playlists: %v", err)
+        log.Println("Error: Couldn't search spotify playlists: %v", err)
     }
-    fmt.Println(msg)
-    for _, playlist := range page.Playlists {
-        fmt.Println("  ", playlist.Name)
-    }
+
+    // example call vv
+    // msg, page, err := client.FeaturedPlaylists()
+    // if err != nil {
+    //     log.Fatalf("couldn't get features playlists: %v", err)
+    // }
+    // fmt.Println(msg)
+    // for _, playlist := range page.Playlists {
+    //     fmt.Println("  ", playlist.Name)
+    // }
     // example call ^^
 
     // add pin to db
@@ -106,14 +164,13 @@ func updatePins() {
 
 }
 
+// PinsHandler routes requests to handler functions based on the HTTP request method
+// GET: getPins
+// POST: addPins
+// PUT: updatePins
 func PinsHandler(w http.ResponseWriter, r *http.Request) {
 
-    // route differently based on request type (r.Method)
-    // GET: getPins
-    // POST: addPins
-    // PUT: updatePins
-
-    fmt.Println(r.Method + " " + r.RequestURI)
+    log.Println(r.Method + " " + r.RequestURI)
 
 
     var pinData []Pin

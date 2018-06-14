@@ -410,7 +410,7 @@ class AddPinWindow extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
-      songName: "",
+      title: "",
       artist: "",
       lyric: ""
     };
@@ -418,7 +418,7 @@ class AddPinWindow extends Component {
 
   handleTitleChange(event) {
     this.setState({
-      songName: event.target.value
+      title: event.target.value
     });
   }
 
@@ -435,7 +435,7 @@ class AddPinWindow extends Component {
   }
 
   validateSubmission() {
-    if (this.state.songName === "") {
+    if (this.state.title === "") {
       alert("Song Name cannot be blank.");
       return(false);
     }
