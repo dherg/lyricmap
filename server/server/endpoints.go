@@ -23,8 +23,16 @@ type Pin struct {
     Title string
     Artist string
     Lyric string
+    Year string
+    Genre string
     SpotifyID string
+    SpotifyTitle string // the title of the track in spotify
+    SpotifyArtist string // artist of track in spotify
 
+}
+
+type Suggestion struct {
+    Tracks []Pin 
 }
 
 type MyServer struct {
@@ -69,18 +77,54 @@ func searchSpotify (p *Pin) error {
     }
 
     // search for track info
-    query := fmt.Sprintf("track:%v%%20artist:%v", p.Title, p.Artist)
+    query := fmt.Sprintf("track:%v artist:%v", p.Title, p.Artist)
+    log.Println("query: ", query)
     results, err := client.Search(query, spotify.SearchTypeTrack)
     if err != nil {
         log.Println("Error searching Spotify track info: ", err)
         return err
     }
     log.Printf("search results: %v", results)
-    if results.Albums != nil {
-        fmt.Println("Albums:")
-        for _, item := range results.Albums.Albums {
-            fmt.Println("   ", item.Name)
+
+    // parse results. want to find:
+    // - SpotifyID [results.Tracks.Tracks.SimpleTrack.ID]
+    // - Year [album api]
+    // - Spotify Song Name [results.Tracks.Tracks.SimpleTrack.Name]
+    // - Spotify Artist Name
+    // - Spotify Album Name
+    // - Spotify genre [album api]
+    if results.Tracks != nil && results.Tracks.Tracks != nil {
+        if len(results.Tracks.Tracks) > 0 {
+            // fmt.Println("Tracks:")
+            // for _, item := range results.Tracks.Popularity {
+            //     fmt.Println("item:   ", item)
+            // }
+            log.Println("results: ", results) // &{<nil> <nil> <nil> 0xc4203b6d80}
+            log.Println("results.Tracks: ", results.Tracks) // &{{https://api.spotify.com/v1/search?query=track%3Aab%2520artist%3Aab&type=track&offset=0&limit=20 20 0 0  } []}
+            log.Println("results.Tracks.Tracks: ", results.Tracks.Tracks)
+            log.Println("len(results.Tracks.Tracks): ", len(results.Tracks.Tracks))
+            log.Println("results.Tracks.Tracks[0]: ", results.Tracks.Tracks[0]) // FullTrack object e.g.: TRACK<[3ncgNpxLoBQ65ABk4djDyd] [PICK IT UP (feat. A$AP Rocky)]> 
+            fullTrack := results.Tracks.Tracks[0]
+            simpleTrack := fullTrack.SimpleTrack
+
+            // get SpotifyID
+            p.SpotifyID = string(simpleTrack.ID)
+
+            // get Spotify song name
+            log.Println("simpleTrack.Name: ", simpleTrack.Name)
+            p.Title = string(simpleTrack.Name)
+
+            // get Spotify
+
+            // get Year
+            // album := fullTrack.Album // SimpleAlbum
+            // log.Println("fullTrack.Album: ", album)
+        } else {
+            return errors.New("searchSpotify: no Track results found")
         }
+    } else {
+        log.Println("results.Tracks: ", results.Tracks)
+        return errors.New("searchSpotify: results.Tracks or results.Tracks.Tracks was nil.")
     }
 
     // // search for album info (year)
@@ -111,12 +155,12 @@ func searchSpotify (p *Pin) error {
 
 func storePin(p Pin) {
     // add pin metadata
-    log.Println("calling storePin with pin: %v", p)
+    log.Println("calling storePin with pin: ", p)
 
     // get spotify info (what info do I want? at least year, spotify embed, album, genre)
     err := searchSpotify(&p)
     if err != nil {
-        log.Println("Error: Couldn't search spotify playlists: %v", err)
+        log.Println("Error: Couldn't search spotify playlists: ", err)
     }
 
     // example call vv
@@ -161,6 +205,40 @@ func addPins(r *http.Request) {
 }
 
 func updatePins() {
+
+}
+
+// suggestTracks
+func suggestTracks(title string, artist string) {
+
+}
+
+// suggestTracksHandler handles requests to suggest-tracks
+func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
+    log.Println(r.Method + " " + r.RequestURI)
+
+    // read body of request into byte array
+    body, err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        panic(err)
+    }
+    log.Printf("received: %v\n", string(body))
+
+    // unpack json
+    var p Pin
+    err = json.Unmarshal(body, &p)
+    if err != nil {
+        panic(err)
+    }
+
+    // return mock data
+    retPins := []Pin{{PinId: "1", Lat: 37.027718, Lng: -95.625},
+                         {PinId: "2", Lat: 35.027718, Lng: -95.625},
+                         {PinId: "3", Lat: 38.904510, Lng: -77.050137}}
+    var retSuggestion Suggestion
+    retSuggestion.Tracks = retPins
+    json.NewEncoder(w).Encode(retSuggestion)
+
 
 }
 
@@ -237,6 +315,7 @@ func main() {
     r.HandleFunc("/pins", PinsHandler)
     r.HandleFunc("/login", LoginHandler)
     r.HandleFunc("/search", SearchHandler)
+    r.HandleFunc("/suggest-tracks", suggestTracksHandler)
 
     log.Fatal(http.ListenAndServe(":8080", &MyServer{r}))
 

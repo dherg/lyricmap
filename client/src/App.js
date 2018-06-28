@@ -8,6 +8,7 @@ import { fitBounds } from 'google-map-react/utils';
 import Pin from './Pin';
 import { BrowserRouter as Router, Route, NavLink, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import Autosuggest from 'react-autosuggest';
 
 const google = window.google;
 const GOOGLE_KEY = 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY';
@@ -399,6 +400,142 @@ class MapBox extends Component {
   }
 }
 
+class SuggestionSearch extends Component {
+
+  // Teach Autosuggest how to calculate suggestions for any given input value.
+  getSuggestions = (value) => {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
+
+    return inputLength === 0 ? [] : this.languages.filter(lang =>
+      lang.name.toLowerCase().slice(0, inputLength) === inputValue
+    );
+  };
+
+  // When suggestion is clicked, Autosuggest needs to populate the input
+  // based on the clicked suggestion. Teach Autosuggest how to calculate the
+  // input value for every given suggestion.
+  getSuggestionValue = (suggestion) => suggestion.name;
+
+  // Use your imagination to render suggestions.
+  renderSuggestion = (suggestion) => (
+    <div>
+      {suggestion.name}
+    </div>
+  );
+
+  constructor() {
+    super();
+
+    // Imagine you have a list of languages that you'd like to autosuggest.
+    this.languages = [
+      {
+        name: 'C',
+        year: 1972
+      },
+      {
+        name: 'Elm',
+        year: 2012
+      },
+    ];
+
+    // Autosuggest is a controlled component.
+    // This means that you need to provide an input value
+    // and an onChange handler that updates this value (see below).
+    // Suggestions also need to be provided to the Autosuggest,
+    // and they are initially empty because the Autosuggest is closed.
+    this.state = {
+      value: '',
+      suggestions: [],
+      isLoading: false
+    };
+
+    this.latestRequest = null;
+  }
+
+  loadSuggestions(value) {
+    // Cancel the previous request
+    if (this.lastRequestId !== null) {
+      clearTimeout(this.lastRequestId);
+    }
+    
+    this.setState({
+      isLoading: true
+    });
+    
+    // Make request
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/suggest-tracks';
+    const thisRequest = this.latestRequest = fetch(url + '?q=' + String(value), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => {console.log('res = ' + res); res.json()} )
+      .then(res => { 
+
+        // If this is true there's a newer request happening, stop everything
+        if(thisRequest !== this.latestRequest) {
+          return;
+        }
+
+        // If this is executed then it's the latest request
+        this.setState({
+          suggestions: res.suggestions,
+          isLoading: false
+        });
+      });
+  };
+    
+
+  onChange = (event, { newValue }) => {
+    this.setState({
+      value: newValue
+    });
+    console.log('change happened. new state = ' + newValue)
+  };
+
+  // Autosuggest will call this function every time you need to update suggestions.
+  // You already implemented this logic above, so just use it.
+  onSuggestionsFetchRequested = ({ value }) => {
+    console.log('onSuggestionsFetchRequested, value = ' + value)
+    this.setState({
+      suggestions: this.loadSuggestions(value)
+    });
+  };
+
+  // Autosuggest will call this function every time you need to clear suggestions.
+  onSuggestionsClearRequested = () => {
+    this.setState({
+      suggestions: []
+    });
+  };
+
+  render() {
+    const { value, suggestions } = this.state;
+
+    // Autosuggest will pass through all these props to the input.
+    const inputProps = {
+      placeholder: 'Type a programming language',
+      value,
+      onChange: this.onChange
+    };
+
+    // Finally, render it!
+    return (
+      <Autosuggest
+        suggestions={suggestions}
+        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+        getSuggestionValue={this.getSuggestionValue}
+        renderSuggestion={this.renderSuggestion}
+        inputProps={inputProps}
+      />
+    );
+  }
+}
+
 class AddPinWindow extends Component {
 
   constructor(props) {
@@ -497,6 +634,7 @@ class AddPinWindow extends Component {
           <input id="addPinLyric" type="textbox" onChange={this.handleLyricChange}/>
         </div>
         <input id="addPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
+        <SuggestionSearch/>
       </div>
     );
   }
