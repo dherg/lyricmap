@@ -17,23 +17,24 @@ import (
 )
 
 type Pin struct {
-    PinId string
-    Lat float32
-    Lng float32
-    Title string
-    Artist string
-    Lyric string
-    Year string
-    Genre string
-    SpotifyID string
-    SpotifyTitle string // the title of the track in spotify
-    SpotifyArtist string // artist of track in spotify
-
+    PinId string `json:",omitempty"`
+    Lat float32 `json:",omitempty"`
+    Lng float32 `json:",omitempty"`
+    Title string `json:",omitempty"`
+    Artist string `json:",omitempty"`
+    Lyric string `json:",omitempty"`
+    Year string `json:",omitempty"`
+    Genre string `json:",omitempty"`
+    SpotifyID string `json:",omitempty"`
+    SpotifyTitle string `json:",omitempty"` // the title of the track in spotify
+    SpotifyArtist string `json:",omitempty"` // artist of track in spotify
+    SmallImageURL string `json:",omitempty"` // URL of album image in smallest format
 }
 
-type Suggestion struct {
-    Tracks []Pin 
-}
+// image_url, title, artist, and spotifyID to be displayed as spotify suggestions for add track
+// type TrackSuggestion struct {
+    
+// }
 
 type MyServer struct {
     r *mux.Router
@@ -209,36 +210,40 @@ func updatePins() {
 }
 
 // suggestTracks
-func suggestTracks(title string, artist string) {
-
+func suggestTracks(query string) []Pin {
+    // return mock data TODO: search spotify and return real data
+    retPins := []Pin{
+                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
+                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
+                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
+                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
+                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
+                    }
+    return(retPins)
 }
 
 // suggestTracksHandler handles requests to suggest-tracks
 func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
-    log.Println(r.Method + " " + r.RequestURI)
+    log.Println(r.Method + " " + r.URL.Path)
 
-    // read body of request into byte array
-    body, err := ioutil.ReadAll(r.Body)
-    if err != nil {
-        panic(err)
-    }
-    log.Printf("received: %v\n", string(body))
+    // get the parameters of query
+    params, ok := r.URL.Query()["q"]
 
-    // unpack json
-    var p Pin
-    err = json.Unmarshal(body, &p)
-    if err != nil {
-        panic(err)
+    if !ok || len(params) < 1 {
+        log.Println("404: URL Parameter 'q' is missing.")
+        w.WriteHeader(http.StatusNotFound)
+        w.Write([]byte("404: Page not found"))
+        return
     }
 
-    // return mock data
-    retPins := []Pin{{PinId: "1", Lat: 37.027718, Lng: -95.625},
-                         {PinId: "2", Lat: 35.027718, Lng: -95.625},
-                         {PinId: "3", Lat: 38.904510, Lng: -77.050137}}
-    var retSuggestion Suggestion
-    retSuggestion.Tracks = retPins
-    json.NewEncoder(w).Encode(retSuggestion)
+    query := params[0]
 
+    suggestions := suggestTracks(query)
+
+    // serve request
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(suggestions)
 
 }
 
