@@ -97,7 +97,7 @@ class SimpleMap extends Component {
       return;
     } else {
       return (
-        pinList.map(pin => <Pin key={pin.PinId} pinId={pin.PinId} lat={Number(pin.Lat)} lng={Number(pin.Lng)} text={pin.Lat + pin.Lng} onPinClick={this.handlePinClick}/>)
+        pinList.map(pin => <Pin key={pin.PinId} pinId={pin.PinId} lat={Number(pin.Lat)} lng={Number(pin.Lng)} text={String(pin.Lat + pin.Lng)} onPinClick={this.handlePinClick}/>)
       );
     }
   }
@@ -403,24 +403,25 @@ class MapBox extends Component {
 class SuggestionSearch extends Component {
 
   // Teach Autosuggest how to calculate suggestions for any given input value.
-  getSuggestions = (value) => {
-    const inputValue = value.trim().toLowerCase();
-    const inputLength = inputValue.length;
+  // getSuggestions = (value) => {
+  //   const inputValue = value.trim().toLowerCase();
+  //   const inputLength = inputValue.length;
 
-    return inputLength === 0 ? [] : this.languages.filter(lang =>
-      lang.name.toLowerCase().slice(0, inputLength) === inputValue
-    );
-  };
+  //   return inputLength === 0 ? [] : this.languages.filter(lang =>
+  //     lang.name.toLowerCase().slice(0, inputLength) === inputValue
+  //   );
+  // };
+
 
   // When suggestion is clicked, Autosuggest needs to populate the input
   // based on the clicked suggestion. Teach Autosuggest how to calculate the
   // input value for every given suggestion.
-  getSuggestionValue = (suggestion) => suggestion.name;
+  getSuggestionValue = (suggestion) => suggestion.SpotifyTitle;
 
   // Use your imagination to render suggestions.
   renderSuggestion = (suggestion) => (
     <div>
-      {suggestion.name}
+      {suggestion.SpotifyTitle}
     </div>
   );
 
@@ -472,17 +473,20 @@ class SuggestionSearch extends Component {
           'Content-Type': 'application/json',
         },
       })
-      .then(res => {console.log('res = ' + res); res.json()} )
+      .then(res => res.json() )
       .then(res => { 
+
+        console.log('res = ' + res)
 
         // If this is true there's a newer request happening, stop everything
         if(thisRequest !== this.latestRequest) {
+          console.log('newer request, stop')
           return;
         }
 
         // If this is executed then it's the latest request
         this.setState({
-          suggestions: res.suggestions,
+          suggestions: res,
           isLoading: false
         });
       });
@@ -500,9 +504,10 @@ class SuggestionSearch extends Component {
   // You already implemented this logic above, so just use it.
   onSuggestionsFetchRequested = ({ value }) => {
     console.log('onSuggestionsFetchRequested, value = ' + value)
-    this.setState({
-      suggestions: this.loadSuggestions(value)
-    });
+    // this.setState({
+    //   suggestions: this.loadSuggestions(value)
+    // });
+    this.loadSuggestions(value)
   };
 
   // Autosuggest will call this function every time you need to clear suggestions.
@@ -514,10 +519,11 @@ class SuggestionSearch extends Component {
 
   render() {
     const { value, suggestions } = this.state;
+    console.log('@520 suggestions = ' + suggestions)
 
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
-      placeholder: 'Type a programming language',
+      placeholder: 'Type the name of a song',
       value,
       onChange: this.onChange
     };
