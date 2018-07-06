@@ -402,26 +402,23 @@ class MapBox extends Component {
 
 class SuggestionSearch extends Component {
 
-  // Teach Autosuggest how to calculate suggestions for any given input value.
-  // getSuggestions = (value) => {
-  //   const inputValue = value.trim().toLowerCase();
-  //   const inputLength = inputValue.length;
-
-  //   return inputLength === 0 ? [] : this.languages.filter(lang =>
-  //     lang.name.toLowerCase().slice(0, inputLength) === inputValue
-  //   );
-  // };
-
-
   // When suggestion is clicked, Autosuggest needs to populate the input
   // based on the clicked suggestion. Teach Autosuggest how to calculate the
   // input value for every given suggestion.
-  getSuggestionValue = (suggestion) => suggestion.SpotifyTitle;
+  getSuggestionValue = (suggestion) => suggestion.SpotifyTitle
 
-  // Use your imagination to render suggestions.
+  // Control how a suggestion is rendered
   renderSuggestion = (suggestion) => (
-    <div>
-      {suggestion.SpotifyTitle}
+    <div className="Suggestion">
+      <div>
+        <img src={suggestion.SmallImageURL}/>
+      </div>
+      <div>
+        {suggestion.SpotifyTitle}
+      </div>
+      <div>
+        {suggestion.SpotifyArtist}
+      </div>
     </div>
   );
 
@@ -530,19 +527,26 @@ class SuggestionSearch extends Component {
 
     // Finally, render it!
     return (
-      <Autosuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-        getSuggestionValue={this.getSuggestionValue}
-        renderSuggestion={this.renderSuggestion}
-        inputProps={inputProps}
-      />
+      <div id="SuggestionSearch">
+        <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+          getSuggestionValue={this.getSuggestionValue}
+          renderSuggestion={this.renderSuggestion}
+          inputProps={inputProps}
+        />
+        <div onClick={this.props.onShowManualAddPinClick}>
+          Can't find the song you're looking for on spotify? Click here to add it manually
+        </div>
+      </div>
+
     );
   }
-}
+} // end SuggestionSearch component
 
-class AddPinWindow extends Component {
+// Component to add pin when song is not found in spotify search
+class ManualAddPin extends Component {
 
   constructor(props) {
     super(props);
@@ -624,9 +628,10 @@ class AddPinWindow extends Component {
 
   render() {
     return(
-      <div id="AddPinWindow">
-        <span className='CloseWindow'
-              onClick={this.props.onCloseAddPinWindowClick}>X</span>
+      <div id="ManualAddPin">
+        <div onClick={this.props.onShowSuggestionSearchClick}>
+          Want to search for the song on Spotify instead? Click here
+        </div>
         <div id="addPinTitleBox">
           {"Song Title: "}
           <input id="addPinTitle" type="textbox" onChange={this.handleTitleChange}/>
@@ -640,7 +645,50 @@ class AddPinWindow extends Component {
           <input id="addPinLyric" type="textbox" onChange={this.handleLyricChange}/>
         </div>
         <input id="addPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
-        <SuggestionSearch/>
+      </div>
+    );
+  }
+
+}
+
+class AddPinWindow extends Component {
+
+  constructor(props) {
+    super(props);
+    this.onShowSuggestionSearchClick = this.onShowSuggestionSearchClick.bind(this);
+    this.onShowManualAddPinClick = this.onShowManualAddPinClick.bind(this);
+
+    this.state = {
+      showManualAddPin: false,
+    };
+  }
+
+  onShowSuggestionSearchClick() {
+    this.setState({
+      showManualAddPin: false,
+    });
+  }
+
+  onShowManualAddPinClick() {
+    this.setState({
+      showManualAddPin: true,
+    });
+  }
+
+  render() {
+
+    return(
+      <div id="AddPinWindow">
+        <span className='CloseWindow'
+              onClick={this.props.onCloseAddPinWindowClick}>X</span>
+        {this.state.showManualAddPin ?
+          <ManualAddPin onCloseAddPinWindowClick={this.props.onCloseAddPinWindowClick}
+                        onShowSuggestionSearchClick={this.onShowSuggestionSearchClick}
+          /> : 
+          <SuggestionSearch onCloseAddPinWindowClick={this.props.onCloseAddPinWindowClick}
+                            onShowManualAddPinClick={this.onShowManualAddPinClick}
+          />
+        }
       </div>
     );
   }
