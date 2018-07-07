@@ -534,11 +534,13 @@ class SuggestionSearch extends Component {
   handleSubmit() {
     // validate the text, do nothing if lyric is blank
     if (this.state.lyric === "") {
+      alert("Lyric cannot be left empty.")
       return;
     }
 
     // Post data to api
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+
 
     fetch(url, {
       method: 'POST',
@@ -549,8 +551,8 @@ class SuggestionSearch extends Component {
       body: JSON.stringify({
         lat: this.props.lat,
         lng: this.props.lng,
-        title: this.state.title,
-        artist: this.state.artist,
+        title: this.state.selection.SpotifyTitle,
+        artist: this.state.selection.SpotifyArtist,
         lyric: this.state.lyric,
       })
     });
