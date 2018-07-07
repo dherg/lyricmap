@@ -405,7 +405,7 @@ class SuggestionSearch extends Component {
   // When suggestion is clicked, Autosuggest needs to populate the input
   // based on the clicked suggestion. Teach Autosuggest how to calculate the
   // input value for every given suggestion.
-  getSuggestionValue = (suggestion) => suggestion.SpotifyTitle
+  getSuggestionValue = (suggestion) => suggestion.SpotifyTitle;
 
   // Control how a suggestion is rendered
   renderSuggestion = (suggestion) => (
@@ -424,6 +424,9 @@ class SuggestionSearch extends Component {
 
   constructor() {
     super();
+
+    this.handleLyricChange = this.handleLyricChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
 
     // Imagine you have a list of languages that you'd like to autosuggest.
     this.languages = [
@@ -445,7 +448,10 @@ class SuggestionSearch extends Component {
     this.state = {
       value: '',
       suggestions: [],
-      isLoading: false
+      isLoading: false,
+      trackSelected: false,
+      selection: null,
+      lyric: "",
     };
 
     this.latestRequest = null;
@@ -494,13 +500,11 @@ class SuggestionSearch extends Component {
     this.setState({
       value: newValue
     });
-    console.log('change happened. new state = ' + newValue)
   };
 
   // Autosuggest will call this function every time you need to update suggestions.
   // You already implemented this logic above, so just use it.
   onSuggestionsFetchRequested = ({ value }) => {
-    console.log('onSuggestionsFetchRequested, value = ' + value)
     // this.setState({
     //   suggestions: this.loadSuggestions(value)
     // });
@@ -514,9 +518,50 @@ class SuggestionSearch extends Component {
     });
   };
 
+  onSuggestionSelected = (event, {suggestion} ) => {
+    console.log('suggestion selected: ' + suggestion);
+    this.setState({
+      selection: suggestion,
+    });
+  }
+
+  handleLyricChange(event) {
+    this.setState({
+      lyric: event.target.value
+    });
+  }
+
+  handleSubmit() {
+    // validate the text, do nothing if lyric is blank
+    if (this.state.lyric === "") {
+      return;
+    }
+
+    // Post data to api
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        lat: this.props.lat,
+        lng: this.props.lng,
+        title: this.state.title,
+        artist: this.state.artist,
+        lyric: this.state.lyric,
+      })
+    });
+
+    // set adding pin and show addpinwindow to false
+    this.props.onCloseAddPinWindowClick();
+
+  }
+
   render() {
     const { value, suggestions } = this.state;
-    console.log('@520 suggestions = ' + suggestions)
 
     // Autosuggest will pass through all these props to the input.
     const inputProps = {
@@ -525,6 +570,20 @@ class SuggestionSearch extends Component {
       onChange: this.onChange
     };
 
+    const showManualAddPinButton = (
+      <div onClick={this.props.onShowManualAddPinClick}>
+        Can't find the song you're looking for on spotify? Click here to add it manually
+      </div>
+    );
+
+    const addPinLyricBox = (
+      <div id="addPinLyric">
+        {"Lyric: "}
+        <input id="addPinLyric" type="textbox" onChange={this.handleLyricChange}/>
+        <input id="addPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
+      </div>
+    );
+
     // Finally, render it!
     return (
       <div id="SuggestionSearch">
@@ -532,15 +591,13 @@ class SuggestionSearch extends Component {
           suggestions={suggestions}
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+          onSuggestionSelected={this.onSuggestionSelected}
           getSuggestionValue={this.getSuggestionValue}
           renderSuggestion={this.renderSuggestion}
           inputProps={inputProps}
         />
-        <div onClick={this.props.onShowManualAddPinClick}>
-          Can't find the song you're looking for on spotify? Click here to add it manually
-        </div>
+        {this.state.selection == null ? showManualAddPinButton : addPinLyricBox}
       </div>
-
     );
   }
 } // end SuggestionSearch component
@@ -684,9 +741,13 @@ class AddPinWindow extends Component {
         {this.state.showManualAddPin ?
           <ManualAddPin onCloseAddPinWindowClick={this.props.onCloseAddPinWindowClick}
                         onShowSuggestionSearchClick={this.onShowSuggestionSearchClick}
+                        lat={this.props.lat}
+                        lng={this.props.lng}
           /> : 
           <SuggestionSearch onCloseAddPinWindowClick={this.props.onCloseAddPinWindowClick}
                             onShowManualAddPinClick={this.onShowManualAddPinClick}
+                            lat={this.props.lat}
+                            lng={this.props.lng}
           />
         }
       </div>
