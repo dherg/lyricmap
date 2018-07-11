@@ -71,6 +71,7 @@ func validatePin(p Pin) bool {
 }
 
 // searchSpotify searches Spotify for complete track info given a pointer to a Pin with Title and Artist fields
+// TODO: unnecessary with new spotify suggestion add pin flow?
 func searchSpotify (p *Pin) error {
 
     if p.Artist == "" || p.Title == "" {
@@ -127,28 +128,6 @@ func searchSpotify (p *Pin) error {
         log.Println("results.Tracks: ", results.Tracks)
         return errors.New("searchSpotify: results.Tracks or results.Tracks.Tracks was nil.")
     }
-
-    // // search for album info (year)
-    // results, err := client.Search("", spotify.SearchTypeAlbum)
-    // if err != nil {
-    //     log.Println("Error searching Spotify track info: ", err)
-    //     return err
-    // }
-
-    // // handle album results
-    // if results.Albums != nil {
-    //     fmt.Println("Albums:")
-    //     for _, item := range results.Albums.Albums {
-    //         fmt.Println("   ", item.Name)
-    //     }
-    // }
-    // // handle playlist results
-    // if results.Playlists != nil {
-    //     fmt.Println("Playlists:")
-    //     for _, item := range results.Playlists.Playlists {
-    //         fmt.Println("   ", item.Name)
-    //     }
-    // }
 
     // indicate no errors
     return nil
@@ -209,16 +188,64 @@ func updatePins() {
 
 }
 
-// suggestTracks
+// suggestTracks searches spotify for a given query and returns up to 5 resulting tracks (or nil on error)
 func suggestTracks(query string) []Pin {
-    // return mock data TODO: search spotify and return real data
-    retPins := []Pin{
-                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
-                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
-                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
-                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
-                        {SpotifyTitle: "Dance Music", SpotifyArtist: "The Mountain Goats", SmallImageURL: "https://i.scdn.co/image/3a193a8684046d2cce14579aae9d387bd00f3407"},
-                    }
+
+    // check that query isn't empty
+    if query == "" {
+        log.Println("Query provided to suggestTracks is empty. Returning no results.")
+        return nil
+    }
+
+    // set limit for search in search options
+    opt := &spotify.Options{}
+    opt.Limit = new(int)
+    *opt.Limit = 5
+
+    // search for query on spotify
+    results, err := client.SearchOpt(query, spotify.SearchTypeTrack, opt)
+    if err != nil {
+        log.Println("Error searching Spotify track info: ", err)
+        return nil
+    }
+    log.Printf("search results: %v", results)
+
+    // get array of suggested tracks
+    var suggestedTracks []spotify.FullTrack
+    if results != nil && results.Tracks != nil && results.Tracks.Tracks != nil {
+        suggestedTracks = results.Tracks.Tracks // array of suggested tracks
+    } else {
+        log.Println("Error: Spotify did not provide suggested tracks")
+        return nil
+    }
+    log.Printf("suggestedTracks: %v", suggestedTracks)
+
+    // for each suggestion, get relevant info (SpotifyTitle, SpotifyArtist, SpotifyID, and SmallImageURL) and add as pin to retPins
+    var retPins []Pin
+    for _, track := range suggestedTracks {
+        // pin to be added to retPins
+        var p Pin
+
+        simpleTrack := track.SimpleTrack
+
+        // get SpotifyTitle
+        p.SpotifyTitle = string(simpleTrack.Name)
+
+        // get SpotifyArtist
+        // TODO: handle multiple artists / get artist from album not from track (avoid wait by maroon 5 showing up as A Boogie)
+        p.SpotifyArtist = string(simpleTrack.Artists[0].Name)
+
+        // get SpotifyID
+        p.SpotifyID = string(simpleTrack.ID)
+
+        // get SmallImageURL (images are stored in biggest first order, and we want smallest, so get last in slice)
+        p.SmallImageURL = string(track.Album.Images[len(track.Album.Images) - 1].URL)
+
+        // add to retPins
+        retPins = append(retPins, p)
+    }
+
+
     return(retPins)
 }
 

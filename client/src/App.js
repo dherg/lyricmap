@@ -541,7 +541,6 @@ class SuggestionSearch extends Component {
     // Post data to api
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
 
-
     fetch(url, {
       method: 'POST',
       headers: {
