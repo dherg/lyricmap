@@ -402,9 +402,27 @@ class MapBox extends Component {
 
 class SuggestionSearch extends Component {
 
-  // When suggestion is clicked, Autosuggest needs to populate the input
-  // based on the clicked suggestion. Teach Autosuggest how to calculate the
-  // input value for every given suggestion.
+  
+
+  constructor() {
+    super();
+
+    this.handleLyricChange = this.handleLyricChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.state = {
+      value: '',
+      suggestions: [],
+      isLoading: false,
+      trackSelected: false,
+      selection: null,
+      lyric: "",
+    };
+
+    this.latestRequest = null;
+  }
+
+  // Populate the input value based on the selected suggestion
   getSuggestionValue = (suggestion) => suggestion.SpotifyTitle;
 
   // Control how a suggestion is rendered
@@ -421,41 +439,6 @@ class SuggestionSearch extends Component {
       </div>
     </div>
   );
-
-  constructor() {
-    super();
-
-    this.handleLyricChange = this.handleLyricChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-
-    // Imagine you have a list of languages that you'd like to autosuggest.
-    this.languages = [
-      {
-        name: 'C',
-        year: 1972
-      },
-      {
-        name: 'Elm',
-        year: 2012
-      },
-    ];
-
-    // Autosuggest is a controlled component.
-    // This means that you need to provide an input value
-    // and an onChange handler that updates this value (see below).
-    // Suggestions also need to be provided to the Autosuggest,
-    // and they are initially empty because the Autosuggest is closed.
-    this.state = {
-      value: '',
-      suggestions: [],
-      isLoading: false,
-      trackSelected: false,
-      selection: null,
-      lyric: "",
-    };
-
-    this.latestRequest = null;
-  }
 
   loadSuggestions(value) {
     // Cancel the previous request
@@ -489,7 +472,7 @@ class SuggestionSearch extends Component {
 
         // If this is executed then it's the latest request
         this.setState({
-          suggestions: res,
+          suggestions: res === null ? [] : res, // if the return value was null, then there are no suggestions
           isLoading: false
         });
       });
@@ -503,11 +486,8 @@ class SuggestionSearch extends Component {
   };
 
   // Autosuggest will call this function every time you need to update suggestions.
-  // You already implemented this logic above, so just use it.
+  // (Actual state is updated in loadSuggestions)
   onSuggestionsFetchRequested = ({ value }) => {
-    // this.setState({
-    //   suggestions: this.loadSuggestions(value)
-    // });
     this.loadSuggestions(value)
   };
 
@@ -523,7 +503,14 @@ class SuggestionSearch extends Component {
     this.setState({
       selection: suggestion,
     });
-  }
+  };
+
+  // Determine whether or not to render suggestions based on the current input
+  // Suggestions are rendered if function returns true
+  // Currently set to render suggestions if input is longer than 2 characters
+  shouldRenderSuggestions = (value) => {
+    return value.trim().length > 2;
+  };
 
   handleLyricChange(event) {
     this.setState({
@@ -593,6 +580,7 @@ class SuggestionSearch extends Component {
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.onSuggestionsClearRequested}
           onSuggestionSelected={this.onSuggestionSelected}
+          shouldRenderSuggestions={this.shouldRenderSuggestions}
           getSuggestionValue={this.getSuggestionValue}
           renderSuggestion={this.renderSuggestion}
           inputProps={inputProps}
