@@ -13,6 +13,40 @@ import Autosuggest from 'react-autosuggest';
 const google = window.google;
 const GOOGLE_KEY = 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY';
 
+// POST a pin with optional metadata
+// lat, lng, title, artist, and lyric are mandatory for all pins
+// spotifyID, album, year, genre, are optional
+function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=null, year=null, genre=null) {
+
+  // check if mandatory parameters are 
+  if (lat === null || lng === null || title === null || artist === null || lyric === null) {
+    throw new Error('One or more of lat, lng, title, artist, or lyric were null. Not posting pin.');
+  }
+  
+  // get url for environment 
+  var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      lat: lat,
+      lng: lng,
+      title: title,
+      artist: artist,
+      lyric: lyric,
+      spotifyID: (spotifyID === null ? undefined : spotifyID),
+      album: (album === null ? undefined : album),
+      year: (year === null ? undefined : year),
+      genre: (genre === null ? undefined : genre),
+    })
+  });
+
+}
+
 class About extends Component {
   render() {
     return (
@@ -423,7 +457,9 @@ class SuggestionSearch extends Component {
   }
 
   // Populate the input value based on the selected suggestion
-  getSuggestionValue = (suggestion) => suggestion.SpotifyTitle;
+  getSuggestionValue = (suggestion) => (
+    suggestion.SpotifyTitle
+  );
 
   // Control how a suggestion is rendered
   renderSuggestion = (suggestion) => (
@@ -525,23 +561,8 @@ class SuggestionSearch extends Component {
       return;
     }
 
-    // Post data to api
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
-
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        lat: this.props.lat,
-        lng: this.props.lng,
-        title: this.state.selection.SpotifyTitle,
-        artist: this.state.selection.SpotifyArtist,
-        lyric: this.state.lyric,
-      })
-    });
+    // Post pin
+    postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, this.state.lyric)
 
     // set adding pin and show addpinwindow to false
     this.props.onCloseAddPinWindowClick();
@@ -649,23 +670,8 @@ class ManualAddPin extends Component {
       return;
     }
 
-    // Post data to api
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
-
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        lat: this.props.lat,
-        lng: this.props.lng,
-        title: this.state.title,
-        artist: this.state.artist,
-        lyric: this.state.lyric,
-      })
-    });
+    // Post pin
+    postPin(this.props.lat, this.props.lng, this.state.title, this.state.artist, this.state.lyric)
 
     // set adding pin and show addpinwindow to false
     this.props.onCloseAddPinWindowClick();
