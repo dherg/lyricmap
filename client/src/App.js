@@ -436,7 +436,6 @@ class MapBox extends Component {
 
 class SuggestionSearch extends Component {
 
-  
 
   constructor() {
     super();
@@ -562,7 +561,7 @@ class SuggestionSearch extends Component {
     }
 
     // Post pin
-    postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, this.state.lyric)
+    postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, this.state.lyric, this.state.selection.SpotifyID)
 
     // set adding pin and show addpinwindow to false
     this.props.onCloseAddPinWindowClick();
