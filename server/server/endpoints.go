@@ -243,7 +243,7 @@ func suggestTracks(query string) []Pin {
 
 // suggestTracksHandler handles requests to suggest-tracks
 func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
-    log.Println(r.Method + " " + r.URL.Path)
+    log.Println(r.Method + " " + r.URL.String())
 
     // get the parameters of query
     params, ok := r.URL.Query()["q"]
@@ -272,8 +272,7 @@ func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
 // PUT: updatePins
 func PinsHandler(w http.ResponseWriter, r *http.Request) {
 
-    log.Println(r.Method + " " + r.RequestURI)
-
+    log.Println(r.Method + " " + r.URL.String())
 
     var pinData []Pin
 

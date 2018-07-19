@@ -9,6 +9,7 @@ import Pin from './Pin';
 import { BrowserRouter as Router, Route, NavLink, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
+import debounce from 'lodash/debounce';
 
 const google = window.google;
 const GOOGLE_KEY = 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY';
@@ -443,6 +444,7 @@ class SuggestionSearch extends Component {
     this.handleLyricChange = this.handleLyricChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
+
     this.state = {
       value: '',
       suggestions: [],
@@ -453,6 +455,7 @@ class SuggestionSearch extends Component {
     };
 
     this.latestRequest = null;
+    this.debouncedLoadSuggestions = debounce(this.loadSuggestions, 400); // wait 400ms before loading suggestions
   }
 
   // Populate the input value based on the selected suggestion
@@ -523,7 +526,7 @@ class SuggestionSearch extends Component {
   // Autosuggest will call this function every time you need to update suggestions.
   // (Actual state is updated in loadSuggestions)
   onSuggestionsFetchRequested = ({ value }) => {
-    this.loadSuggestions(value)
+    this.debouncedLoadSuggestions(value);
   };
 
   // Autosuggest will call this function every time you need to clear suggestions.
