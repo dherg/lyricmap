@@ -372,9 +372,8 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
         } else {
             pinData = getPinByID(idParam[0])
         }
-
+        
         log.Println("returning ", pinData)
-
         // set header response content type to JSON
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(pinData)
