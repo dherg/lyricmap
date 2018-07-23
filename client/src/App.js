@@ -132,15 +132,15 @@ class SimpleMap extends Component {
       return;
     } else {
       return (
-        pinList.map(pin => <Pin key={pin.PinId} pinId={pin.PinId} lat={Number(pin.Lat)} lng={Number(pin.Lng)} text={String(pin.Lat + pin.Lng)} onPinClick={this.handlePinClick}/>)
+        pinList.map(pin => <Pin key={pin.PinID} pinID={pin.PinID} lat={Number(pin.Lat)} lng={Number(pin.Lng)} text={String(pin.Lat + pin.Lng)} onPinClick={this.handlePinClick}/>)
       );
     }
   }
 
-  handlePinClick(clickedPinLat, clickedPinLng) {
-    console.log("clickedPin", clickedPinLat, clickedPinLng);
+  handlePinClick(clickedPinID, clickedPinLat, clickedPinLng) {
+    console.log("clickedPinID,clickedPinLat,clickedPinLng ", clickedPinID, clickedPinLat, clickedPinLng);
     // open InfoWindow
-    this.props.onPinClick(clickedPinLat);
+    this.props.onPinClick(clickedPinID);
 
     // set clicked pin to center
     this.setState({
@@ -313,7 +313,7 @@ class InfoWindow extends Component {
       title: null,
       artist: null,
       album: null,
-      year: null,
+      releaseDate: null,
       lyrics: null,
       genre: null,
     };
@@ -321,31 +321,70 @@ class InfoWindow extends Component {
 
   componentDidMount() {
     // TODO: fetch pin info
-    const spotifyembed = (
-      <iframe src="https://open.spotify.com/embed/track/07gqJjvwwuZ1assFLKbiNn" width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
-      );
-    const title = "Dance Music";
-    const artist = "The Mountain Goats";
-    const album = "The Sunset Tree";
-    const year = "2005";
-    const lyrics = "Alright, I'm on Johnson Avenue in San Luis Obispo\nAnd I'm five years old, or six, maybe";
-    const genre = "Alternative";
+    console.log('clicked pin id = ' + this.props.clickedPinID)
 
-    this.setState({
-      spotifyembed: spotifyembed,
-      title: title,
-      artist: artist,
-      album: album,
-      year: year,
-      lyrics: lyrics,
-      genre: genre,
-    });
+    // GET /pins?id=this.props.clickedPinID
+    // Make request
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+    // const that = this;
+    fetch(url + '?id=' + String(this.props.clickedPinID), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => res.json() )
+      .then(res => { 
+        res = res[0]
+        console.log('res = ' + res);
+        console.log('res["Lyric"] = ' + res["Lyric"]);
+        // save info from the request
+        var spotifyID = res["SpotifyID"];
+
+        var spotifyembed = (
+          <iframe src={"https://open.spotify.com/embed/track/" + String(spotifyID)} width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
+        );
+
+        console.log(spotifyembed);
+
+        this.setState({
+          spotifyembed: spotifyID ? spotifyembed : null,
+          title: res["Title"],
+          album: res["Album"],
+          releaseDate: res["ReleaseDate"],
+          lyrics: res["Lyric"],
+          genre: res["Genres"],
+        })
+
+      });
+
+    // const spotifyembed = (
+    //   <iframe src="https://open.spotify.com/embed/track/07gqJjvwwuZ1assFLKbiNn" width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
+    //   );
+    // const title = "Dance Music";
+    // const artist = "The Mountain Goats";
+    // const album = "The Sunset Tree";
+    // const year = "2005";
+    // const lyrics = "Alright, I'm on Johnson Avenue in San Luis Obispo\nAnd I'm five years old, or six, maybe";
+    // const genre = "Alternative";
+
+    // this.setState({
+    //   spotifyembed: spotifyembed,
+    //   title: title,
+    //   artist: artist,
+    //   album: album,
+    //   year: year,
+    //   lyrics: lyrics,
+    //   genre: genre,
+    // });
   }
 
   render() {
+
     return (
       <div id='InfoWindow'>
-        <span class='CloseWindow'
+        <span className='CloseWindow'
               onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
         <div id='PinLyrics'>
           " {this.state.lyrics} "
@@ -363,13 +402,13 @@ class InfoWindow extends Component {
           Album: <b>{this.state.album}</b>
         </div>
         <div className="PinDetail">
-          Year: <b>{this.state.year}</b>
+          Release Date: <b>{this.state.releaseDate}</b>
         </div>
         <div className="PinDetail">
           Genre: <b>{this.state.genre}</b>
         </div>
         <div className="PinDetail">
-          PinID: {this.props.clickedPin}
+          PinID: {this.props.clickedPinID}
         </div>
       </div>
     );
@@ -388,7 +427,7 @@ class MapBox extends Component {
 
     this.state = {
       showInfoWindow: false,
-      clickedPin: null,
+      clickedPinID: null,
     };
   }
 
@@ -398,24 +437,24 @@ class MapBox extends Component {
     this.props.setMapDimensions(mapwidth, mapheight);
   }
 
-  handlePinClick(clickedPin) {
+  handlePinClick(clickedPinID) {
     this.setState({
       showInfoWindow: true,
-      clickedPin: clickedPin,
+      clickedPinID: clickedPinID,
     });
   }
 
   handleCloseInfoWindowClick() {
     this.setState({
       showInfoWindow: false,
-      clickedPin: null,
+      clickedPinID: null,
     });
   }
 
   render() {
 
     const infoWindow = (
-      <InfoWindow clickedPin={this.state.clickedPin} 
+      <InfoWindow clickedPinID={this.state.clickedPinID} 
                   onCloseInfoWindowClick={this.handleCloseInfoWindowClick}/>
     );
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export default class Pin extends Component {
   static propTypes = {
-    pinId: PropTypes.string,
+    pinID: PropTypes.string,
     lat: PropTypes.number,
     lng: PropTypes.number,
     text: PropTypes.string,
@@ -15,9 +15,7 @@ export default class Pin extends Component {
 
   onClick() {
     // open InfoWindow
-    this.props.onPinClick(this.props.lat, this.props.lng);
-
-    // center map on pin
+    this.props.onPinClick(this.props.pinID, this.props.lat, this.props.lng);
   }
 
   render() {
