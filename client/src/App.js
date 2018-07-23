@@ -493,7 +493,7 @@ class SuggestionSearch extends Component {
   renderSuggestion = (suggestion) => (
     <div className="Suggestion">
       <div>
-        <img src={suggestion.SmallImageURL}/>
+        <img src={suggestion.SmallImageURL} alt={suggestion.SpotifyTitle + " album cover"}/>
       </div>
       <div>
         {suggestion.SpotifyTitle}
