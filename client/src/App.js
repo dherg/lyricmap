@@ -319,11 +319,9 @@ class InfoWindow extends Component {
     };
   }
 
-  componentDidMount() {
-    // TODO: fetch pin info
-    console.log('clicked pin id = ' + this.props.clickedPinID)
-
-    // GET /pins?id=this.props.clickedPinID
+  // fetch pin info and update state for given pinID
+  fetchPinInfo(pinID) {
+    console.log('clicked pin id = ' + pinID)
     // Make request
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
     // const that = this;
@@ -336,17 +334,14 @@ class InfoWindow extends Component {
       })
       .then(res => res.json() )
       .then(res => { 
+        // get data for pin 0 (should only be one pin)
         res = res[0]
-        console.log('res = ' + res);
-        console.log('res["Lyric"] = ' + res["Lyric"]);
         // save info from the request
         var spotifyID = res["SpotifyID"];
 
         var spotifyembed = (
           <iframe src={"https://open.spotify.com/embed/track/" + String(spotifyID)} width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
         );
-
-        console.log(spotifyembed);
 
         this.setState({
           spotifyembed: spotifyID ? spotifyembed : null,
@@ -358,26 +353,18 @@ class InfoWindow extends Component {
         })
 
       });
+  }
 
-    // const spotifyembed = (
-    //   <iframe src="https://open.spotify.com/embed/track/07gqJjvwwuZ1assFLKbiNn" width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
-    //   );
-    // const title = "Dance Music";
-    // const artist = "The Mountain Goats";
-    // const album = "The Sunset Tree";
-    // const year = "2005";
-    // const lyrics = "Alright, I'm on Johnson Avenue in San Luis Obispo\nAnd I'm five years old, or six, maybe";
-    // const genre = "Alternative";
+  componentDidMount() {
+    // fetch pin data
+    this.fetchPinInfo(this.props.clickedPinID);
+  }
 
-    // this.setState({
-    //   spotifyembed: spotifyembed,
-    //   title: title,
-    //   artist: artist,
-    //   album: album,
-    //   year: year,
-    //   lyrics: lyrics,
-    //   genre: genre,
-    // });
+  componentDidUpdate(prevProps) {
+    // update if props pinID has changed
+    if (this.props.clickedPinID !== prevProps.clickedPinID) {
+      this.fetchPinInfo(this.props.clickedPinID);
+    }
   }
 
   render() {
