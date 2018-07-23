@@ -2,22 +2,27 @@ package main
 
 import (
     "log"
-    // "fmt"
+    "fmt"
     // "strings"
     "net/http"
     "encoding/json"
     "io/ioutil"
     "context"
     "os"
+    "math/rand"
+    "time"
+    "database/sql"
     // "errors"
 
     "github.com/gorilla/mux"
     "github.com/zmb3/spotify"
     "golang.org/x/oauth2/clientcredentials"
+
+    _ "github.com/lib/pq" // import even though not referenced in code (for psql drivers)
 )
 
 type Pin struct {
-    PinId string `json:",omitempty"`
+    PinID string `json:",omitempty"`
     Lat float32 `json:",omitempty"` // required
     Lng float32 `json:",omitempty"` // required
     Title string `json:",omitempty"` // required
@@ -25,45 +30,107 @@ type Pin struct {
     Lyric string `json:",omitempty"` // required
     Album string `json:",omitempty"`
     ReleaseDate string `json:",omitempty"`
-    Genres []string `json:",omitempty"`
+    Genres string `json:",omitempty"`
     SpotifyID string `json:",omitempty"`
     SpotifyTitle string `json:",omitempty"` // the title of the track in spotify
     SpotifyArtist string `json:",omitempty"` // artist of track in spotify
     SmallImageURL string `json:",omitempty"` // URL of album image in smallest format
 }
 
-// image_url, title, artist, and spotifyID to be displayed as spotify suggestions for add track
-// type TrackSuggestion struct {
-    
-// }
-
 type MyServer struct {
     r *mux.Router
 }
 
-// set Spotify api client variable
+// database connection info
+var (
+    pinsDBHost = os.Getenv("PINS_DB_HOST")
+    pinsDBPort = os.Getenv("PINS_DB_PORT")
+    pinsDBUser = os.Getenv("PINS_DB_USER")
+    pinsDBPass = os.Getenv("PINS_DB_PASS")
+    pinsDBName = os.Getenv("PINS_DB_NAME") // db name
+)
+
+// declare Spotify api client variable
 var client spotify.Client
 
-// type test_struct struct {
-//     Lat string
-//     Lng string
-//     Title string
-//     Artist string
-//     Lyric string
-// }
+// declare DB connection variable
+var db *sql.DB 
 
-func getPins(pinId string) []Pin {
-    // Right now returns all pins
-    // TODO return all pins if no pinId parameter in request, else return info about that pin
-    if pinId != "" { // return info for specific pin
-        return nil
-    } else { // return all pins
-        retPins := []Pin{{PinId: "1", Lat: 37.027718, Lng: -95.625},
-                         {PinId: "2", Lat: 35.027718, Lng: -95.625},
-                         {PinId: "3", Lat: 38.904510, Lng: -77.050137}}
+// generate a random alphanumeric ID for the pin
+func generateID() string {
 
-        return retPins
-    } 
+    // length of id to generate
+    id_length := 8
+
+    // chars that will be used to generate id from
+    var chars = []rune("abcdefghijklmnopqrstuvwxyz0123456789")
+
+    id := make([]rune, id_length)
+    for i := range id {
+        id[i] = chars[rand.Intn(len(chars))]
+    }
+
+    return string(id)
+}
+
+func getPins() []Pin {
+    // TODO return all pins from db
+
+    retPins := []Pin{}
+
+    rows, err := db.Query("SELECT id, lat, lng FROM pins;")
+    if err != nil {
+        panic(err)
+    }
+    defer rows.Close()
+    for rows.Next() {
+        // create new pin to hold row data
+        var p Pin
+        err = rows.Scan(&p.PinID, &p.Lat, &p.Lng)
+        if err != nil {
+            panic(err)
+        }
+
+        // add pin to return list
+        retPins = append(retPins, p)
+    }
+
+    // return all pins
+    // retPins := []Pin{{PinID: "1", Lat: 37.027718, Lng: -95.625},
+    //                  {PinID: "2", Lat: 35.027718, Lng: -95.625},
+    //                  {PinID: "3", Lat: 38.904510, Lng: -77.050137}}
+
+    return retPins
+    
+}
+
+func getPinByID(pinID string) []Pin {
+
+    // spotifyembed: null,
+    //   title: null,
+    //   artist: null,
+    //   album: null,
+    //   year: null,
+    //   lyrics: null,
+    //   genre: null,
+
+    var p Pin
+
+    sqlStatement := `SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist
+                     FROM pins WHERE id=$1;`
+    row := db.QueryRow(sqlStatement, pinID)
+    switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, &p.Genres, &p.SpotifyID, &p.SpotifyArtist); err {
+    case sql.ErrNoRows:
+      fmt.Println("No rows were returned!")
+    case nil:
+      fmt.Println(p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, p.Genres, p.SpotifyID, p.SpotifyArtist)
+    default:
+      panic(err)
+    }
+
+    return([]Pin{p})
+
+
 }
 
 func validatePin(p Pin) bool {
@@ -129,7 +196,12 @@ func getSpotifyMetadata (p *Pin) error {
 
     // get release date and genres from fullAlbum
     p.ReleaseDate = string(fullAlbum.ReleaseDate)
-    p.Genres = fullAlbum.Genres
+    log.Println("genre = ", fullAlbum.Genres) // TODO: take more than just the first genre?
+    if len(fullAlbum.Genres) > 0 {
+        p.Genres = fullAlbum.Genres[0]
+    } else {
+        p.Genres = ""
+    }
 
     // indicate no errors
     return nil
@@ -147,6 +219,16 @@ func storePin(p Pin) {
     }
 
     // add pin to db
+    // generate a pinID
+    p.PinID = generateID()
+
+    sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist)
+                        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                        `
+    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, p.Genres, p.SpotifyID, p.SpotifyArtist)
+    if err != nil {
+        panic(err)
+    }
 
 }
 
@@ -278,7 +360,21 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
 
     switch r.Method {
     case "GET":
-        pinData = getPins("")
+        // check to see if the url contains pinID (for single pin) and route accordingly
+        err := r.ParseForm()
+        if err != nil {
+            panic(err)
+        }
+
+        idParam := r.Form["id"]
+        if idParam == nil {
+            pinData = getPins()
+        } else {
+            pinData = getPinByID(idParam[0])
+        }
+
+        log.Println("returning ", pinData)
+
         // set header response content type to JSON
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(pinData)
@@ -287,7 +383,6 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
     case "PUT":
         updatePins()
     }
-
 
 }
 
@@ -331,6 +426,21 @@ func getSpotifyClient() spotify.Client {
 }
 
 func main() {
+
+    // seed random
+    rand.Seed(time.Now().UnixNano())
+
+    // set up DB connection
+    psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("PINS_DB_HOST"), os.Getenv("PINS_DB_PORT"), os.Getenv("PINS_DB_USER"), os.Getenv("PINS_DB_PASS"), os.Getenv("PINS_DB_NAME"))
+    log.Println("psqlInfo: " + psqlInfo)
+    var err error
+    db, err = sql.Open("postgres", psqlInfo)
+    if err != nil {
+        panic(err)
+    }
+    defer db.Close()
+
+    generateID()
 
     client = getSpotifyClient()
 
