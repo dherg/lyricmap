@@ -346,6 +346,7 @@ class InfoWindow extends Component {
         this.setState({
           spotifyembed: spotifyID ? spotifyembed : null,
           title: res["Title"],
+          artist: res["Artist"],
           album: res["Album"],
           releaseDate: res["ReleaseDate"],
           lyrics: res["Lyric"],
