@@ -13,6 +13,11 @@ export default class Pin extends Component {
     text : 'test',
   };
 
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
   onClick() {
     // open InfoWindow
     this.props.onPinClick(this.props.pinID, this.props.lat, this.props.lng);
@@ -22,9 +27,7 @@ export default class Pin extends Component {
     return (
 
         <div className="Pin-container">
-            <div className="Pin-body" onClick={() => this.onClick()}>
-                {this.props.lat}
-                {this.props.lng}
+            <div className="Pin-body" onClick={this.onClick}>
             </div>
         </div>
 
