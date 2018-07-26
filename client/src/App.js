@@ -370,6 +370,10 @@ class InfoWindow extends Component {
 
   render() {
 
+    var genres = this.state.genre ? this.state.genre.join(", ") : null
+
+    console.log(this.state.genre);
+
     return (
       <div id='InfoWindow'>
         <span className='CloseWindow'
@@ -393,7 +397,7 @@ class InfoWindow extends Component {
           Release Date: <b>{this.state.releaseDate}</b>
         </div>
         <div className="PinDetail">
-          Genre: <b>{this.state.genre}</b>
+          Genres: <b>{genres}</b>
         </div>
         <div className="PinDetail">
           PinID: {this.props.clickedPinID}

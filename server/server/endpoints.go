@@ -18,7 +18,7 @@ import (
     "github.com/zmb3/spotify"
     "golang.org/x/oauth2/clientcredentials"
 
-    _ "github.com/lib/pq" // import even though not referenced in code (for psql drivers)
+    "github.com/lib/pq" // import even though not referenced in code (for psql drivers)
 )
 
 type Pin struct {
@@ -30,7 +30,7 @@ type Pin struct {
     Lyric string `json:",omitempty"` // required
     Album string `json:",omitempty"`
     ReleaseDate string `json:",omitempty"`
-    Genres string `json:",omitempty"`
+    Genres []string `json:",omitempty"`
     SpotifyID string `json:",omitempty"`
     SpotifyTitle string `json:",omitempty"` // the title of the track in spotify
     SpotifyArtist string `json:",omitempty"` // artist of track in spotify
@@ -119,7 +119,7 @@ func getPinByID(pinID string) []Pin {
     sqlStatement := `SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist
                      FROM pins WHERE id=$1;`
     row := db.QueryRow(sqlStatement, pinID)
-    switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, &p.Genres, &p.SpotifyID, &p.SpotifyArtist); err {
+    switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, pq.Array(&p.Genres), &p.SpotifyID, &p.SpotifyArtist); err {
     case sql.ErrNoRows:
       fmt.Println("No rows were returned!")
     case nil:
@@ -188,20 +188,23 @@ func getSpotifyMetadata (p *Pin) error {
 
     // get FullAlbum with SimpleAlbum ID
     // (SimpleAlbum -> getAlbum with album ID -> fullAlbum)
-    fullAlbum, err := client.GetAlbum(spotify.ID(simpleAlbum.ID))
+    fullAlbum, err := client.GetAlbum(simpleAlbum.ID)
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching album with SpotifyID: %v\n%v", fullTrack.Album.ID, err)
         return err
     }
 
-    // get release date and genres from fullAlbum
+    // get release date from fullAlbum
     p.ReleaseDate = string(fullAlbum.ReleaseDate)
-    log.Println("genre = ", fullAlbum.Genres) // TODO: take more than just the first genre?
-    if len(fullAlbum.Genres) > 0 {
-        p.Genres = fullAlbum.Genres[0]
-    } else {
-        p.Genres = ""
+    
+    // genres are (unfortunately) only available from Artist page, genres field in album is always empty
+    // so get artist (only gets genres for first artist listed)
+    fullArtist, err := client.GetArtist(simpleAlbum.Artists[0].ID)
+    if err != nil {
+        log.Println("getSpotifyMetadata: Error searching artist with SpotifyID: %v\n%v", simpleAlbum.Artists[0].ID, err)
+        return err
     }
+    p.Genres = fullArtist.Genres
 
     // indicate no errors
     return nil
@@ -212,10 +215,10 @@ func storePin(p Pin) {
     // add pin metadata
     log.Println("calling storePin with pin: ", p)
 
-    // get full spotify info if request comes with a spotifyID (what info do I want? at least release date, genre)
+    // try to get spotify metadata
     err := getSpotifyMetadata(&p)
     if err != nil {
-        log.Println("Error: Couldn't search spotify: ", err)
+        log.Println("Error getting spotify metadata: ", err)
     }
 
     // add pin to db
@@ -225,7 +228,7 @@ func storePin(p Pin) {
     sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist)
                         VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                         `
-    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, p.Genres, p.SpotifyID, p.SpotifyArtist)
+    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist)
     if err != nil {
         panic(err)
     }
@@ -372,7 +375,7 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
         } else {
             pinData = getPinByID(idParam[0])
         }
-        
+
         log.Println("returning ", pinData)
         // set header response content type to JSON
         w.Header().Set("Content-Type", "application/json")
