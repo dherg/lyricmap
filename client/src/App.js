@@ -266,7 +266,45 @@ class AddPinButton extends Component {
       </div>
     );
   }
+}
 
+
+class GoogleSignIn extends Component {
+
+  constructor(props) {
+    super(props);
+    this.onSignIn = this.onSignIn.bind(this);
+  }
+
+  componentDidMount() {
+    console.log('this mounted')
+    window.gapi.load('auth2');
+    window.gapi.signin2.render('my-signin2', {
+        'scope': 'profile email',
+        'width': 80,
+        'height': 20,
+        'longtitle': false,
+        'theme': 'dark',
+        'onsuccess': this.onSignIn,
+    });
+  }
+
+  onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log('Name: ' + profile.getName());
+    console.log('Image URL: ' + profile.getImageUrl());
+    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+  }
+
+  render() {
+
+    return (
+      <div>
+        <div id="my-signin2" data-onsuccess={"onSignIn"}></div>
+      </div>
+    );
+  }
 }
 
 // Site header bar
@@ -288,6 +326,9 @@ class Header extends Component {
           </div>
         </div>
         <div className="Header-link-box">
+          <div className="Header-link">
+            <GoogleSignIn />
+          </div>
           <div className="Header-link">
             <NavLink to="random">Random</NavLink> 
           </div>
