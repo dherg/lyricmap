@@ -280,7 +280,7 @@ class GoogleSignIn extends Component {
     console.log('this mounted')
     window.gapi.load('auth2');
     window.gapi.signin2.render('my-signin2', {
-        'scope': 'profile email',
+        'scope': 'email',
         'width': 80,
         'height': 20,
         'longtitle': false,
@@ -295,6 +295,30 @@ class GoogleSignIn extends Component {
     console.log('Name: ' + profile.getName());
     console.log('Image URL: ' + profile.getImageUrl());
     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+    // post ID token to server
+    var id_token = googleUser.getAuthResponse().id_token;
+    console.log('id_token: ' + id_token)
+
+    // get url for environment 
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/login';
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idtoken: id_token,
+      })
+    }).then(function(response) {
+        if (response.status >= 400) {
+          throw new Error("Bad response from server");
+        }
+    });
+
+
   }
 
   render() {

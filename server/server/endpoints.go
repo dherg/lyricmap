@@ -41,6 +41,40 @@ type MyServer struct {
     r *mux.Router
 }
 
+// for info on fields see https://developers.google.com/identity/sign-in/web/backend-auth
+type IDToken struct {
+    IDToken string `json:"idtoken"`
+    Iss string
+    Sub string
+    Azp string
+    Aud string
+    Iat string
+    Exp string
+    Email string
+    Email_verified string
+    Name string
+    Picture string
+    Given_name string
+    Family_name string
+    Locale string
+}
+
+type IDTokenResponse struct {
+    iss string
+    sub string
+    azp string
+    aud string
+    iat string
+    exp string
+    email string
+    email_verified string
+    name string
+    picture string
+    given_name string
+    family_name string
+    locale string
+}
+
 // database connection info
 var (
     pinsDBHost = os.Getenv("PINS_DB_HOST")
@@ -389,7 +423,51 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+    // ensure that it is POST
+    if r.Method != "POST" {
+        log.Println("Invalid HTTP method for login. Expected POST, got %v" + r.Method)
+        w.WriteHeader(http.StatusMethodNotAllowed) // return 405
+        w.Write([]byte("405 - login must be a POST request"))
+        return
+    }
 
+    // get token out of request
+    body, err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        panic(err)
+    }
+    log.Printf("body = %s", body)
+    var token IDToken
+    err = json.Unmarshal(body, &token)
+    if err != nil {
+        panic(err)
+    }
+    log.Printf("token = %s", token.IDToken)
+
+    // validate token with call to tokeninfo
+    resp, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%v", token.IDToken))
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    // check that response is 200 (i.e. valid token) TODO: also need to check aud field for lyricmap's client id
+    if resp.StatusCode != 200 {
+        log.Printf("tokeninfo check returned %v (!= 200)", resp.StatusCode)
+    }
+    body, err = ioutil.ReadAll(resp.Body)
+    if err != nil {
+        panic(err)
+    }
+    log.Printf("body = %s", body)
+    err = json.Unmarshal(body, &token)
+    if err != nil {
+        panic(err)
+    }
+    log.Printf("token = %v", token)
+
+
+    // either invalid token, valid token but unregistered user, or valid token and registered user
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
@@ -451,6 +529,7 @@ func main() {
     r.HandleFunc("/login", LoginHandler)
     r.HandleFunc("/search", SearchHandler)
     r.HandleFunc("/suggest-tracks", suggestTracksHandler)
+
 
     log.Println("starting server on port 8080")
     log.Fatal(http.ListenAndServe(":8080", &MyServer{r}))
