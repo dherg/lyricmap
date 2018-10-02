@@ -15,6 +15,7 @@ import (
     // "errors"
 
     "github.com/gorilla/mux"
+    "github.com/gorilla/sessions"
     "github.com/zmb3/spotify"
     "golang.org/x/oauth2/clientcredentials"
 
@@ -86,6 +87,9 @@ var (
 
 // declare Spotify api client variable
 var client spotify.Client
+
+// user session file store TODO: change key, make config var
+var sessionStore = sessions.NewCookieStore([]byte("something-very-secret"))
 
 // declare DB connection variable
 var db *sql.DB 
@@ -261,7 +265,7 @@ func storePin(p Pin) {
 
     sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist)
                         VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-                        `
+                    `
     _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist)
     if err != nil {
         panic(err)
@@ -296,6 +300,11 @@ func addPins(r *http.Request) {
 }
 
 func updatePins() {
+
+}
+
+// registerUser register a new user in the user table
+func registerUser() {
 
 }
 
@@ -453,7 +462,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
     // check that response is 200 (i.e. valid token) TODO: also need to check aud field for lyricmap's client id
     if resp.StatusCode != 200 {
-        log.Printf("tokeninfo check returned %v (!= 200)", resp.StatusCode)
+        log.Printf("Token validation failed. tokeninfo check returned %v (!= 200)", resp.StatusCode)
+        return
     }
     body, err = ioutil.ReadAll(resp.Body)
     if err != nil {
@@ -466,8 +476,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     }
     log.Printf("token = %v", token)
 
+    // TODO: vvv
+    // Check to see whether user for this token is registered or not.
+    // If registered, get new session for user
+    // If not registered, register and get new session for user
 
-    // either invalid token, valid token but unregistered user, or valid token and registered user
+
+
+    // Get a session. Get() always returns a session, even if empty.
+    session, err := sessionStore.Get(r, "session-name")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Set some session values.
+    session.Values["foo"] = "bar"
+    session.Values[42] = 43
+    // Save it before we write to the response/return from the handler.
+    session.Save(r, w)
+
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {

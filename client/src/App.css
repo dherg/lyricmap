@@ -263,6 +263,37 @@ div > h3 {
   border-radius: 50%;
 }
 
+.Pin-container--selected {
+  /*width: 100vw;*/
+  /*height: 100vh;*/
+  position: absolute;
+  left: -20px;
+  top: -50px;
+  z-index: 10;
+}
+
+.Pin-body--selected {
+  width: 40px;
+  height: 40px;
+  background-color: #c50;
+  border-radius: 50% 50% 0;
+  transform: rotate(45deg);
+  z-index: 0;
+}
+
+.Pin-body--selected::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  background-color: rgba(0, 0, 0, .1);
+  top: 25%;
+  left: 25%;
+  border-radius: 50%;
+}
+
+
+
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
