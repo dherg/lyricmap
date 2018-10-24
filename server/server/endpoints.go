@@ -480,7 +480,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     // Check to see whether user for this token is registered or not.
     // If registered, get new session for user
     // If not registered, register and get new session for user
-
+    // check user table for this id
+    log.Printf(token.Sub)
+    row := db.QueryRow(`SELECT FROM users WHERE id = $1`, token.Sub)
+    err = row.Scan()
+    if err == sql.ErrNoRows { // user is not registered
+        // insert user
+    } else if err != nil {
+        panic(err)
+    }
 
 
     // Get a session. Get() always returns a session, even if empty.
