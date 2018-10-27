@@ -303,9 +303,13 @@ func updatePins() {
 
 }
 
-// registerUser register a new user in the user table
-func registerUser() {
-
+// registerUser registers a new user in the user table with id userID
+func registerUser(userID string) error {
+    sqlStatement := `INSERT INTO users (id)
+                        VALUES($1)
+                    `
+    _, err := db.Exec(sqlStatement, userID)
+    return err
 }
 
 // suggestTracks searches spotify for a given query and returns up to 5 resulting tracks (or nil on error)
@@ -476,7 +480,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     }
     log.Printf("token = %v", token)
 
-    // TODO: vvv
     // Check to see whether user for this token is registered or not.
     // If registered, get new session for user
     // If not registered, register and get new session for user
@@ -486,9 +489,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     err = row.Scan()
     if err == sql.ErrNoRows { // user is not registered
         // insert user
+        err = registerUser(token.Sub)
+        if err != nil {
+            panic(err)
+        }
     } else if err != nil {
         panic(err)
     }
+
 
 
     // Get a session. Get() always returns a session, even if empty.
