@@ -12,7 +12,7 @@ import (
     "math/rand"
     "time"
     "database/sql"
-    // "errors"
+    "errors"
 
     "github.com/gorilla/mux"
     "github.com/gorilla/sessions"
@@ -435,6 +435,35 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// validateGoogleToken, given a Google user's ID token, validates a google user ID
+// by calling Google's validation endpoint
+func validateGoogleToken(token string) error {
+    // validate token with call to tokeninfo
+    resp, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%v", token.IDToken))
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    // check that response is 200 (i.e. valid token) TODO: also need to check aud field for lyricmap's client id
+    if resp.StatusCode != 200 {
+        return errors.New("Token validation failed. tokeninfo check returned %v (!= 200)", resp.StatusCode)
+    }
+
+    // return no error (valid token)
+    return nil
+    // body, err = ioutil.ReadAll(resp.Body)
+    // if err != nil {
+    //     panic(err)
+    // }
+    // log.Printf("body = %s", body)
+    // err = json.Unmarshal(body, &token)
+    // if err != nil {
+    //     panic(err)
+    // }
+    // log.Printf("token = %v", token)
+}
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
     // ensure that it is POST
     if r.Method != "POST" {
@@ -457,28 +486,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     }
     log.Printf("token = %s", token.IDToken)
 
-    // validate token with call to tokeninfo
-    resp, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%v", token.IDToken))
+    err = validateGoogleToken(token.IDToken)
+    // if err != nil, do not log user in. ID is not valid
     if err != nil {
-        panic(err)
+        log.Printf("Token = %s found invalid, not logging in.")
+        http.Error(w, "Invalid Google ID", http.StatusUnauthorized)
     }
-    defer resp.Body.Close()
-
-    // check that response is 200 (i.e. valid token) TODO: also need to check aud field for lyricmap's client id
-    if resp.StatusCode != 200 {
-        log.Printf("Token validation failed. tokeninfo check returned %v (!= 200)", resp.StatusCode)
-        return
-    }
-    body, err = ioutil.ReadAll(resp.Body)
-    if err != nil {
-        panic(err)
-    }
-    log.Printf("body = %s", body)
-    err = json.Unmarshal(body, &token)
-    if err != nil {
-        panic(err)
-    }
-    log.Printf("token = %v", token)
 
     // Check to see whether user for this token is registered or not.
     // If registered, get new session for user
