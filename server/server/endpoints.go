@@ -36,6 +36,7 @@ type Pin struct {
     SpotifyTitle string `json:",omitempty"` // the title of the track in spotify
     SpotifyArtist string `json:",omitempty"` // artist of track in spotify
     SmallImageURL string `json:",omitempty"` // URL of album image in smallest format
+    CreatedBy string `json:",omitempty"`
 }
 
 type MyServer struct {
@@ -60,22 +61,6 @@ type IDToken struct {
     Locale string
 }
 
-type IDTokenResponse struct {
-    iss string
-    sub string
-    azp string
-    aud string
-    iat string
-    exp string
-    email string
-    email_verified string
-    name string
-    picture string
-    given_name string
-    family_name string
-    locale string
-}
-
 // database connection info
 var (
     pinsDBHost = os.Getenv("PINS_DB_HOST")
@@ -89,7 +74,7 @@ var (
 var client spotify.Client
 
 // user session file store TODO: change key, make config var
-var sessionStore = sessions.NewCookieStore([]byte("something-very-secret"))
+var sessionStore = sessions.NewCookieStore([]byte(os.Getenv("GORILLA_SESSION_KEY")))
 
 // declare DB connection variable
 var db *sql.DB 
@@ -263,10 +248,10 @@ func storePin(p Pin) {
     // generate a pinID
     p.PinID = generateID()
 
-    sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist)
-                        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by)
+                        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                     `
-    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist)
+    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist, p.CreatedBy)
     if err != nil {
         panic(err)
     }
@@ -288,7 +273,13 @@ func addPins(r *http.Request) {
     if err != nil {
         panic(err)
     }
-    log.Printf("%v", p.Artist)
+
+    // get user from session
+    session, err := sessionStore.Get(r, "lyricmap")
+    if err != nil {
+        panic(err)
+    }
+    p.CreatedBy = session.Values["user_id"].(string)
 
     if !validatePin(p) {
         log.Printf("pin %v invalid\n", p)
@@ -373,6 +364,23 @@ func suggestTracks(query string) []Pin {
     return(retPins)
 }
 
+func checkRequestAuthentication(r *http.Request) (bool, error) {
+    session, err := sessionStore.Get(r, "lyricmap")
+    if err != nil {
+        panic(err)
+    }
+
+    // Check if user is authenticated
+    log.Println("session.Values['authenticated']")
+    log.Println(session.Values["authenticated"])
+    log.Println("in checkrequestauthentication, session.Values[\"authenticated\"] = %v", session.Values["authenticated"].(bool))
+    if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+        return false, err
+    } else {
+        return true, err
+    }
+}
+
 // suggestTracksHandler handles requests to suggest-tracks
 func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
     log.Println(r.Method + " " + r.URL.String())
@@ -428,7 +436,18 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(pinData)
     case "POST":
-        addPins(r)
+        isAuthenticated, err := checkRequestAuthentication(r)
+        if err == nil && isAuthenticated {
+            addPins(r)
+        } else {
+            if err != nil {
+                panic(err)
+            }
+            log.Println("401 Request not authenticated to add pin: ", r)
+            w.WriteHeader(http.StatusUnauthorized)
+            w.Write([]byte("401: User not authorized to add pin."))
+            return
+        }
     case "PUT":
         updatePins()
     }
@@ -436,32 +455,30 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // validateGoogleToken, given a Google user's ID token, validates a google user ID
-// by calling Google's validation endpoint
-func validateGoogleToken(token string) error {
+// by calling Google's validation endpoint, and returns a google ID if token is valud
+func validateGoogleToken(token string) (string, error) {
     // validate token with call to tokeninfo
-    resp, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%v", token.IDToken))
+    res, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%v", token))
     if err != nil {
         panic(err)
     }
-    defer resp.Body.Close()
+    defer res.Body.Close()
 
     // check that response is 200 (i.e. valid token) TODO: also need to check aud field for lyricmap's client id
-    if resp.StatusCode != 200 {
-        return errors.New("Token validation failed. tokeninfo check returned %v (!= 200)", resp.StatusCode)
+    if res.StatusCode != 200 {
+        return "", errors.New(fmt.Sprintf("Token validation failed. tokeninfo check returned %v (!= 200)", res.StatusCode))
+    }
+
+    // get userID from sub field
+    body, err := ioutil.ReadAll(res.Body)
+    var tokenResponse IDToken
+    err = json.Unmarshal(body, &tokenResponse)
+    if err != nil {
+        panic(err)
     }
 
     // return no error (valid token)
-    return nil
-    // body, err = ioutil.ReadAll(resp.Body)
-    // if err != nil {
-    //     panic(err)
-    // }
-    // log.Printf("body = %s", body)
-    // err = json.Unmarshal(body, &token)
-    // if err != nil {
-    //     panic(err)
-    // }
-    // log.Printf("token = %v", token)
+    return tokenResponse.Sub, nil
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -484,9 +501,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         panic(err)
     }
-    log.Printf("token = %s", token.IDToken)
+    log.Printf("token = %s", token)
 
-    err = validateGoogleToken(token.IDToken)
+    userID, err := validateGoogleToken(token.IDToken) // TODO: get sub from this response to use as the google ID
     // if err != nil, do not log user in. ID is not valid
     if err != nil {
         log.Printf("Token = %s found invalid, not logging in.")
@@ -497,12 +514,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     // If registered, get new session for user
     // If not registered, register and get new session for user
     // check user table for this id
-    log.Printf(token.Sub)
-    row := db.QueryRow(`SELECT FROM users WHERE id = $1`, token.Sub)
+    log.Printf(userID)
+    row := db.QueryRow(`SELECT FROM users WHERE id = $1`, userID)
     err = row.Scan()
     if err == sql.ErrNoRows { // user is not registered
         // insert user
-        err = registerUser(token.Sub)
+        err = registerUser(userID)
         if err != nil {
             panic(err)
         }
@@ -510,21 +527,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         panic(err)
     }
 
-
-
     // Get a session. Get() always returns a session, even if empty.
-    session, err := sessionStore.Get(r, "session-name")
+    session, err := sessionStore.Get(r, "lyricmap")
     if err != nil {
+        panic(err)
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
-    // Set some session values.
-    session.Values["foo"] = "bar"
-    session.Values[42] = 43
-    // Save it before we write to the response/return from the handler.
+    // set user_id session value and save
+    log.Println("saving session with user_id = %v and authenticated = true", userID)
+    session.Values["user_id"] = userID
+    session.Values["authenticated"] = true
     session.Save(r, w)
-
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {

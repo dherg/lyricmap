@@ -29,6 +29,7 @@ function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=null, yea
 
   fetch(url, {
     method: 'POST',
+    credentials: 'same-origin',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -296,15 +297,17 @@ class GoogleSignIn extends Component {
     console.log('Image URL: ' + profile.getImageUrl());
     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 
-    // post ID token to server
+    // get google ID token
     var id_token = googleUser.getAuthResponse().id_token;
     console.log('id_token: ' + id_token)
 
     // get url for environment 
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/login';
 
+    // post ID token to server
     fetch(url, {
       method: 'POST',
+      credentials: 'same-origin',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -316,6 +319,7 @@ class GoogleSignIn extends Component {
         if (response.status >= 400) {
           throw new Error("Bad response from server");
         }
+        console.log('response received after logging in, status = ' + response.status)
     });
 
 
@@ -392,6 +396,7 @@ class InfoWindow extends Component {
     // const that = this;
     fetch(url + '?id=' + String(this.props.clickedPinID), {
         method: 'GET',
+        credentials: 'same-origin',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -588,6 +593,7 @@ class SuggestionSearch extends Component {
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/suggest-tracks';
     const thisRequest = this.latestRequest = fetch(url + '?q=' + String(value), {
         method: 'GET',
+        credentials: 'same-origin',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
