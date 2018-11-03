@@ -16,6 +16,7 @@ import (
 
     "github.com/gorilla/mux"
     "github.com/gorilla/sessions"
+    "github.com/gorilla/handlers"
     "github.com/zmb3/spotify"
     "golang.org/x/oauth2/clientcredentials"
 
@@ -97,8 +98,6 @@ func generateID() string {
 }
 
 func getPins() []Pin {
-    // TODO return all pins from db
-
     retPins := []Pin{}
 
     rows, err := db.Query("SELECT id, lat, lng FROM pins;")
@@ -118,11 +117,6 @@ func getPins() []Pin {
         retPins = append(retPins, p)
     }
 
-    // return all pins
-    // retPins := []Pin{{PinID: "1", Lat: 37.027718, Lng: -95.625},
-    //                  {PinID: "2", Lat: 35.027718, Lng: -95.625},
-    //                  {PinID: "3", Lat: 38.904510, Lng: -77.050137}}
-
     return retPins
     
 }
@@ -139,14 +133,14 @@ func getPinByID(pinID string) []Pin {
 
     var p Pin
 
-    sqlStatement := `SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist
+    sqlStatement := `SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by
                      FROM pins WHERE id=$1;`
     row := db.QueryRow(sqlStatement, pinID)
-    switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, pq.Array(&p.Genres), &p.SpotifyID, &p.SpotifyArtist); err {
+    switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, pq.Array(&p.Genres), &p.SpotifyID, &p.SpotifyArtist, &p.CreatedBy); err {
     case sql.ErrNoRows:
       fmt.Println("No rows were returned!")
     case nil:
-      fmt.Println(p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, p.Genres, p.SpotifyID, p.SpotifyArtist)
+      fmt.Println(p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, p.Genres, p.SpotifyID, p.SpotifyArtist, p.CreatedBy)
     default:
       panic(err)
     }
@@ -602,8 +596,13 @@ func main() {
     r.HandleFunc("/search", SearchHandler)
     r.HandleFunc("/suggest-tracks", suggestTracksHandler)
 
+    // CORS setup
+    headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+    originsOk := handlers.AllowedOrigins([]string{os.Getenv("ALLOWED_ORIGINS")})
+    methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+    credentialsOk := handlers.AllowCredentials()
 
     log.Println("starting server on port 8080")
-    log.Fatal(http.ListenAndServe(":8080", &MyServer{r}))
+    log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk, credentialsOk)(&MyServer{r})))
 
 }

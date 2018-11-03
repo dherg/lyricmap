@@ -29,7 +29,7 @@ function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=null, yea
 
   fetch(url, {
     method: 'POST',
-    credentials: 'same-origin',
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -307,7 +307,7 @@ class GoogleSignIn extends Component {
     // post ID token to server
     fetch(url, {
       method: 'POST',
-      credentials: 'same-origin',
+      credentials: 'include',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -385,6 +385,7 @@ class InfoWindow extends Component {
       releaseDate: null,
       lyrics: null,
       genre: null,
+      createdBy: null
     };
   }
 
@@ -396,7 +397,7 @@ class InfoWindow extends Component {
     // const that = this;
     fetch(url + '?id=' + String(this.props.clickedPinID), {
         method: 'GET',
-        credentials: 'same-origin',
+        credentials: 'include',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -421,6 +422,7 @@ class InfoWindow extends Component {
           releaseDate: res["ReleaseDate"],
           lyrics: res["Lyric"],
           genre: res["Genres"],
+          createdBy: res["CreatedBy"]
         })
 
       });
@@ -471,6 +473,9 @@ class InfoWindow extends Component {
         </div>
         <div className="PinDetail">
           PinID: {this.props.clickedPinID}
+        </div>
+        <div className="PinDetail">
+          Added By: {this.state.createdBy}
         </div>
       </div>
     );
@@ -593,7 +598,7 @@ class SuggestionSearch extends Component {
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/suggest-tracks';
     const thisRequest = this.latestRequest = fetch(url + '?q=' + String(value), {
         method: 'GET',
-        credentials: 'same-origin',
+        credentials: 'include',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
