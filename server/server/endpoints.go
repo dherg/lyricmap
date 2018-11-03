@@ -3,16 +3,14 @@ package main
 import (
     "log"
     "fmt"
-    // "strings"
     "net/http"
     "encoding/json"
     "io/ioutil"
     "context"
     "os"
-    "math/rand"
     "time"
     "database/sql"
-    "errors"
+    "math/rand"
 
     "github.com/gorilla/mux"
     "github.com/gorilla/sessions"
@@ -20,25 +18,7 @@ import (
     "github.com/zmb3/spotify"
     "golang.org/x/oauth2/clientcredentials"
 
-    "github.com/lib/pq" // import even though not referenced in code (for psql drivers)
 )
-
-type Pin struct {
-    PinID string `json:",omitempty"`
-    Lat float32 `json:",omitempty"` // required
-    Lng float32 `json:",omitempty"` // required
-    Title string `json:",omitempty"` // required
-    Artist string `json:",omitempty"` // required
-    Lyric string `json:",omitempty"` // required
-    Album string `json:",omitempty"`
-    ReleaseDate string `json:",omitempty"`
-    Genres []string `json:",omitempty"`
-    SpotifyID string `json:",omitempty"`
-    SpotifyTitle string `json:",omitempty"` // the title of the track in spotify
-    SpotifyArtist string `json:",omitempty"` // artist of track in spotify
-    SmallImageURL string `json:",omitempty"` // URL of album image in smallest format
-    CreatedBy string `json:",omitempty"`
-}
 
 type MyServer struct {
     r *mux.Router
@@ -79,103 +59,6 @@ var sessionStore = sessions.NewCookieStore([]byte(os.Getenv("GORILLA_SESSION_KEY
 
 // declare DB connection variable
 var db *sql.DB 
-
-// generate a random alphanumeric ID for the pin
-func generateID() string {
-
-    // length of id to generate
-    id_length := 8
-
-    // chars that will be used to generate id from
-    var chars = []rune("abcdefghijklmnopqrstuvwxyz0123456789")
-
-    id := make([]rune, id_length)
-    for i := range id {
-        id[i] = chars[rand.Intn(len(chars))]
-    }
-
-    return string(id)
-}
-
-func getPins() []Pin {
-    retPins := []Pin{}
-
-    rows, err := db.Query("SELECT id, lat, lng FROM pins;")
-    if err != nil {
-        panic(err)
-    }
-    defer rows.Close()
-    for rows.Next() {
-        // create new pin to hold row data
-        var p Pin
-        err = rows.Scan(&p.PinID, &p.Lat, &p.Lng)
-        if err != nil {
-            panic(err)
-        }
-
-        // add pin to return list
-        retPins = append(retPins, p)
-    }
-
-    return retPins
-    
-}
-
-func getPinByID(pinID string) []Pin {
-
-    // spotifyembed: null,
-    //   title: null,
-    //   artist: null,
-    //   album: null,
-    //   year: null,
-    //   lyrics: null,
-    //   genre: null,
-
-    var p Pin
-
-    sqlStatement := `SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by
-                     FROM pins WHERE id=$1;`
-    row := db.QueryRow(sqlStatement, pinID)
-    switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, pq.Array(&p.Genres), &p.SpotifyID, &p.SpotifyArtist, &p.CreatedBy); err {
-    case sql.ErrNoRows:
-      fmt.Println("No rows were returned!")
-    case nil:
-      fmt.Println(p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, p.Genres, p.SpotifyID, p.SpotifyArtist, p.CreatedBy)
-    default:
-      panic(err)
-    }
-
-    return([]Pin{p})
-
-
-}
-
-func validatePin(p Pin) bool {
-
-    // check to see if the required fields are set
-    if p.Lat == 0 {
-        log.Println("Incomplete pin, p.Lat not set")
-        return false
-    }
-    if p.Lng == 0 {
-        log.Println("Incomplete pin, p.Lng not set")
-        return false
-    }
-    if p.Title == "" {
-        log.Println("Incomplete pin, p.Lng not set")
-        return false
-    }
-    if p.Artist == "" {
-        log.Println("Incomplete pin, p.Artist not set")
-        return false
-    }
-    if p.Lyric == "" {
-        log.Println("Incomplete pin, p.Lyric not set")
-        return false
-    }
-
-    return true
-}
 
 // getSpotifyMetadata searches Spotify for complete track metadata given a pointer to a Pin with valid SpotifyID
 // TODO: unnecessary with new spotify suggestion add pin flow?
@@ -226,75 +109,6 @@ func getSpotifyMetadata (p *Pin) error {
     // indicate no errors
     return nil
 
-}
-
-func storePin(p Pin) {
-    // add pin metadata
-    log.Println("calling storePin with pin: ", p)
-
-    // try to get spotify metadata
-    err := getSpotifyMetadata(&p)
-    if err != nil {
-        log.Println("Error getting spotify metadata: ", err)
-    }
-
-    // add pin to db
-    // generate a pinID
-    p.PinID = generateID()
-
-    sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by)
-                        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-                    `
-    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist, p.CreatedBy)
-    if err != nil {
-        panic(err)
-    }
-
-}
-
-func addPins(r *http.Request) {
-
-    // read body into byte array
-    body, err := ioutil.ReadAll(r.Body)
-    if err != nil {
-        panic(err)
-    }
-    log.Printf("received: %v\n", string(body))
-
-    // unpack json
-    var p Pin
-    err = json.Unmarshal(body, &p)
-    if err != nil {
-        panic(err)
-    }
-
-    // get user from session
-    session, err := sessionStore.Get(r, "lyricmap")
-    if err != nil {
-        panic(err)
-    }
-    p.CreatedBy = session.Values["user_id"].(string)
-
-    if !validatePin(p) {
-        log.Printf("pin %v invalid\n", p)
-        return
-    }
-
-    go storePin(p)
-    
-}
-
-func updatePins() {
-
-}
-
-// registerUser registers a new user in the user table with id userID
-func registerUser(userID string) error {
-    sqlStatement := `INSERT INTO users (id)
-                        VALUES($1)
-                    `
-    _, err := db.Exec(sqlStatement, userID)
-    return err
 }
 
 // suggestTracks searches spotify for a given query and returns up to 5 resulting tracks (or nil on error)
@@ -354,25 +168,7 @@ func suggestTracks(query string) []Pin {
         retPins = append(retPins, p)
     }
 
-
     return(retPins)
-}
-
-func checkRequestAuthentication(r *http.Request) (bool, error) {
-    session, err := sessionStore.Get(r, "lyricmap")
-    if err != nil {
-        panic(err)
-    }
-
-    // Check if user is authenticated
-    log.Println("session.Values['authenticated']")
-    log.Println(session.Values["authenticated"])
-    log.Println("in checkrequestauthentication, session.Values[\"authenticated\"] = %v", session.Values["authenticated"].(bool))
-    if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
-        return false, err
-    } else {
-        return true, err
-    }
 }
 
 // suggestTracksHandler handles requests to suggest-tracks
@@ -446,33 +242,6 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
         updatePins()
     }
 
-}
-
-// validateGoogleToken, given a Google user's ID token, validates a google user ID
-// by calling Google's validation endpoint, and returns a google ID if token is valud
-func validateGoogleToken(token string) (string, error) {
-    // validate token with call to tokeninfo
-    res, err := http.Get(fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%v", token))
-    if err != nil {
-        panic(err)
-    }
-    defer res.Body.Close()
-
-    // check that response is 200 (i.e. valid token) TODO: also need to check aud field for lyricmap's client id
-    if res.StatusCode != 200 {
-        return "", errors.New(fmt.Sprintf("Token validation failed. tokeninfo check returned %v (!= 200)", res.StatusCode))
-    }
-
-    // get userID from sub field
-    body, err := ioutil.ReadAll(res.Body)
-    var tokenResponse IDToken
-    err = json.Unmarshal(body, &tokenResponse)
-    if err != nil {
-        panic(err)
-    }
-
-    // return no error (valid token)
-    return tokenResponse.Sub, nil
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
