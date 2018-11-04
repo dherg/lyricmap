@@ -61,3 +61,40 @@ func validateGoogleToken(token string) (string, error) {
     // return no error (valid token)
     return tokenResponse.Sub, nil
 }
+
+// createUserSession creates a new authenticated user session for a given userID
+func createUserSession(userID string, w http.ResponseWriter, r *http.Request) error {
+    // Get a session. Get() always returns a session, even if empty.
+    session, err := sessionStore.Get(r, "lyricmap")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return err
+    }
+
+    // set user_id session value and save
+    log.Println("saving session with user_id = %v and authenticated = true", userID)
+    session.Values["user_id"] = userID
+    session.Values["authenticated"] = true
+    session.Save(r, w)
+
+    // return no error 
+    return nil
+}
+
+// revokeUserSession removes a user's authenication from session
+func revokeUserSession(w http.ResponseWriter, r *http.Request) error {
+    // get session
+    session, err := sessionStore.Get(r, "lyricmap")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return err
+    }
+
+    // set `authenticated` field to false
+    log.Println("revoking authentication for user_id = ", session.Values["userID"])
+    session.Values["authenticated"] = false
+    session.Save(r, w)
+
+    // return no error
+    return nil
+}

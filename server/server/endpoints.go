@@ -241,7 +241,6 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
     case "PUT":
         updatePins()
     }
-
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -274,8 +273,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     // Check to see whether user for this token is registered or not.
-    // If registered, get new session for user
-    // If not registered, register and get new session for user
+    // If not registered, register user
     // check user table for this id
     log.Printf(userID)
     row := db.QueryRow(`SELECT FROM users WHERE id = $1`, userID)
@@ -290,19 +288,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         panic(err)
     }
 
-    // Get a session. Get() always returns a session, even if empty.
-    session, err := sessionStore.Get(r, "lyricmap")
+    // Create session for user
+    err = createUserSession(userID, w, r)
     if err != nil {
         panic(err)
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
     }
+}
 
-    // set user_id session value and save
-    log.Println("saving session with user_id = %v and authenticated = true", userID)
-    session.Values["user_id"] = userID
-    session.Values["authenticated"] = true
-    session.Save(r, w)
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+    err := revokeUserSession(w, r)
+    if err != nil {
+        panic(err)
+    }
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
@@ -362,6 +359,7 @@ func main() {
     r := mux.NewRouter()
     r.HandleFunc("/pins", PinsHandler)
     r.HandleFunc("/login", LoginHandler)
+    r.HandleFunc("/logout", LogoutHandler)
     r.HandleFunc("/search", SearchHandler)
     r.HandleFunc("/suggest-tracks", suggestTracksHandler)
 
