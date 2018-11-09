@@ -18,20 +18,23 @@ func registerUser(userID string) error {
     return err
 }
 
-func checkRequestAuthentication(r *http.Request) (bool, error) {
+func checkRequestAuthentication(r *http.Request) (string, bool, error) {
     session, err := sessionStore.Get(r, "lyricmap")
     if err != nil {
         panic(err)
     }
 
     // Check if user is authenticated
-    log.Println("session.Values['authenticated']")
+    log.Println("session.Values['authenticated']:")
     log.Println(session.Values["authenticated"])
-    log.Println("in checkrequestauthentication, session.Values[\"authenticated\"] = %v", session.Values["authenticated"].(bool))
-    if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
-        return false, err
+    if session.Values["authenticated"] == nil {
+        log.Println("No authenticated field found in session cookie")
+        return "", false, err
+    } else if auth, ok := session.Values["authenticated"].(bool); !ok || !auth  {
+        return session.Values["userID"].(string), false, err
     } else {
-        return true, err
+        fmt.Println("here 37, sesh.userID = ", session.Values["userID"])
+        return session.Values["userID"].(string), true, err
     }
 }
 
@@ -72,8 +75,8 @@ func createUserSession(userID string, w http.ResponseWriter, r *http.Request) er
     }
 
     // set user_id session value and save
-    log.Println("saving session with user_id = %v and authenticated = true", userID)
-    session.Values["user_id"] = userID
+    log.Println("saving session with userID = %v and authenticated = true", userID)
+    session.Values["userID"] = userID
     session.Values["authenticated"] = true
     session.Save(r, w)
 
@@ -81,7 +84,7 @@ func createUserSession(userID string, w http.ResponseWriter, r *http.Request) er
     return nil
 }
 
-// revokeUserSession removes a user's authenication from session
+// revokeUserSession removes a user's authentication from session
 func revokeUserSession(w http.ResponseWriter, r *http.Request) error {
     // get session
     session, err := sessionStore.Get(r, "lyricmap")
@@ -97,4 +100,18 @@ func revokeUserSession(w http.ResponseWriter, r *http.Request) error {
 
     // return no error
     return nil
+}
+
+// updateDisplayName updates the given userID's display name in the users table to newName
+func updateDisplayName(userID string, newName string) {
+    log.Println("updating displayname of ", userID, " to ", newName)
+
+    sqlStatement := `UPDATE users 
+                        SET display_name = $1
+                        WHERE id = $2
+                    `
+    _, err := db.Exec(sqlStatement, newName, userID)
+    if err != nil {
+        panic(err)
+    }
 }

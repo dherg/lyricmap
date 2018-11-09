@@ -226,7 +226,7 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(pinData)
     case "POST":
-        isAuthenticated, err := checkRequestAuthentication(r)
+        _, isAuthenticated, err := checkRequestAuthentication(r)
         if err == nil && isAuthenticated {
             addPins(r)
         } else {
@@ -276,6 +276,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     // If not registered, register user
     // check user table for this id
     log.Printf(userID)
+    // if userID == "", error out
+    if userID == "" {
+        log.Printf("403: userID == \"\"")
+        http.Error(w, "userID not found", http.StatusUnauthorized)
+        return
+    }
     row := db.QueryRow(`SELECT FROM users WHERE id = $1`, userID)
     err = row.Scan()
     if err == sql.ErrNoRows { // user is not registered
@@ -300,6 +306,44 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         panic(err)
     }
+}
+
+func UsersHandler(w http.ResponseWriter, r *http.Request) {
+    switch r.Method {
+    case "GET":
+    case "POST":
+    case "PUT":
+        // read body into byte array
+        body, err := ioutil.ReadAll(r.Body)
+        if err != nil {
+            panic(err)
+        }
+        log.Printf("received in PUT /users: %v\n", string(body))
+
+        // unpack json
+        var data struct {
+            NewName string
+        }
+        err = json.Unmarshal(body, &data)
+        if err != nil {
+            panic(err)
+        }
+
+        if data.NewName == "" {
+            log.Println("in /users PUT, no newName field included")
+        } else {
+            userID, isAuthenticated, err := checkRequestAuthentication(r)
+            if err != nil {
+                panic(err)
+            } else if isAuthenticated && userID != "" {
+                go updateDisplayName(userID, data.NewName)
+            } else {
+                log.Println("/users PUT, user not authenticated or userID == \"\"")
+                w.WriteHeader(http.StatusForbidden)
+                w.Write([]byte("403: User not authenticated."))
+            }
+        }
+    }  
 }
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
@@ -362,6 +406,7 @@ func main() {
     r.HandleFunc("/logout", LogoutHandler)
     r.HandleFunc("/search", SearchHandler)
     r.HandleFunc("/suggest-tracks", suggestTracksHandler)
+    r.HandleFunc("/users", UsersHandler)
 
     // CORS setup
     headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
