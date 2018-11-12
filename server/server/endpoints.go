@@ -299,6 +299,21 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         panic(err)
     }
+
+    // Write display name in response
+    displayName, err := getUserDisplayName(userID)
+    if err != nil {
+        panic(err)
+    }
+    // set header response content type to JSON
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(
+        struct {
+            DisplayName string
+        }{
+            displayName,
+        })
+
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {

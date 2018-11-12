@@ -61,6 +61,69 @@ class About extends Component {
   }
 }
 
+class UserPage extends Component {
+
+  // TODO: get currently logged in as
+  // and say "currently logged in as: {user}/No one "
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+
+    this.state = {
+      'text': "",
+    };
+  }
+
+  updateDisplayName(newName) {
+    // get url for environment 
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
+
+    fetch(url, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        newName: newName,
+      })
+    }).then(res => res.json())
+    .then(response => console.log('Success changing name:', JSON.stringify(response)))
+    .catch(error => console.error('Error changing name:', error));
+  }
+
+  // handle change in text box
+  handleChange(event) {
+    this.setState({text: event.target.value});
+  }
+
+  // handle clicking the "submit" button
+  handleSubmit() {
+    this.updateDisplayName(this.state.text);
+  }
+
+  handleKeyPress(e) {
+    if (e.key === 'Enter' && this.state.text !== '') {
+      this.handleSubmit();
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <div className="UserPage">
+          User text here
+        </div>
+        <input id="address" type="textbox" placeholder="Enter new name" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
+        <input id="submit" type="button" value="Update display name" onClick={this.handleSubmit}/>
+      </div>
+    );
+  }
+}
+
 class NotFound extends Component {
   render() {
     return (
@@ -315,13 +378,23 @@ class GoogleSignIn extends Component {
       body: JSON.stringify({
         idtoken: id_token,
       })
-    }).then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        console.log('response received after logging in, status = ' + response.status)
-    });
+    })
+    // .then(function(response) {
+    //     if (response.status >= 400) {
+    //       throw new Error("Bad response from server");
+    //     }
+    //     console.log('response received after logging in, status = ' + response.status)
+    //     // get display name from respo
 
+    // })
+    .then(res => res.json() )
+    .then(res => { 
+      console.log(res)
+      if (res["DisplayName"] != "") {
+        this.props.handleUpdateDisplayName(res["DisplayName"]);
+      }
+
+    });
 
   }
 
@@ -340,9 +413,22 @@ class Header extends Component {
 
   constructor(props) {
     super(props);
+    this.updateDisplayName = this.updateDisplayName.bind(this);
+
+    this.state = {
+      displayName: ""
+    }
+  }
+
+  updateDisplayName(newName) {
+    this.setState({
+      "displayName": newName,
+    });
   }
 
   render() {
+
+    const userNav = (this.state.displayName == "" ? "User" : this.state.displayName)
     return (
       <div className="App-header">
         <div className="Logo-box">
@@ -355,7 +441,12 @@ class Header extends Component {
         </div>
         <div className="Header-link-box">
           <div className="Header-link">
-            <GoogleSignIn />
+            <GoogleSignIn handleUpdateDisplayName={this.updateDisplayName}/>
+          </div>
+          <div className="Header-link">
+            <NavLink to="user">
+               {userNav}
+            </NavLink> 
           </div>
           <div className="Header-link">
             <NavLink to="random">Random</NavLink> 
@@ -964,6 +1055,7 @@ class AppRouter extends Component {
         <div>
           <Switch>
             <Route path="/about" component={About} />
+            <Route path="/user" component={UserPage} />
             <Route exact path="/" component={MapPage} />
             <Route component={NotFound} />
           </Switch>

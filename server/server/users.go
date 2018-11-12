@@ -7,6 +7,7 @@ import (
     "io/ioutil"
     "encoding/json"
     "errors"
+    "database/sql"
 )
 
 // registerUser registers a new user in the user table with id userID
@@ -112,6 +113,26 @@ func updateDisplayName(userID string, newName string) {
                     `
     _, err := db.Exec(sqlStatement, newName, userID)
     if err != nil {
+        panic(err)
+    }
+}
+
+// getUserDisplayName gets the display name for a given userID, returns nil if no display name found
+func getUserDisplayName(userID string) (string, error) {
+    log.Println("Getting display name for ", userID)
+
+    sqlStatement := `SELECT display_name FROM users WHERE id=$1;`
+
+    var displayName string
+    row := db.QueryRow(sqlStatement, userID)
+    switch err := row.Scan(&displayName); err {
+    case sql.ErrNoRows:
+        fmt.Println("userID not found")
+        return "", sql.ErrNoRows
+    case nil:
+        fmt.Println("display name: ", displayName)
+        return displayName, nil
+    default:
         panic(err)
     }
 }
