@@ -323,9 +323,46 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
     switch r.Method {
     case "GET":
+        // get userID from query parameter
+        err := r.ParseForm()
+        if err != nil {
+            panic(err)
+        }
+
+        idParam := r.Form["id"]
+        log.Println("idParam = ", idParam)
+        if idParam == nil || idParam[0] == "" {
+            // error ID required
+            log.Println("/users GET, user ID field not found or is equal to \"\"")
+            w.WriteHeader(http.StatusBadRequest)
+            w.Write([]byte("400: id query parameter required with valid user ID"))
+        } else {
+            userID := idParam[0]
+            displayName, err := getUserDisplayName(userID)
+            if err != nil {
+                // userID not found. return 404
+                log.Println("userID not found. Returning 404 \"\"")
+                w.WriteHeader(http.StatusNotFound)
+                w.Write([]byte("404: User ID not found"))
+            } else {
+                log.Println("displayName = ", displayName)
+                // set header response content type to JSON
+                w.Header().Set("Content-Type", "application/json")
+                json.NewEncoder(w).Encode(
+                    struct {
+                        UserID string
+                        DisplayName string
+                    }{
+                        userID,
+                        displayName,
+                    })
+            }
+
+        }
     case "POST":
     case "PUT":
         // read body into byte array
