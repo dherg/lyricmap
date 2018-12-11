@@ -71,11 +71,60 @@ class UserPage extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
 
+    var userID = this.props.match.params.id;
+    console.log(userID)
+    if (typeof userID !== "undefined" && userID !== "") {
+      console.log('got real userID. fetching display name')
+      this.fetchUserDetails(userID)
+    }
+
     this.state = {
       'text': "",
+      'isLoading': true,
+      'displayName': "", // Only a valid display name when isLoading = false
+      'userFound': false,
     };
   }
 
+  // get the user details via GET to /users endpoint, update the state with
+  // the display name, and change isLoading to false
+  fetchUserDetails(userID) {
+    // get url for environment 
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
+    var that = this;
+    fetch(url + '?id=' + String(userID), {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => {
+        if (res.status === 404) {
+          this.setState({
+            'isLoading': false,
+          })
+        } else if (res.status !== 200) {
+          throw new Error("Not 200 response");
+        } else {
+          res.json().then(function(data) {
+              if (data["DisplayName"] !== "") {
+                that.setState({
+                  "isLoading": false, 
+                  "displayName": data["DisplayName"],
+                  "userFound": true,
+                })
+              }
+          })
+        }
+      })
+      .catch(function(err) {
+        console.log(err)
+      }); // end fetch()
+  }
+
+  // PUT new display name for the currently logged in user
   updateDisplayName(newName) {
     // get url for environment 
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
@@ -112,10 +161,13 @@ class UserPage extends Component {
   }
 
   render() {
+    console.log(this.state)
+    const name = (this.state.userFound ? this.state.displayName : "User not found!")
+    const display = (this.state.isLoading ? "Loading..." : name)
     return (
       <div>
         <div className="UserPage">
-          User text here
+          {display}
         </div>
         <input id="address" type="textbox" placeholder="Enter new name" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
         <input id="submit" type="button" value="Update display name" onClick={this.handleSubmit}/>
@@ -1055,7 +1107,8 @@ class AppRouter extends Component {
         <div>
           <Switch>
             <Route path="/about" component={About} />
-            <Route path="/user" component={UserPage} />
+            <Route path="/users/:id" component={UserPage} />
+            <Route path="/users" component={UserPage} />
             <Route exact path="/" component={MapPage} />
             <Route component={NotFound} />
           </Switch>
