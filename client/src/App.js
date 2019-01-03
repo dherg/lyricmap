@@ -12,7 +12,14 @@ import Autosuggest from 'react-autosuggest';
 import debounce from 'lodash/debounce';
 
 const google = window.google;
-const GOOGLE_KEY = 'AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY';
+
+// keep track of signed in user
+var globalCurrentUser = {
+                    "userID": null,
+                    "displayName": null
+                  };
+
+const GOOGLE_KEY = process.env.REACT_APP_GOOGLE_KEY;
 
 // POST a pin with optional metadata
 // lat, lng, title, artist, and lyric are mandatory for all pins
@@ -161,9 +168,8 @@ class UserPage extends Component {
   }
 
   render() {
-    console.log(this.state)
-    const name = (this.state.userFound ? this.state.displayName : "User not found!")
-    const display = (this.state.isLoading ? "Loading..." : name)
+    const name = (this.state.userFound ? this.state.displayName : "User not found!");
+    const display = (this.state.isLoading ? "Loading..." : name);
     return (
       <div>
         <div className="UserPage">
@@ -393,7 +399,6 @@ class GoogleSignIn extends Component {
   }
 
   componentDidMount() {
-    console.log('this mounted')
     window.gapi.load('auth2');
     window.gapi.signin2.render('my-signin2', {
         'scope': 'email',
@@ -431,24 +436,15 @@ class GoogleSignIn extends Component {
         idtoken: id_token,
       })
     })
-    // .then(function(response) {
-    //     if (response.status >= 400) {
-    //       throw new Error("Bad response from server");
-    //     }
-    //     console.log('response received after logging in, status = ' + response.status)
-    //     // get display name from respo
-
-    // })
     .then(res => res.json() )
     .then(res => { 
       console.log(res)
       if (res["DisplayName"] != "") {
-        this.props.handleUpdateDisplayName(res["DisplayName"]);
+        this.props.handleUpdateCurrentUser(profile.getId(), res["DisplayName"]);
       }
-
     });
 
-  }
+  } // end onSignIn()
 
   render() {
 
@@ -465,22 +461,23 @@ class Header extends Component {
 
   constructor(props) {
     super(props);
-    this.updateDisplayName = this.updateDisplayName.bind(this);
+    this.updateCurrentUser = this.updateCurrentUser.bind(this);
 
     this.state = {
       displayName: ""
     }
   }
 
-  updateDisplayName(newName) {
-    this.setState({
-      "displayName": newName,
-    });
+  updateCurrentUser(newUserID, newName) {
+    globalCurrentUser.userID = newUserID;
+    globalCurrentUser.displayName = newName;
+    this.setState({"displayName": ""}); // hack to force rerender of displayname after it is updated in signin
   }
 
   render() {
 
-    const userNav = (this.state.displayName == "" ? "User" : this.state.displayName)
+    const userNav = (globalCurrentUser.displayName == null ? "" : globalCurrentUser.displayName);
+    var userLink = (globalCurrentUser.userID == null ? "user" : "users/" + globalCurrentUser.userID);
     return (
       <div className="App-header">
         <div className="Logo-box">
@@ -493,10 +490,10 @@ class Header extends Component {
         </div>
         <div className="Header-link-box">
           <div className="Header-link">
-            <GoogleSignIn handleUpdateDisplayName={this.updateDisplayName}/>
+            <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser}/>
           </div>
           <div className="Header-link">
-            <NavLink to="user">
+            <NavLink to={userLink}>
                {userNav}
             </NavLink> 
           </div>
@@ -623,7 +620,6 @@ class InfoWindow extends Component {
       </div>
     );
   }
-
 }
 
 // Everything under the header bar (map + pin info panels)
@@ -686,13 +682,11 @@ class MapBox extends Component {
 
 class SuggestionSearch extends Component {
 
-
   constructor() {
     super();
 
     this.handleLyricChange = this.handleLyricChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-
 
     this.state = {
       value: '',
@@ -952,7 +946,6 @@ class ManualAddPin extends Component {
       </div>
     );
   }
-
 }
 
 class AddPinWindow extends Component {
@@ -1101,20 +1094,27 @@ class MapPage extends Component {
 
 class AppRouter extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loggedInUser: null
+    }
+  }
+
   render() {
     return (
       <Router>
         <div>
-          <Switch>
-            <Route path="/about" component={About} />
-            <Route path="/users/:id" component={UserPage} />
-            <Route path="/users" component={UserPage} />
-            <Route exact path="/" component={MapPage} />
-            <Route component={NotFound} />
-          </Switch>
+            <Switch>
+              <Route path="/about" component={About} />
+              <Route path="/users/:id" component={UserPage} />
+              <Route path="/users" component={UserPage} />
+              <Route exact path="/" component={MapPage} />
+              <Route component={NotFound} />
+            </Switch>
         </div>
       </Router>
-
     );
   }
 }
