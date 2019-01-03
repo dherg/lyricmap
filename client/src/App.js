@@ -74,9 +74,7 @@ class UserPage extends Component {
   // and say "currently logged in as: {user}/No one "
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleUpdateDisplayName = this.handleUpdateDisplayName.bind(this);
 
     var userID = this.props.match.params.id;
     console.log(userID)
@@ -86,7 +84,6 @@ class UserPage extends Component {
     }
 
     this.state = {
-      'text': "",
       'isLoading': true,
       'displayName': "", // Only a valid display name when isLoading = false
       'userFound': false,
@@ -132,7 +129,7 @@ class UserPage extends Component {
   }
 
   // PUT new display name for the currently logged in user
-  updateDisplayName(newName) {
+  handleUpdateDisplayName(newName) {
     // get url for environment 
     var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
 
@@ -151,14 +148,48 @@ class UserPage extends Component {
     .catch(error => console.error('Error changing name:', error));
   }
 
-  // handle change in text box
-  handleChange(event) {
-    this.setState({text: event.target.value});
+
+  render() {
+    const name = (this.state.userFound ? this.state.displayName : "User not found!");
+    const display = (this.state.isLoading ? "Loading..." : name);
+
+    // only show box to change display name if on the currently logged in user's page
+    const updateDisplayNameBox = (this.props.match.params.id == globalCurrentUser.userID ? 
+                                  <UpdateDisplayNameBox updateDisplayName={this.handleUpdateDisplayName}/> :
+                                  null);
+
+    return (
+      <div>
+        <div className="UserPage">
+          {display}
+        </div>
+        {updateDisplayNameBox}
+      </div>
+    );
+  }
+}
+
+class UpdateDisplayNameBox extends Component {
+
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+
+    this.state = {
+      'text': "",    
+    };
   }
 
   // handle clicking the "submit" button
   handleSubmit() {
-    this.updateDisplayName(this.state.text);
+    this.props.updateDisplayName(this.state.text);
+  }
+
+  // handle change in text box
+  handleChange(event) {
+    this.setState({text: event.target.value});
   }
 
   handleKeyPress(e) {
@@ -167,14 +198,10 @@ class UserPage extends Component {
     }
   }
 
+
   render() {
-    const name = (this.state.userFound ? this.state.displayName : "User not found!");
-    const display = (this.state.isLoading ? "Loading..." : name);
-    return (
+    return(
       <div>
-        <div className="UserPage">
-          {display}
-        </div>
         <input id="address" type="textbox" placeholder="Enter new name" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
         <input id="submit" type="button" value="Update display name" onClick={this.handleSubmit}/>
       </div>
