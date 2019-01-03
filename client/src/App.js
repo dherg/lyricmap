@@ -154,7 +154,7 @@ class UserPage extends Component {
     const display = (this.state.isLoading ? "Loading..." : name);
 
     // only show box to change display name if on the currently logged in user's page
-    const updateDisplayNameBox = (this.props.match.params.id == globalCurrentUser.userID ? 
+    const updateDisplayNameBox = (this.props.match.params.id === globalCurrentUser.userID ? 
                                   <UpdateDisplayNameBox updateDisplayName={this.handleUpdateDisplayName}/> :
                                   null);
 
@@ -269,7 +269,7 @@ class SimpleMap extends Component {
         return response.json();
       })
       .then(function(data) {
-        console.log('saving pinData time: ' + (new Date).getTime());
+        console.log('saving pinData time: ' + (new Date()).getTime());
         pinData = data;
         console.log(pinData);
         return data;
@@ -466,7 +466,7 @@ class GoogleSignIn extends Component {
     .then(res => res.json() )
     .then(res => { 
       console.log(res)
-      if (res["DisplayName"] != "") {
+      if (res["DisplayName"] !== "") {
         this.props.handleUpdateCurrentUser(profile.getId(), res["DisplayName"]);
       }
     });
