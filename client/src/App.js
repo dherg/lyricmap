@@ -160,6 +160,7 @@ class UserPage extends Component {
 
     return (
       <div>
+        <Header />
         <div className="UserPage">
           {display}
         </div>
@@ -503,24 +504,21 @@ class Header extends Component {
 
   render() {
 
+    // get currently logged in user info
     const userNav = (globalCurrentUser.displayName == null ? "" : globalCurrentUser.displayName);
-    var userLink = (globalCurrentUser.userID == null ? "user" : "users/" + globalCurrentUser.userID);
-    return (
-      <div className="App-header">
-        <div className="Logo-box">
-          <div>
-            <img src={logo} className="App-logo" alt="logo" />
-          </div>
-          <div>
-            <h1 className="App-title">Lyric Map</h1>
-          </div>
-        </div>
+    var userLink = (globalCurrentUser.userID == null ? "user" : globalCurrentUser.userID);
+
+    // conditionally render header links based on whether on map page or not
+    // true if on map page, false or undefined if not
+    let headerBox;
+    if (this.props.onMapPage) {
+      headerBox = (
         <div className="Header-link-box">
           <div className="Header-link">
             <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser}/>
           </div>
           <div className="Header-link">
-            <NavLink to={userLink}>
+            <NavLink to={"users/" + globalCurrentUser.userID}>
                {userNav}
             </NavLink> 
           </div>
@@ -533,6 +531,36 @@ class Header extends Component {
           <AddPinButton handleAddPinButton={this.props.handleAddPinButton} isAddingPin={this.props.isAddingPin}/>
           <SearchBar changeMapCenter={this.props.changeMapCenter} />
         </div>
+      ); // end headerBox assignment
+    } else {
+      headerBox = (
+        <div className="Header-link-box">
+          <div className="Header-link">
+            <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser}/>
+          </div>
+          <div className="Header-link">
+            <NavLink to={userLink}>
+               {userNav}
+            </NavLink> 
+          </div>
+          <div className="Header-link">
+            <NavLink to="about">About</NavLink> 
+          </div>
+        </div>
+      ); // end headerBox assignment
+    }
+
+    return (
+      <div className="App-header">
+        <div className="Logo-box">
+            <div>
+              <img src={logo} className="App-logo" alt="logo" />
+            </div>
+            <div>
+              <h1 className="App-title">Lyric Map</h1>
+            </div>
+        </div>
+        {headerBox}
       </div>
     ); // close return
   } // close render()
@@ -1107,7 +1135,7 @@ class MapPage extends Component {
 
     return(
       <div>
-        <Header changeMapCenter={(g) => this.changeMapCenter(g)} handleAddPinButton={this.handleAddPinButton} isAddingPin={this.state.isAddingPin}/>
+        <Header onMapPage={true} changeMapCenter={(g) => this.changeMapCenter(g)} handleAddPinButton={this.handleAddPinButton} isAddingPin={this.state.isAddingPin}/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
