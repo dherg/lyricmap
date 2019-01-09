@@ -6,7 +6,7 @@ import './App.css';
 import GoogleMapReact from 'google-map-react';
 import { fitBounds } from 'google-map-react/utils';
 import Pin from './Pin';
-import { BrowserRouter as Router, Route, NavLink, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, NavLink, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
 import debounce from 'lodash/debounce';
@@ -499,7 +499,7 @@ class Header extends Component {
   updateCurrentUser(newUserID, newName) {
     globalCurrentUser.userID = newUserID;
     globalCurrentUser.displayName = newName;
-    this.setState({"displayName": ""}); // hack to force rerender of displayname after it is updated in signin
+    this.setState({"displayName": ""}); // set state to same thing - hack to force rerender of displayname after it is updated in signin
   }
 
   render() {
@@ -553,12 +553,14 @@ class Header extends Component {
     return (
       <div className="App-header">
         <div className="Logo-box">
+          <Link to="" className="Logo-box">
             <div>
               <img src={logo} className="App-logo" alt="logo" />
             </div>
             <div>
               <h1 className="App-title">Lyric Map</h1>
             </div>
+          </Link>
         </div>
         {headerBox}
       </div>

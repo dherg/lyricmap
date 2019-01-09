@@ -76,6 +76,8 @@
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: flex-start;
+  color: white;
+  text-decoration: none;
 }
 
 div > h3 {
