@@ -34,7 +34,7 @@ func checkRequestAuthentication(r *http.Request) (string, bool, error) {
     } else if auth, ok := session.Values["authenticated"].(bool); !ok || !auth  {
         return session.Values["userID"].(string), false, err
     } else {
-        fmt.Println("here 37, sesh.userID = ", session.Values["userID"])
+        log.Println("here 37, sesh.userID = ", session.Values["userID"])
         return session.Values["userID"].(string), true, err
     }
 }
@@ -127,10 +127,10 @@ func getUserDisplayName(userID string) (string, error) {
     row := db.QueryRow(sqlStatement, userID)
     switch err := row.Scan(&displayName); err {
     case sql.ErrNoRows:
-        fmt.Println("userID not found")
+        log.Println("userID not found")
         return "", sql.ErrNoRows
     case nil:
-        fmt.Println("display name: ", displayName)
+        log.Println("display name: ", displayName)
         return displayName, nil
     default:
         panic(err)
