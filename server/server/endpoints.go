@@ -285,6 +285,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     row := db.QueryRow(`SELECT FROM users WHERE id = $1`, userID)
     err = row.Scan()
     if err == sql.ErrNoRows { // user is not registered
+        log.Printf("user %s is not registered, registering", userID)
         // insert user
         err = registerUser(userID)
         if err != nil {

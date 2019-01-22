@@ -12,10 +12,14 @@ import (
 
 // registerUser registers a new user in the user table with id userID
 func registerUser(userID string) error {
+    log.Printf("registering user %s", userID)
     sqlStatement := `INSERT INTO users (id)
                         VALUES($1)
                     `
     _, err := db.Exec(sqlStatement, userID)
+    if err != nil {
+        panic(err)
+    }
     return err
 }
 
@@ -123,16 +127,18 @@ func getUserDisplayName(userID string) (string, error) {
 
     sqlStatement := `SELECT display_name FROM users WHERE id=$1;`
 
-    var displayName string
+    var displayName sql.NullString
     row := db.QueryRow(sqlStatement, userID)
-    switch err := row.Scan(&displayName); err {
-    case sql.ErrNoRows:
-        log.Println("userID not found")
-        return "", sql.ErrNoRows
-    case nil:
-        log.Println("display name: ", displayName)
-        return displayName, nil
-    default:
+    err := row.Scan(&displayName)
+    if err != nil {
         panic(err)
     }
+    if displayName.Valid {
+        log.Println("display name: ", displayName.String)
+        return displayName.String, nil
+    } else {
+        log.Println("userID not found")
+        return "", nil
+    }
+
 }
