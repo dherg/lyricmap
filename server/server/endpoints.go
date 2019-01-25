@@ -257,7 +257,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         panic(err)
     }
-    log.Printf("body = %s", body)
     var token IDToken
     err = json.Unmarshal(body, &token)
     if err != nil {

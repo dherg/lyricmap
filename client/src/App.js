@@ -53,7 +53,26 @@ function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=null, yea
       genre: (genre === null ? undefined : genre),
     })
   });
+}
 
+// PUT request to update display name
+function putDisplayName(newName) {
+  // get url for environment 
+  var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
+
+  fetch(url, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      newName: newName,
+    })
+  }).then(res => res.json())
+  .then(response => console.log('Success changing name:', JSON.stringify(response)))
+  .catch(error => console.error('Error changing name:', error));
 }
 
 class About extends Component {
@@ -130,22 +149,7 @@ class UserPage extends Component {
 
   // PUT new display name for the currently logged in user
   handleUpdateDisplayName(newName) {
-    // get url for environment 
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
-
-    fetch(url, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        newName: newName,
-      })
-    }).then(res => res.json())
-    .then(response => console.log('Success changing name:', JSON.stringify(response)))
-    .catch(error => console.error('Error changing name:', error));
+    putDisplayName(newName);
   }
 
 
@@ -387,7 +391,7 @@ class SearchBar extends Component {
     return(
       <div id="floating-panel">
         <input id="address" type="textbox" placeholder="Enter location" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
-        <input id="submit" type="button" value="Search" onClick={this.handleSubmit}/>
+        <input className="submit" type="button" value="Search" onClick={this.handleSubmit}/>
       </div>
     );
   }
@@ -469,13 +473,15 @@ class GoogleSignIn extends Component {
       console.log(res)
       if (res["DisplayName"] !== "") {
         this.props.handleUpdateCurrentUser(profile.getId(), res["DisplayName"]);
+      } else if (res["DisplayName"] === "") {
+        console.log("prompt to set display name")
+        this.props.handlePromptForName(profile.getId())
       }
     });
 
   } // end onSignIn()
 
   render() {
-
     return (
       <div>
         <div id="my-signin2" data-onsuccess={"onSignIn"}></div>
@@ -490,6 +496,7 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.updateCurrentUser = this.updateCurrentUser.bind(this);
+    this.handlePromptForName = this.handlePromptForName.bind(this);
 
     this.state = {
       displayName: ""
@@ -500,6 +507,10 @@ class Header extends Component {
     globalCurrentUser.userID = newUserID;
     globalCurrentUser.displayName = newName;
     this.setState({"displayName": ""}); // set state to same thing - hack to force rerender of displayname after it is updated in signin
+  }
+
+  handlePromptForName(userID) {
+    this.props.handlePromptForName(userID)
   }
 
   render() {
@@ -515,7 +526,7 @@ class Header extends Component {
       headerBox = (
         <div className="Header-link-box">
           <div className="Header-link">
-            <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser}/>
+            <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser} handlePromptForName={this.handlePromptForName}/>
           </div>
           <div className="Header-link">
             <NavLink to={"users/" + globalCurrentUser.userID}>
@@ -1053,6 +1064,69 @@ class AddPinWindow extends Component {
 
 }
 
+// modal to prompt new user to set their display name
+class NamePrompt extends Component {
+  constructor(props) {
+    super(props);
+    this.handleNicknameInputChange = this.handleNicknameInputChange.bind(this);
+    this.validateSubmission = this.validateSubmission.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.state = {
+      nickname: "",
+    };
+  }
+
+  handleNicknameInputChange(event) {
+    this.setState({
+      nickname: event.target.value
+    });
+  }
+
+  validateSubmission() {
+    if (this.state.nickname === "") {
+      alert("Your nickname can't be blank!");
+      return(false)
+    } else if (this.state.nickname.length > 32) {
+      alert("Your nickname can't be longer than 32 characters")
+      return(false)
+    } else {
+      return(true)
+    }
+
+  }
+
+  handleSubmit() {
+    // validate the text, do nothing if submission not valid
+    if (!this.validateSubmission()) {
+      return;
+    }
+
+    // Post pin
+    putDisplayName(this.state.nickname)
+
+    // close name prompt
+    this.props.closeNamePrompt();
+
+  }
+
+  render() {
+    return(
+      <div id="Name-Prompt-Box">
+        <div>
+          To finish setting up your account, give yourself a nickname! 
+        </div>
+        <input id="Name-Prompt-Input" type="textbox" placeholder="Your new nickname" onChange={this.handleNicknameInputChange}/>
+        <input className="submit" type="button" value="Submit Name" onClick={this.handleSubmit}/>
+        <div>
+          (Don't worry, you can change this later on your user page.)
+        </div>
+      </div>
+    )
+  }
+
+}
+
 // the header + MapBox
 class MapPage extends Component {
 
@@ -1061,6 +1135,8 @@ class MapPage extends Component {
     this.handleAddPinButton = this.handleAddPinButton.bind(this);
     this.handleAddPin = this.handleAddPin.bind(this);
     this.handleCloseAddPinWindowClick = this.handleCloseAddPinWindowClick.bind(this);
+    this.handlePromptForName = this.handlePromptForName.bind(this);
+    this.handleCloseNamePrompt = this.handleCloseNamePrompt.bind(this);
 
     this.state = {
       center: null,
@@ -1068,6 +1144,7 @@ class MapPage extends Component {
       mapheight: null,
       isAddingPin: false,
       showAddPinWindow: false,
+      showNamePrompt: false
     }
   }
 
@@ -1129,21 +1206,38 @@ class MapPage extends Component {
     });
   }
 
+  handlePromptForName() {
+    this.setState({
+      showNamePrompt: true,
+    })
+  }
+
+  handleCloseNamePrompt() {
+    this.setState({
+      showNamePrompt: false
+    })
+  }
+
   render() {
 
     const addPinWindow = (
       <AddPinWindow onCloseAddPinWindowClick={this.handleCloseAddPinWindowClick} lat={this.state.addingPinLat} lng={this.state.addingPinLng}/>
     );
 
+    const namePrompt = (
+      <NamePrompt closeNamePrompt={this.handleCloseNamePrompt}/>
+    );
+
     return(
       <div>
-        <Header onMapPage={true} changeMapCenter={(g) => this.changeMapCenter(g)} handleAddPinButton={this.handleAddPinButton} isAddingPin={this.state.isAddingPin}/>
+        <Header onMapPage={true} changeMapCenter={(g) => this.changeMapCenter(g)} handleAddPinButton={this.handleAddPinButton} isAddingPin={this.state.isAddingPin} handlePromptForName={this.handlePromptForName}/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
                 isAddingPin={this.state.isAddingPin}
                 handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}/>
         {this.state.showAddPinWindow ? addPinWindow : null}
+        {this.state.showNamePrompt ? namePrompt : null}
       </div>
     );
   }

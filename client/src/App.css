@@ -62,7 +62,7 @@
   /*padding-left: 10px;*/
 }
 
-#submit {
+.submit {
   background-color: #404040;
   color: white;
 }
@@ -294,8 +294,30 @@ div > h3 {
   border-radius: 50%;
 }
 
+#Name-Prompt-Box {
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.8);
+  position: fixed;
+  top: 30%;
+  left: 20%;
+  width: auto;
+  height: auto;
+  color: white;
+  text-align: center;
+  overflow: scroll;
+  padding: 5%;
+  line-height: 2em;
+  border-radius: 10px;
+}
 
+#Name-Prompt-Input {
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
 
+#Add-Nickname-Submit {
+
+}
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
