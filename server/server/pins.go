@@ -167,7 +167,7 @@ func addPins(r *http.Request) {
     if err != nil {
         panic(err)
     }
-    p.CreatedBy = session.Values["user_id"].(string)
+    p.CreatedBy = session.Values["userID"].(string)
 
     if !validatePin(p) {
         log.Printf("pin %v invalid\n", p)
