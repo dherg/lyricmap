@@ -598,7 +598,8 @@ class InfoWindow extends Component {
       releaseDate: null,
       lyrics: null,
       genre: null,
-      createdBy: null
+      createdByID: null,
+      createdByName: null,
     };
   }
 
@@ -635,10 +636,41 @@ class InfoWindow extends Component {
           releaseDate: res["ReleaseDate"],
           lyrics: res["Lyric"],
           genre: res["Genres"],
-          createdBy: res["CreatedBy"]
+          createdByID: res["CreatedBy"]
         })
-
       });
+  }
+
+  fetchCreatorDisplayName(userID) {
+    // get url for environment 
+    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
+    var that = this;
+    fetch(url + '?id=' + String(userID), {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => {
+        if (res.status === 404) {
+          console.log("creator userID not found")
+        } else if (res.status !== 200) {
+          throw new Error("Not 200 response");
+        } else {
+          res.json().then(function(data) {
+              if (data["DisplayName"] !== "") {
+                that.setState({
+                  "createdByName": data["DisplayName"],
+                })
+              }
+          })
+        }
+      })
+      .catch(function(err) {
+        console.log(err)
+      }); // end fetch()
   }
 
   componentDidMount() {
@@ -646,11 +678,16 @@ class InfoWindow extends Component {
     this.fetchPinInfo(this.props.clickedPinID);
   }
 
-  componentDidUpdate(prevProps) {
-    // update if props pinID has changed
+  componentDidUpdate(prevProps, prevState) {
+    // update all the props if pinID has changed
     if (this.props.clickedPinID !== prevProps.clickedPinID) {
       this.fetchPinInfo(this.props.clickedPinID);
+    } else if (this.state.createdByID !== prevState.createdByID && this.state.createdByID !== null) {
+      // if we've now fetched pin info, try to fetch display name
+      console.log('fetching display name')
+      this.fetchCreatorDisplayName(this.state.createdByID);
     }
+
   }
 
   render() {
@@ -688,7 +725,7 @@ class InfoWindow extends Component {
           PinID: {this.props.clickedPinID}
         </div>
         <div className="PinDetail">
-          Added By: {this.state.createdBy}
+          Added By: {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName}
         </div>
       </div>
     );
