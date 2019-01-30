@@ -70,8 +70,13 @@ function putDisplayName(newName) {
     body: JSON.stringify({
       newName: newName,
     })
-  }).then(res => res.json())
-  .then(response => console.log('Success changing name:', JSON.stringify(response)))
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.status === 200 && res["DisplayName"] !== "") {
+      globalCurrentUser.displayName = res["DisplayName"]
+    }
+  })
   .catch(error => console.error('Error changing name:', error));
 }
 
@@ -506,7 +511,7 @@ class Header extends Component {
   updateCurrentUser(newUserID, newName) {
     globalCurrentUser.userID = newUserID;
     globalCurrentUser.displayName = newName;
-    this.setState({"displayName": ""}); // set state to same thing - hack to force rerender of displayname after it is updated in signin
+    this.setState({"displayName": ""}); // set state to same thing - force rerender of displayname after it is updated in signin
   }
 
   handlePromptForName(userID) {
@@ -1102,7 +1107,7 @@ class NamePrompt extends Component {
       return;
     }
 
-    // Post pin
+    // Put new display name
     putDisplayName(this.state.nickname)
 
     // close name prompt

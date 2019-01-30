@@ -389,6 +389,15 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
                 panic(err)
             } else if isAuthenticated && userID != "" {
                 go updateDisplayName(userID, data.NewName)
+                // send back 200 with the new display name
+                w.WriteHeader(http.StatusOK)
+                w.Header().Set("Content-Type", "application/json")
+                json.NewEncoder(w).Encode(
+                    struct {
+                        DisplayName string
+                    }{
+                        data.NewName,
+                    })
             } else {
                 log.Println("/users PUT, user not authenticated or userID == \"\"")
                 w.WriteHeader(http.StatusForbidden)
