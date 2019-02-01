@@ -78,6 +78,11 @@ func getSpotifyMetadata (p *Pin) error {
     fullTrack, err := client.GetTrack(spotify.ID(p.SpotifyID))
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching track with SpotifyID: %v\n%v", p.SpotifyID, err)
+        // Check if it's a token expired error. if so get new token
+        // This request will fail but next should work
+        if err.Error() == "oauth2: token expired and refresh token is not set" {
+            client = getSpotifyClient()
+        }
         return err
     }
     log.Println("fullTrack = %v", fullTrack)
@@ -91,6 +96,11 @@ func getSpotifyMetadata (p *Pin) error {
     fullAlbum, err := client.GetAlbum(simpleAlbum.ID)
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching album with SpotifyID: %v\n%v", fullTrack.Album.ID, err)
+        // Check if it's a token expired error. if so get new token
+        // This request will fail but next should work
+        if err.Error() == "oauth2: token expired and refresh token is not set" {
+            client = getSpotifyClient()
+        }
         return err
     }
 
@@ -102,6 +112,11 @@ func getSpotifyMetadata (p *Pin) error {
     fullArtist, err := client.GetArtist(simpleAlbum.Artists[0].ID)
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching artist with SpotifyID: %v\n%v", simpleAlbum.Artists[0].ID, err)
+        // Check if it's a token expired error. if so get new token
+        // This request will fail but next should work
+        if err.Error() == "oauth2: token expired and refresh token is not set" {
+            client = getSpotifyClient()
+        }
         return err
     }
     p.Genres = fullArtist.Genres
@@ -129,6 +144,11 @@ func suggestTracks(query string) []Pin {
     results, err := client.SearchOpt(query, spotify.SearchTypeTrack, opt)
     if err != nil {
         log.Println("Error searching Spotify track info: ", err)
+        // Check if it's a token expired error. if so get new token
+        // This request will fail but next should work
+        if err.Error() == "oauth2: token expired and refresh token is not set" {
+            client = getSpotifyClient()
+        }
         return nil
     }
     log.Printf("search results: %v", results)
@@ -457,8 +477,7 @@ func main() {
     }
     defer db.Close()
 
-    generateID()
-
+    // set up spotify client for future calls
     client = getSpotifyClient()
 
     r := mux.NewRouter()
