@@ -1225,10 +1225,17 @@ class MapPage extends Component {
   }
 
   handleAddPinButton() {
-    console.log('setting isAddingPin to true')
-    this.setState({
-      isAddingPin: true,
-    });
+    // check if user is logged in or not before allowing them to add pin
+    if (globalCurrentUser.userID !== null) {
+      console.log('setting isAddingPin to true')
+      this.setState({
+        isAddingPin: true,
+      });
+    } else {
+      // show popup saying you have to be logged in
+      alert("You must be logged in to add a pin!")
+    }
+    
   }
 
   handleAddPin(lat, lng) {
