@@ -767,6 +767,14 @@ class MapBox extends Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.isAddingPin != prevProps.isAddingPin && this.props.isAddingPin == true) {
+      this.setState({
+        showInfoWindow: false,
+      });
+    }
+  }
+
   render() {
 
     const infoWindow = (
@@ -951,7 +959,6 @@ class SuggestionSearch extends Component {
       </div>
     );
 
-    // Finally, render it!
     return (
       <div id="SuggestionSearch">
         <Autosuggest
