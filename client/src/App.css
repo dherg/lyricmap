@@ -86,6 +86,10 @@ div > h3 {
   align-items: flex-end;*/
 }
 
+#InfoWindowUserLink {
+  color: white;
+}
+
 #MapBoxWithInfoWindow {
   display: flex;
   flex-direction: row;

@@ -696,6 +696,8 @@ class InfoWindow extends Component {
 
     console.log(this.state.genre);
 
+    const userLink = "users/" + String(this.state.createdByID)
+
     return (
       <div id='InfoWindow'>
         <span className='CloseWindow'
@@ -725,7 +727,7 @@ class InfoWindow extends Component {
           PinID: {this.props.clickedPinID}
         </div>
         <div className="PinDetail">
-          Added By: {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName}
+          Added By: <Link id="InfoWindowUserLink" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link>
         </div>
       </div>
     );
