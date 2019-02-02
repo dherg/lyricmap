@@ -701,7 +701,7 @@ class InfoWindow extends Component {
         <span className='CloseWindow'
               onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
         <div id='PinLyrics'>
-          " {this.state.lyrics} "
+          {this.state.lyrics}
         </div>
         <div id='SpotifyEmbed'>
           {this.state.spotifyembed}
@@ -942,10 +942,12 @@ class SuggestionSearch extends Component {
     );
 
     const addPinLyricBox = (
-      <div id="addPinLyric">
-        {"Lyric: "}
-        <input id="addPinLyric" type="textbox" onChange={this.handleLyricChange}/>
-        <input id="addPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
+      <div id="AddPinLyric">
+        {"Lyric (only the relevant lines!) "}
+        <form id="AddPinLyricForm"> 
+          <textarea id="AddPinLyricTextArea" onChange={this.handleLyricChange}/>
+          <input id="AddPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
+        </form>
       </div>
     );
 

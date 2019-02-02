@@ -123,6 +123,27 @@ div > h3 {
   line-height: 2em;
 }
 
+#AddPinLyricForm {
+  /*display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;*/
+  /*display: block;*/
+}
+
+#AddPinLyricTextArea {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 75%;
+}
+
+#AddPinSubmit {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}
+
 .react-autosuggest__container {
   position: relative;
 }
