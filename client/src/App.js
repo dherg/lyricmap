@@ -5,11 +5,22 @@ import './App.css';
 // my imports
 import GoogleMapReact from 'google-map-react';
 import { fitBounds } from 'google-map-react/utils';
-import Pin from './Pin';
 import { BrowserRouter as Router, Route, Link, NavLink, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
 import debounce from 'lodash/debounce';
+
+// my components
+import About from './About';
+import AddPinButton from './AddPinButton';
+import GoogleSignIn from './GoogleSignIn';
+import InfoWindow from './InfoWindow';
+import ManualAddPin from './ManualAddPin';
+import NamePrompt from './NamePrompt';
+import NotFound from './NotFound';
+import SearchBar from './SearchBar';
+import SimpleMap from './SimpleMap';
+import UpdateDisplayNameBox from './UpdateDisplayNameBox';
 
 const google = window.google;
 
@@ -19,12 +30,10 @@ var globalCurrentUser = {
                     "displayName": null
                   };
 
-const GOOGLE_KEY = process.env.REACT_APP_GOOGLE_KEY;
-
 // POST a pin with optional metadata
 // lat, lng, title, artist, and lyric are mandatory for all pins
 // spotifyID, album, year, genre, are optional
-function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=null, year=null, genre=null) {
+export function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=null, year=null, genre=null) {
 
   // check if mandatory parameters are 
   if (lat === null || lng === null || title === null || artist === null || lyric === null) {
@@ -56,7 +65,7 @@ function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=null, yea
 }
 
 // PUT request to update display name
-function putDisplayName(newName) {
+export function putDisplayName(newName) {
   // get url for environment 
   var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
 
@@ -80,22 +89,8 @@ function putDisplayName(newName) {
   .catch(error => console.error('Error changing name:', error));
 }
 
-class About extends Component {
-  render() {
-    return (
-      <div>
-        <div className="AboutPage">
-          About text here
-        </div>
-      </div>
-    );
-  }
-}
-
 class UserPage extends Component {
 
-  // TODO: get currently logged in as
-  // and say "currently logged in as: {user}/No one "
   constructor(props) {
     super(props);
     this.handleUpdateDisplayName = this.handleUpdateDisplayName.bind(this);
@@ -174,322 +169,6 @@ class UserPage extends Component {
           {display}
         </div>
         {updateDisplayNameBox}
-      </div>
-    );
-  }
-}
-
-class UpdateDisplayNameBox extends Component {
-
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-
-    this.state = {
-      'text': "",    
-    };
-  }
-
-  // handle clicking the "submit" button
-  handleSubmit() {
-    this.props.updateDisplayName(this.state.text);
-  }
-
-  // handle change in text box
-  handleChange(event) {
-    this.setState({text: event.target.value});
-  }
-
-  handleKeyPress(e) {
-    if (e.key === 'Enter' && this.state.text !== '') {
-      this.handleSubmit();
-    }
-  }
-
-
-  render() {
-    return(
-      <div>
-        <input id="address" type="textbox" placeholder="Enter new name" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
-        <input id="submit" type="button" value="Update display name" onClick={this.handleSubmit}/>
-      </div>
-    );
-  }
-}
-
-class NotFound extends Component {
-  render() {
-    return (
-      <div>
-        Not Found
-      </div>
-    );
-  }
-}
-
-// The map itself + pins
-class SimpleMap extends Component {
-
-  constructor(props) {
-    super(props);
-    this.handlePinClick = this.handlePinClick.bind(this);
-    this.addPin = this.addPin.bind(this);
-    this.state = {
-      center: {lat: 35.027718, lng: -95.625},
-      zoom: 5,
-      pinList: null,
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.center !== nextProps.center) {
-      this.setState({
-        center: nextProps.center,
-      });
-    }
-    if (this.props.zoom !== nextProps.zoom) {
-      this.setState({
-        zoom: nextProps.zoom,
-      })
-    }
-  }
-
-  componentDidMount() {
-    this.getPins().then(data => {
-      this.setState({
-        pinList: data,
-      });
-    });
-    console.log('this.state.pinList: ' + this.state.pinList);
-  }
-
-  getPins() {
-
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
-
-    var pinData;
-
-    return fetch(url)
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.json();
-      })
-      .then(function(data) {
-        console.log('saving pinData time: ' + (new Date()).getTime());
-        pinData = data;
-        console.log(pinData);
-        return data;
-      });
-  }
-
-  pinListToComponents(pinList) {
-    if (pinList === null) {
-      return;
-    } else {
-      return (
-        pinList.map(pin => <Pin key={pin.PinID} pinID={pin.PinID} lat={Number(pin.Lat)} lng={Number(pin.Lng)} text={String(pin.Lat + pin.Lng)} onPinClick={this.handlePinClick}/>)
-      );
-    }
-  }
-
-  handlePinClick(clickedPinID, clickedPinLat, clickedPinLng) {
-    console.log("clickedPinID,clickedPinLat,clickedPinLng ", clickedPinID, clickedPinLat, clickedPinLng);
-    // open InfoWindow
-    this.props.onPinClick(clickedPinID);
-
-    // set clicked pin to center
-    this.setState({
-      center: {lat: clickedPinLat, lng: clickedPinLng},
-    })
-  }
-
-  addPin(event) {
-    if (this.props.isAddingPin) {
-      this.props.handleAddPin(event.lat, event.lng);
-    }
-  }
-
-  render() {
-
-    return (
-      <div className="SimpleMap">
-
-        <GoogleMapReact
-          center={this.state.center}
-          zoom={this.state.zoom}
-          bootstrapURLKeys={{
-            key: GOOGLE_KEY,
-            v: '3.30'
-          }}
-          onClick={this.addPin}
-          options={{streetViewControl: true}}
-        >
-
-          {this.pinListToComponents(this.state.pinList)}
-        </GoogleMapReact>
-
-      </div>
-    );
-  }
-}
-
-// Search bar
-class SearchBar extends Component {
-
-  constructor(props) {
-    super(props);
-
-    this.changeMapCenter = this.changeMapCenter.bind(this);
-    this.geocodeAddress = this.geocodeAddress.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-
-    this.state = {
-      text: '',
-    }
-  }
-
-  // take in geometry object and update the map center with .location and .viewport
-  changeMapCenter(geometry) {
-    this.props.changeMapCenter(geometry);
-  }
-
-  // handle change in text box
-  handleChange(event) {
-    this.setState({text: event.target.value});
-  }
-
-  geocodeAddress(address) {
-    var geocoder = new google.maps.Geocoder();
-
-    geocoder.geocode({'address': address}, (results, status) => {
-      console.log('Results: ' + results[0]);
-      if (status === 'OK') {
-        console.log('status OK. results: ' + results[0].formatted_address);
-        console.log('results[0].geometry.location: ' + results[0].geometry.location);
-        this.changeMapCenter(results[0].geometry);
-      } else {
-        console.log('Geocode was not successful.');
-        console.log('Status: ' + status);
-      }
-    }); 
-  }
-
-  // handle clicking the "submit" button
-  handleSubmit() {
-    this.geocodeAddress(this.state.text);
-  }
-
-  handleKeyPress(e) {
-    if (e.key === 'Enter' && this.state.text !== '') {
-      this.handleSubmit();
-    }
-  }
-
-
-  render() {
-    return(
-      <div id="floating-panel">
-        <input id="address" type="textbox" placeholder="Enter location" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
-        <input className="submit" type="button" value="Search" onClick={this.handleSubmit}/>
-      </div>
-    );
-  }
-}
-
-class AddPinButton extends Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      text: 'Click to add',
-    };
-  }
-
-  render() {
-
-    const button = (
-      this.props.isAddingPin ? 
-      <input id="add-pin-button" type="button" value="Click on map to add pin..." disabled /> : 
-      <input id="add-pin-button" type="button" value="Add a Pin" onClick={this.props.handleAddPinButton} />
-    );
-    return(
-      <div id="add-pin-button-container">
-        {button}
-      </div>
-    );
-  }
-}
-
-
-class GoogleSignIn extends Component {
-
-  constructor(props) {
-    super(props);
-    this.onSignIn = this.onSignIn.bind(this);
-  }
-
-  componentDidMount() {
-    window.gapi.load('auth2');
-    window.gapi.signin2.render('my-signin2', {
-        'scope': 'email',
-        'width': 80,
-        'height': 20,
-        'longtitle': false,
-        'theme': 'dark',
-        'onsuccess': this.onSignIn,
-    });
-  }
-
-  onSignIn(googleUser) {
-    var profile = googleUser.getBasicProfile();
-    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    console.log('Name: ' + profile.getName());
-    console.log('Image URL: ' + profile.getImageUrl());
-    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-
-    // get google ID token
-    var id_token = googleUser.getAuthResponse().id_token;
-    console.log('id_token: ' + id_token)
-
-    // get url for environment 
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/login';
-
-    // post ID token to server
-    fetch(url, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        idtoken: id_token,
-      })
-    })
-    .then(res => res.json() )
-    .then(res => { 
-      console.log(res)
-      if (res["DisplayName"] !== "") {
-        this.props.handleUpdateCurrentUser(profile.getId(), res["DisplayName"]);
-      } else if (res["DisplayName"] === "") {
-        console.log("prompt to set display name")
-        this.props.handlePromptForName(profile.getId())
-      }
-    });
-
-  } // end onSignIn()
-
-  render() {
-    return (
-      <div>
-        <div id="my-signin2" data-onsuccess={"onSignIn"}></div>
       </div>
     );
   }
@@ -582,156 +261,6 @@ class Header extends Component {
       </div>
     ); // close return
   } // close render()
-}
-
-// side panel with info about clicked pin
-class InfoWindow extends Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      spotifyembed: null,
-      title: null,
-      artist: null,
-      album: null,
-      releaseDate: null,
-      lyrics: null,
-      genre: null,
-      createdByID: null,
-      createdByName: null,
-    };
-  }
-
-  // fetch pin info and update state for given pinID
-  fetchPinInfo(pinID) {
-    console.log('clicked pin id = ' + pinID)
-    // Make request
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
-    // const that = this;
-    fetch(url + '?id=' + String(this.props.clickedPinID), {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(res => res.json() )
-      .then(res => { 
-        // get data for pin 0 (should only be one pin)
-        res = res[0]
-        // save info from the request
-        var spotifyID = res["SpotifyID"];
-
-        var spotifyembed = (
-          <iframe src={"https://open.spotify.com/embed/track/" + String(spotifyID)} width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
-        );
-
-        this.setState({
-          spotifyembed: spotifyID ? spotifyembed : null,
-          title: res["Title"],
-          artist: res["Artist"],
-          album: res["Album"],
-          releaseDate: res["ReleaseDate"],
-          lyrics: res["Lyric"],
-          genre: res["Genres"],
-          createdByID: res["CreatedBy"]
-        })
-      });
-  }
-
-  fetchCreatorDisplayName(userID) {
-    // get url for environment 
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
-    var that = this;
-    fetch(url + '?id=' + String(userID), {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(res => {
-        if (res.status === 404) {
-          console.log("creator userID not found")
-        } else if (res.status !== 200) {
-          throw new Error("Not 200 response");
-        } else {
-          res.json().then(function(data) {
-              if (data["DisplayName"] !== "") {
-                that.setState({
-                  "createdByName": data["DisplayName"],
-                })
-              }
-          })
-        }
-      })
-      .catch(function(err) {
-        console.log(err)
-      }); // end fetch()
-  }
-
-  componentDidMount() {
-    // fetch pin data
-    this.fetchPinInfo(this.props.clickedPinID);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // update all the props if pinID has changed
-    if (this.props.clickedPinID !== prevProps.clickedPinID) {
-      this.fetchPinInfo(this.props.clickedPinID);
-    } else if (this.state.createdByID !== prevState.createdByID && this.state.createdByID !== null) {
-      // if we've now fetched pin info, try to fetch display name
-      console.log('fetching display name')
-      this.fetchCreatorDisplayName(this.state.createdByID);
-    }
-
-  }
-
-  render() {
-
-    var genres = this.state.genre ? this.state.genre.join(", ") : null
-
-    console.log(this.state.genre);
-
-    const userLink = "users/" + String(this.state.createdByID)
-
-    return (
-      <div id='InfoWindow'>
-        <span className='CloseWindow'
-              onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
-        <div id='PinLyrics'>
-          {this.state.lyrics}
-        </div>
-        <div id='SpotifyEmbed'>
-          {this.state.spotifyembed}
-        </div>
-        <div id='PinTitle'>
-          {this.state.title}
-        </div>
-        <div id='PinArtist'>
-          by <b>{this.state.artist}</b>
-        </div>
-        <div className="PinDetail">
-          Album: <b>{this.state.album}</b>
-        </div>
-        <div className="PinDetail">
-          Release Date: <b>{this.state.releaseDate}</b>
-        </div>
-        <div className="PinDetail">
-          Genres: <b>{genres}</b>
-        </div>
-        <div className="PinDetail">
-          PinID: {this.props.clickedPinID}
-        </div>
-        <div className="PinDetail">
-          Added By: <Link id="InfoWindowUserLink" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link>
-        </div>
-      </div>
-    );
-  }
 }
 
 // Everything under the header bar (map + pin info panels)
@@ -979,96 +508,6 @@ class SuggestionSearch extends Component {
   }
 } // end SuggestionSearch component
 
-// Component to add pin when song is not found in spotify search
-class ManualAddPin extends Component {
-
-  constructor(props) {
-    super(props);
-    this.handleTitleChange = this.handleTitleChange.bind(this);
-    this.handleArtistChange = this.handleArtistChange.bind(this);
-    this.handleLyricChange = this.handleLyricChange.bind(this);
-    this.validateSubmission = this.validateSubmission.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-
-    this.state = {
-      title: "",
-      artist: "",
-      lyric: ""
-    };
-  }
-
-  handleTitleChange(event) {
-    this.setState({
-      title: event.target.value
-    });
-  }
-
-  handleArtistChange(event) {
-    this.setState({
-      artist: event.target.value
-    });
-  }
-
-  handleLyricChange(event) {
-    this.setState({
-      lyric: event.target.value
-    });
-  }
-
-  validateSubmission() {
-    if (this.state.title === "") {
-      alert("Song Name cannot be blank.");
-      return(false);
-    }
-    if (this.state.artist === "") {
-      alert("Artist cannot be blank.");
-      return(false);
-    }
-    if (this.state.lyric === "") {
-      alert("Lyric cannot be blank.");
-      return(false);
-    }
-    return(true);
-  }
-
-  handleSubmit() {
-    // validate the text, do nothing if submission not valid
-    if (!this.validateSubmission()) {
-      return;
-    }
-
-    // Post pin
-    postPin(this.props.lat, this.props.lng, this.state.title, this.state.artist, this.state.lyric)
-
-    // set adding pin and show addpinwindow to false
-    this.props.onCloseAddPinWindowClick();
-
-  }
-
-  render() {
-    return(
-      <div id="ManualAddPin">
-        <div onClick={this.props.onShowSuggestionSearchClick}>
-          Want to search for the song on Spotify instead? Click here
-        </div>
-        <div id="addPinTitleBox">
-          {"Song Title: "}
-          <input id="addPinTitle" type="textbox" onChange={this.handleTitleChange}/>
-        </div>
-        <div id="addPinArtistBox">
-          {"Artist: "}
-          <input id="addPinArtist" type="textbox" onChange={this.handleArtistChange}/>
-        </div>
-        <div id="addPinLyric">
-          {"Lyric: "}
-          <input id="addPinLyric" type="textbox" onChange={this.handleLyricChange}/>
-        </div>
-        <input id="addPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
-      </div>
-    );
-  }
-}
-
 class AddPinWindow extends Component {
 
   constructor(props) {
@@ -1114,70 +553,6 @@ class AddPinWindow extends Component {
       </div>
     );
   }
-
-}
-
-// modal to prompt new user to set their display name
-class NamePrompt extends Component {
-  constructor(props) {
-    super(props);
-    this.handleNicknameInputChange = this.handleNicknameInputChange.bind(this);
-    this.validateSubmission = this.validateSubmission.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-
-    this.state = {
-      nickname: "",
-    };
-  }
-
-  handleNicknameInputChange(event) {
-    this.setState({
-      nickname: event.target.value
-    });
-  }
-
-  validateSubmission() {
-    if (this.state.nickname === "") {
-      alert("Your nickname can't be blank!");
-      return(false)
-    } else if (this.state.nickname.length > 32) {
-      alert("Your nickname can't be longer than 32 characters")
-      return(false)
-    } else {
-      return(true)
-    }
-
-  }
-
-  handleSubmit() {
-    // validate the text, do nothing if submission not valid
-    if (!this.validateSubmission()) {
-      return;
-    }
-
-    // Put new display name
-    putDisplayName(this.state.nickname)
-
-    // close name prompt
-    this.props.closeNamePrompt();
-
-  }
-
-  render() {
-    return(
-      <div id="Name-Prompt-Box">
-        <div>
-          To finish setting up your account, give yourself a nickname! 
-        </div>
-        <input id="Name-Prompt-Input" type="textbox" placeholder="Your new nickname" onChange={this.handleNicknameInputChange}/>
-        <input className="submit" type="button" value="Submit Name" onClick={this.handleSubmit}/>
-        <div>
-          (Don't worry, you can change this later on your user page.)
-        </div>
-      </div>
-    )
-  }
-
 }
 
 // the header + MapBox
@@ -1246,7 +621,6 @@ class MapPage extends Component {
       // show popup saying you have to be logged in
       alert("You must be logged in to add a pin!")
     }
-    
   }
 
   handleAddPin(lat, lng) {
