@@ -282,7 +282,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         panic(err)
     }
-    log.Printf("token = %s", token)
 
     userID, err := validateGoogleToken(token.IDToken) // TODO: get sub from this response to use as the google ID
     // if err != nil, do not log user in. ID is not valid

@@ -3,6 +3,7 @@ package main
 import (
     "log"
     "fmt"
+    "time"
     "net/http"
     "encoding/json"
     "io/ioutil"
@@ -27,6 +28,7 @@ type Pin struct {
     SpotifyArtist string `json:",omitempty"` // artist of track in spotify
     SmallImageURL string `json:",omitempty"` // URL of album image in smallest format
     CreatedBy string `json:",omitempty"`
+    CreatedDate string `json:",omitempty"`
 }
 
 // generate a random alphanumeric ID for the pin
@@ -70,14 +72,6 @@ func getPins() []Pin {
 }
 
 func getPinByID(pinID string) []Pin {
-
-    // spotifyembed: null,
-    //   title: null,
-    //   artist: null,
-    //   album: null,
-    //   year: null,
-    //   lyrics: null,
-    //   genre: null,
 
     var p Pin
 
@@ -137,10 +131,19 @@ func storePin(p Pin) {
     // generate a pinID
     p.PinID = generateID()
 
-    sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by)
-                        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    // get pin date added
+    // year, month, day := time.Now().Date()
+    // p.CreatedDate = time.Now()
+    // try to get a string out of p.CreatedDate
+    // dateString := p.CreatedDate.Format("January 2, 2006") // "January 2, 2006" is template for time.Time.Format()
+    // log.Println(dateString)
+    // fmt.Printf("insert time:\n%v\n%v\n%v", year, month, day)
+
+
+    sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by, created_time)
+                        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                     `
-    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist, p.CreatedBy)
+    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist, p.CreatedBy, time.Now())
     if err != nil {
         panic(err)
     }

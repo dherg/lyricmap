@@ -80,7 +80,7 @@ func createUserSession(userID string, w http.ResponseWriter, r *http.Request) er
     }
 
     // set user_id session value and save
-    log.Println("saving session with userID = %v and authenticated = true", userID)
+    log.Printf("saving session with userID = %v and authenticated = true", userID)
     session.Values["userID"] = userID
     session.Values["authenticated"] = true
     session.Save(r, w)
