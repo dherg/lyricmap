@@ -216,6 +216,34 @@ func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func getAllPins(w http.ResponseWriter, r *http.Request) {
+    var pinData []Pin
+
+    pinData = getPins()
+
+    log.Println("returning ", pinData)
+    // set header response content type to JSON
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(pinData)
+}
+
+func getSinglePin(w http.ResponseWriter, r *http.Request, pinID string) {
+    var pinData []Pin
+    pinData = getPinByID(pinID)
+    log.Println("returning ", pinData)
+    if pinData != nil {
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(pinData)
+    } else {
+        // pinID not found. return 404
+        log.Println("pinID not found. Returning 404 \"\"")
+        w.WriteHeader(http.StatusNotFound)
+        message := fmt.Sprintf("404: Pin ID '%s' not found", pinID)
+        w.Write([]byte(message))
+
+    }
+}
+
 // PinsHandler routes requests to handler functions based on the HTTP request method
 // GET: getPins
 // POST: addPins
@@ -223,8 +251,6 @@ func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
 func PinsHandler(w http.ResponseWriter, r *http.Request) {
 
     log.Println(r.Method + " " + r.URL.String())
-
-    var pinData []Pin
 
     switch r.Method {
     case "GET":
@@ -236,15 +262,11 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
 
         idParam := r.Form["id"]
         if idParam == nil {
-            pinData = getPins()
+            getAllPins(w, r)
         } else {
-            pinData = getPinByID(idParam[0])
+            getSinglePin(w, r, idParam[0])
         }
 
-        log.Println("returning ", pinData)
-        // set header response content type to JSON
-        w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(pinData)
     case "POST":
         _, isAuthenticated, err := checkRequestAuthentication(r)
         if err == nil && isAuthenticated {

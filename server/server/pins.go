@@ -81,7 +81,8 @@ func getPinByID(pinID string) []Pin {
     row := db.QueryRow(sqlStatement, pinID)
     switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, pq.Array(&p.Genres), &p.SpotifyID, &p.SpotifyArtist, &p.CreatedBy, &createdTime); err {
     case sql.ErrNoRows:
-        fmt.Println("No rows were returned!")
+        log.Printf("No rows were returned for pinID %s", pinID)
+        return(nil)
     case nil:
         // convert time format to string
         if createdTime.Valid && !(createdTime.Time.IsZero()) {
