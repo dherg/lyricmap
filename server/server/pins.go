@@ -74,17 +74,22 @@ func getPins() []Pin {
 func getPinByID(pinID string) []Pin {
 
     var p Pin
+    var createdTime pq.NullTime
 
-    sqlStatement := `SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by
+    sqlStatement := `SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by, created_time
                      FROM pins WHERE id=$1;`
     row := db.QueryRow(sqlStatement, pinID)
-    switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, pq.Array(&p.Genres), &p.SpotifyID, &p.SpotifyArtist, &p.CreatedBy); err {
+    switch err := row.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, pq.Array(&p.Genres), &p.SpotifyID, &p.SpotifyArtist, &p.CreatedBy, &createdTime); err {
     case sql.ErrNoRows:
-      fmt.Println("No rows were returned!")
+        fmt.Println("No rows were returned!")
     case nil:
-      fmt.Println(p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, p.Genres, p.SpotifyID, p.SpotifyArtist, p.CreatedBy)
+        // convert time format to string
+        if createdTime.Valid && !(createdTime.Time.IsZero()) {
+            p.CreatedDate = createdTime.Time.Format("January 2, 2006") // "January 2, 2006" is template date for time.Time.Format()
+        }
+        fmt.Println(p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, p.Genres, p.SpotifyID, p.SpotifyArtist, p.CreatedBy, createdTime)
     default:
-      panic(err)
+        panic(err)
     }
 
     return([]Pin{p})
@@ -139,11 +144,12 @@ func storePin(p Pin) {
     // log.Println(dateString)
     // fmt.Printf("insert time:\n%v\n%v\n%v", year, month, day)
 
+    creationTime := time.Now()
 
     sqlStatement := `INSERT INTO pins (id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by, created_time)
                         VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                     `
-    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist, p.CreatedBy, time.Now())
+    _, err = db.Exec(sqlStatement, p.PinID, p.Lat, p.Lng, p.Title, p.Artist, p.Lyric, p.Album, p.ReleaseDate, pq.Array(p.Genres), p.SpotifyID, p.SpotifyArtist, p.CreatedBy, creationTime)
     if err != nil {
         panic(err)
     }

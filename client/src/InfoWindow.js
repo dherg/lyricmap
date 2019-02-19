@@ -18,6 +18,7 @@ export default class InfoWindow extends Component {
       genre: null,
       createdByID: null,
       createdByName: null,
+      createdDate: null
     };
   }
 
@@ -41,7 +42,6 @@ export default class InfoWindow extends Component {
         res = res[0]
         // save info from the request
         var spotifyID = res["SpotifyID"];
-
         var spotifyembed = (
           <iframe src={"https://open.spotify.com/embed/track/" + String(spotifyID)} width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
         );
@@ -54,7 +54,8 @@ export default class InfoWindow extends Component {
           releaseDate: res["ReleaseDate"],
           lyrics: res["Lyric"],
           genre: res["Genres"],
-          createdByID: res["CreatedBy"]
+          createdByID: res["CreatedBy"],
+          createdDate: res["CreatedDate"]
         })
       });
   }
@@ -147,6 +148,9 @@ export default class InfoWindow extends Component {
         <div className="PinDetail">
           Added By: <Link id="InfoWindowUserLink" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link>
         </div>
+        <div className="PinDetail">
+          Added on: {this.state.createdDate}
+        </div> 
       </div>
     );
   }
