@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  reverseproxy:
+    image: reverseproxy:latest
+    ports:
+      - 80:80
+      - 8080:8080
+    restart: always
+
+  node:
+    depends_on:
+      - reverseproxy
+    image: nodeserver:latest
+    restart: always
+    env_file:
+      - client/env-qa.list
+
+  golang:
+    depends_on:
+      - reverseproxy
+    image: goserver:latest
+    restart: always
+    env_file:
+      - server/env-qa.list
