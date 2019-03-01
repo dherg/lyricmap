@@ -502,12 +502,12 @@ func main() {
     client = getSpotifyClient()
 
     r := mux.NewRouter()
-    r.HandleFunc("/pins", PinsHandler)
-    r.HandleFunc("/login", LoginHandler)
-    r.HandleFunc("/logout", LogoutHandler)
-    r.HandleFunc("/search", SearchHandler)
-    r.HandleFunc("/suggest-tracks", suggestTracksHandler)
-    r.HandleFunc("/users", UsersHandler)
+    r.HandleFunc("/api/pins", PinsHandler)
+    r.HandleFunc("/api/login", LoginHandler)
+    r.HandleFunc("/api/logout", LogoutHandler)
+    r.HandleFunc("/api/search", SearchHandler)
+    r.HandleFunc("/api/suggest-tracks", suggestTracksHandler)
+    r.HandleFunc("/api/users", UsersHandler)
 
     // CORS setup
     headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
