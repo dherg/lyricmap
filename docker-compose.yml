@@ -1,13 +1,14 @@
-version: '3'
+version: '3.1'
 
 services:
+
   reverseproxy:
-    image: reverseproxy:latest
+    image: nginx:latest
     ports:
       - "80"
-      - "8080"
+      - "443"
     volumes:
-      - nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - /docker/letsencrypt-docker-nginx/src/production/dh-param/dhparam-2048.pem:/etc/ssl/certs/dhparam-2048.pem
       - /docker-volumes/etc/letsencrypt/live/lyricmap.com/fullchain.pem:/etc/letsencrypt/live/lyricmap.com/fullchain.pem
       - /docker-volumes/etc/letsencrypt/live/lyricmap.com/privkey.pem:/etc/letsencrypt/live/lyricmap.com/privkey.pem
@@ -22,7 +23,7 @@ services:
     restart: always
     env_file:
       - client/env-qa.list
-   networks:
+    networks:
       - docker-network
 
   golang:
@@ -31,10 +32,11 @@ services:
     image: goserver:latest
     restart: always
     env_file:
-      - server/env-qa.lis
+      - server/env-qa.list
     networks:
       - docker-network
 
 networks:
   docker-network:
     driver: bridge
+
