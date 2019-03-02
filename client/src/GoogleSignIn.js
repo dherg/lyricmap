@@ -31,7 +31,7 @@ export default class GoogleSignIn extends Component {
     console.log('id_token: ' + id_token)
 
     // get url for environment 
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/login';
+    var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/login';
 
     // post ID token to server
     fetch(url, {

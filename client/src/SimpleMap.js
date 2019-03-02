@@ -44,7 +44,7 @@ export default class SimpleMap extends Component {
 
   getPins() {
 
-    var url = 'http://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+    var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
 
     var pinData;
 
