@@ -28,7 +28,7 @@ export function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=nu
   }
   
   // get url for environment 
-  var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+  var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
 
   fetch(url, {
     method: 'POST',
@@ -54,7 +54,7 @@ export function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=nu
 // PUT request to update display name
 export function putDisplayName(newName) {
   // get url for environment 
-  var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
+  var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
 
   fetch(url, {
     method: 'PUT',

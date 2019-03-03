@@ -26,7 +26,7 @@ export default class InfoWindow extends Component {
   fetchPinInfo(pinID) {
     console.log('clicked pin id = ' + pinID)
     // Make request
-    var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
     // const that = this;
     fetch(url + '?id=' + String(this.props.clickedPinID), {
         method: 'GET',
@@ -62,7 +62,7 @@ export default class InfoWindow extends Component {
 
   fetchCreatorDisplayName(userID) {
     // get url for environment 
-    var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
+    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
     var that = this;
     fetch(url + '?id=' + String(userID), {
         method: 'GET',

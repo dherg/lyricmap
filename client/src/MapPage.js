@@ -17,6 +17,7 @@ export default class MapPage extends Component {
     this.handleCloseAddPinWindowClick = this.handleCloseAddPinWindowClick.bind(this);
     this.handlePromptForName = this.handlePromptForName.bind(this);
     this.handleCloseNamePrompt = this.handleCloseNamePrompt.bind(this);
+    this.handleRandomClick = this.handleRandomClick.bind(this);
 
     this.state = {
       center: null,
@@ -24,7 +25,9 @@ export default class MapPage extends Component {
       mapheight: null,
       isAddingPin: false,
       showAddPinWindow: false,
-      showNamePrompt: false
+      showNamePrompt: false,
+      pinList: null,
+      randomPin: null,
     }
   }
 
@@ -104,6 +107,30 @@ export default class MapPage extends Component {
     })
   }
 
+  handlePinListUpdate(pinList) {
+    this.setState({
+      pinList: pinList,
+    });
+  }
+
+  handleRandomClick() {
+
+    console.log('handleRandomClick');
+    if (this.state.pinList === null || this.state.pinList.length === 0 ){
+      return;
+    }
+
+    // close other windows 
+    this.handleCloseNamePrompt();
+    this.handleCloseAddPinWindowClick();
+
+    // choose random pin from this.state.pinList 
+    var randomPin = this.state.pinList[Math.floor(Math.random() * this.state.pinList.length)];
+    this.setState({
+      randomPin: randomPin,
+    });
+  }
+
   render() {
 
     const addPinWindow = (
@@ -114,14 +141,26 @@ export default class MapPage extends Component {
       <NamePrompt closeNamePrompt={this.handleCloseNamePrompt}/>
     );
 
+    console.log('in MapPage');
+    console.log('this.handleRandomClick = ');
+    console.log(this.handleRandomClick);
+
     return(
       <div>
-        <Header onMapPage={true} changeMapCenter={(g) => this.changeMapCenter(g)} handleAddPinButton={this.handleAddPinButton} isAddingPin={this.state.isAddingPin} handlePromptForName={this.handlePromptForName}/>
+        <Header onMapPage={true} 
+                changeMapCenter={(g) => this.changeMapCenter(g)} 
+                handleAddPinButton={this.handleAddPinButton} 
+                isAddingPin={this.state.isAddingPin} 
+                handlePromptForName={this.handlePromptForName}
+                handleRandomClick={this.handleRandomClick}
+                pinList={this.state.pinList}/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
                 isAddingPin={this.state.isAddingPin}
-                handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}/>
+                handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}
+                handlePinListUpdate={(pinList) => this.handlePinListUpdate(pinList)}
+                randomPin={this.state.randomPin}/>
         {this.state.showAddPinWindow ? addPinWindow : null}
         {this.state.showNamePrompt ? namePrompt : null}
       </div>

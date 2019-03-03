@@ -29,7 +29,7 @@ export default class UserPage extends Component {
   // the display name, and change isLoading to false
   fetchUserDetails(userID) {
     // get url for environment 
-    var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
+    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/users';
     var that = this;
     fetch(url + '?id=' + String(userID), {
         method: 'GET',

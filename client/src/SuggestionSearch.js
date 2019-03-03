@@ -58,7 +58,7 @@ export default class SuggestionSearch extends Component {
     });
     
     // Make request
-    var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/suggest-tracks';
+    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/suggest-tracks';
     const thisRequest = this.latestRequest = fetch(url + '?q=' + String(value), {
         method: 'GET',
         credentials: 'include',

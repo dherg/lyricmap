@@ -6,6 +6,7 @@ import { Link, NavLink } from 'react-router-dom';
 import AddPinButton from './AddPinButton';
 import GoogleSignIn from './GoogleSignIn';
 import SearchBar from './SearchBar';
+import Random from './Random';
 
 // Site header bar
 export default class Header extends Component {
@@ -32,6 +33,10 @@ export default class Header extends Component {
 
   render() {
 
+    console.log('in Header');
+    console.log('this.props.handleRandomClick = ');
+    console.log(this.props.handleRandomClick);
+
     // get currently logged in user info
     const userNav = (window.globalCurrentUser.displayName == null ? "" : window.globalCurrentUser.displayName);
     var userLink = (window.globalCurrentUser.userID == null ? "user" : window.globalCurrentUser.userID);
@@ -51,7 +56,7 @@ export default class Header extends Component {
             </NavLink> 
           </div>
           <div className="Header-link">
-            <NavLink to="random">Random</NavLink> 
+            <Random handleRandomClick={this.props.handleRandomClick}/>
           </div>
           <div className="Header-link">
             <NavLink to="about">About</NavLink> 

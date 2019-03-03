@@ -38,13 +38,14 @@ export default class SimpleMap extends Component {
       this.setState({
         pinList: data,
       });
+      this.props.handlePinListUpdate(this.state.pinList);
     });
     console.log('this.state.pinList: ' + this.state.pinList);
   }
 
   getPins() {
 
-    var url = 'https://' + process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
 
     var pinData;
 
@@ -87,6 +88,13 @@ export default class SimpleMap extends Component {
   addPin(event) {
     if (this.props.isAddingPin) {
       this.props.handleAddPin(event.lat, event.lng);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+
+    if (this.props.randomPin !== prevProps.randomPin && this.props.randomPin !== null) {
+      this.handlePinClick(this.props.randomPin.PinID, this.props.randomPin.Lat, this.props.randomPin.Lng);
     }
   }
 
