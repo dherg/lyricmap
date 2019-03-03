@@ -2,7 +2,9 @@ import React, {Component} from 'react';
 
 import Header from './Header';
 import UpdateDisplayNameBox from './UpdateDisplayNameBox';
+import UserAddedPin from './UserAddedPin';
 
+import { getPins } from './App';
 import { putDisplayName } from './App';
 
 export default class UserPage extends Component {
@@ -17,13 +19,25 @@ export default class UserPage extends Component {
     if (typeof userID !== "undefined" && userID !== "") {
       console.log('got real userID. fetching display name')
       this.fetchUserDetails(userID)
+      this.fetchUserPins(userID)
     }
 
     this.state = {
-      'isLoading': true,
+      'isLoadingUserDetails': true,
       'displayName': "", // Only a valid display name when isLoading = false
       'userFound': false,
+      'userAddedPinList': null,
     };
+  }
+
+  // get the list of pins a user has created via GET to /pins?addedBy={userID}
+  fetchUserPins(userID) {
+    getPins(userID).then(data => {
+      this.setState({
+        userAddedPinList: data,
+      });
+      // this.props.handlePinListUpdate(this.state.pinList);
+    });
   }
 
   // get the user details via GET to /users endpoint, update the state with
@@ -43,7 +57,7 @@ export default class UserPage extends Component {
       .then(res => {
         if (res.status === 404) {
           this.setState({
-            'isLoading': false,
+            'isLoadingUserDetails': false,
           })
         } else if (res.status !== 200) {
           throw new Error("Not 200 response");
@@ -51,7 +65,7 @@ export default class UserPage extends Component {
           res.json().then(function(data) {
               if (data["DisplayName"] !== "") {
                 that.setState({
-                  "isLoading": false, 
+                  "isLoadingUserDetails": false, 
                   "displayName": data["DisplayName"],
                   "userFound": true,
                 })
@@ -69,7 +83,7 @@ export default class UserPage extends Component {
     var fetchedName = putDisplayName(newName);
     if (fetchedName !== null) {
       this.setState({
-        isLoading: false,
+        isLoadingUserDetails: false,
         userFound: true,
         displayName: fetchedName,
       });
@@ -81,21 +95,30 @@ export default class UserPage extends Component {
     console.log('here in ahndleuserupdate')
     if (newName !== null) {
       this.setState({
-        "isLoading": false, 
+        "isLoadingUserDetails": false, 
         "displayName": newName,
         "userFound": true,
       })
     }
   }
 
+  pinListToComponents(pinList) {
+        if (pinList === null) {
+          return;
+        } else {
+          console.log('pinList');
+          console.log(pinList);
+          return (
+              pinList.map(pin => <UserAddedPin pinID={pin.PinID} pinTitle={pin.Title} pinArtist={pin.Artist}/>)
+          );
+        }
+    }
+
 
   render() {
-    console.log('this.state:')
-    console.log(this.state)
-    console.log('window.globalCurrentUser.userID')
-    console.log(window.globalCurrentUser.userID)
+
     const name = (this.state.userFound ? this.state.displayName : "User not found!");
-    const display = (this.state.isLoading ? "Loading..." : name);
+    const display = (this.state.isLoadingUserDetails ? "Loading..." : name);
 
     // only show box to change display name if on the currently logged in user's page
     const updateDisplayNameBox = (this.props.match.params.id === window.globalCurrentUser.userID ? 
@@ -108,7 +131,9 @@ export default class UserPage extends Component {
         <div className="UserPage">
           {display}
         </div>
-        {updateDisplayNameBox}
+          {updateDisplayNameBox}
+          Pins added by this user:
+          {this.pinListToComponents(this.state.userAddedPinList)}
       </div>
     );
   }

@@ -221,10 +221,21 @@ func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func getAllPins(w http.ResponseWriter, r *http.Request, addedBy string) {
+func getAllPins(w http.ResponseWriter, r *http.Request) {
     var pinData []Pin
 
-    pinData = getPins(addedBy)
+    pinData = getPins()
+
+    log.Println("returning ", pinData)
+    // set header response content type to JSON
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(pinData)
+}
+
+func getPinsByUser(w http.ResponseWriter, r *http.Request, addedBy string) {
+    var pinData []Pin
+
+    pinData = getPinsByUserId(addedBy)
 
     log.Println("returning ", pinData)
     // set header response content type to JSON
@@ -272,10 +283,10 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
 
         if r.Form["addedBy"] != nil && len(r.Form["addedBy"]) > 0 {
             log.Printf("r.Form[\"addedBy\" = %v", r.Form["addedBy"])
-            getAllPins(w, r, r.Form["addedBy"][0])
+            getPinsByUser(w, r, r.Form["addedBy"][0])
             return
         } else {
-            getAllPins(w, r, "")
+            getAllPins(w, r)
             return
         }
 

@@ -4,6 +4,8 @@ import GoogleMapReact from 'google-map-react';
 
 import Pin from './Pin';
 
+import { getPins } from './App';
+
 const GOOGLE_KEY = process.env.REACT_APP_GOOGLE_KEY;
 
 // The map itself + pins
@@ -34,33 +36,13 @@ export default class SimpleMap extends Component {
   }
 
   componentDidMount() {
-    this.getPins().then(data => {
+    getPins().then(data => {
       this.setState({
         pinList: data,
       });
       this.props.handlePinListUpdate(this.state.pinList);
     });
     console.log('this.state.pinList: ' + this.state.pinList);
-  }
-
-  getPins() {
-
-    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
-
-    var pinData;
-
-    return fetch(url)
-      .then(function(response) {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-        }
-        return response.json();
-      })
-      .then(function(data) {
-        pinData = data;
-        console.log(pinData);
-        return data;
-      });
   }
 
   pinListToComponents(pinList) {

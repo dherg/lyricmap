@@ -17,6 +17,34 @@ window.globalCurrentUser = {
                     "displayName": null
                   };
 
+// GET list of pins with optional filters:
+//  - addedBy={userID}
+// No filters returns list of all pins
+export function getPins(addedBy=null) {
+
+  var resource = '/pins';
+  if (addedBy !== null) {
+    resource += '?addedBy=' + addedBy;
+  }
+
+  var url = process.env.REACT_APP_LYRICMAP_API_HOST + resource;
+
+  var pinData;
+
+  return fetch(url)
+    .then(function(response) {
+      if (response.status >= 400) {
+        throw new Error("Bad response from server");
+      }
+      return response.json();
+    })
+    .then(function(data) {
+      pinData = data;
+      console.log(pinData);
+      return data;
+    });
+}
+
 // POST a pin with optional metadata
 // lat, lng, title, artist, and lyric are mandatory for all pins
 // spotifyID, album, year, genre, are optional

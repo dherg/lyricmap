@@ -48,20 +48,11 @@ func generateID() string {
     return string(id)
 }
 
-func getPins(addedBy string) []Pin {
+func getPins() []Pin {
     retPins := []Pin{}
 
-    var rows *sql.Rows
-    var err error
-
-    var queryString string
-    if addedBy != "" {
-        queryString = "SELECT id, lat, lng FROM pins WHERE created_by=$1;"
-        rows, err = db.Query(queryString, addedBy)
-    } else {
-        queryString = "SELECT id, lat, lng FROM pins;"
-        rows, err = db.Query(queryString)
-    }
+    queryString := "SELECT id, lat, lng FROM pins;"
+    rows, err := db.Query(queryString)
 
     if err != nil {
         panic(err)
@@ -69,7 +60,6 @@ func getPins(addedBy string) []Pin {
     defer rows.Close()
     for rows.Next() {
 
-        log.Println("here in row")
         // create new pin to hold row data
         var p Pin
         err = rows.Scan(&p.PinID, &p.Lat, &p.Lng)
@@ -82,6 +72,35 @@ func getPins(addedBy string) []Pin {
     }
 
     return retPins
+}
+
+func getPinsByUserId(addedBy string) []Pin {
+
+    retPins := []Pin{}
+
+    queryString := "SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by, created_time FROM pins;"
+    rows, err := db.Query(queryString)
+
+    if err != nil {
+        panic(err)
+    }
+    defer rows.Close()
+    for rows.Next() {
+
+        // create new pin to hold row data
+        var p Pin
+        var createdTime pq.NullTime
+        err = rows.Scan(&p.PinID, &p.Lat, &p.Lng, &p.Title, &p.Artist, &p.Lyric, &p.Album, &p.ReleaseDate, pq.Array(&p.Genres), &p.SpotifyID, &p.SpotifyArtist, &p.CreatedBy, &createdTime)
+        if err != nil {
+            panic(err)
+        }
+
+        // add pin to return list
+        retPins = append(retPins, p)
+    }
+
+    return retPins
+
 }
 
 func getPinByID(pinID string) []Pin {
