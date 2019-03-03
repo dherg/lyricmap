@@ -78,6 +78,7 @@ func getSpotifyMetadata (p *Pin) error {
     fullTrack, err := client.GetTrack(spotify.ID(p.SpotifyID))
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching track with SpotifyID: %v\n%v", p.SpotifyID, err)
+        log.Printf("err.Error(): %v", err.Error())
         // Check if it's a token expired error. if so get new token
         // This request will fail but next should work
         if err.Error() == "oauth2: token expired and refresh token is not set" {
@@ -96,6 +97,7 @@ func getSpotifyMetadata (p *Pin) error {
     fullAlbum, err := client.GetAlbum(simpleAlbum.ID)
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching album with SpotifyID: %v\n%v", fullTrack.Album.ID, err)
+        log.Printf("err.Error(): %v", err.Error())
         // Check if it's a token expired error. if so get new token
         // This request will fail but next should work
         if err.Error() == "oauth2: token expired and refresh token is not set" {
@@ -112,6 +114,7 @@ func getSpotifyMetadata (p *Pin) error {
     fullArtist, err := client.GetArtist(simpleAlbum.Artists[0].ID)
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching artist with SpotifyID: %v\n%v", simpleAlbum.Artists[0].ID, err)
+        log.Printf("err.Error(): %v", err.Error())
         // Check if it's a token expired error. if so get new token
         // This request will fail but next should work
         if err.Error() == "oauth2: token expired and refresh token is not set" {
@@ -144,6 +147,8 @@ func suggestTracks(query string) []Pin {
     results, err := client.SearchOpt(query, spotify.SearchTypeTrack, opt)
     if err != nil {
         log.Println("Error searching Spotify track info: ", err)
+        log.Printf("err.Error(): %v", err.Error())
+
         // Check if it's a token expired error. if so get new token
         // This request will fail but next should work
         if err.Error() == "oauth2: token expired and refresh token is not set" {
