@@ -221,10 +221,10 @@ func suggestTracksHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func getAllPins(w http.ResponseWriter, r *http.Request) {
+func getAllPins(w http.ResponseWriter, r *http.Request, addedBy string) {
     var pinData []Pin
 
-    pinData = getPins()
+    pinData = getPins(addedBy)
 
     log.Println("returning ", pinData)
     // set header response content type to JSON
@@ -265,11 +265,17 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
             panic(err)
         }
 
-        idParam := r.Form["id"]
-        if idParam == nil {
-            getAllPins(w, r)
+        if r.Form["id"] != nil {
+            getSinglePin(w, r, r.Form["id"][0])
+            return
+        }
+
+        if r.Form["addedBy"] != nil {
+            getAllPins(w, r, r.Form["addedBy"][0])
+            return
         } else {
-            getSinglePin(w, r, idParam[0])
+            getAllPins(w, r, "")
+            return
         }
 
     case "POST":

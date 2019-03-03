@@ -48,15 +48,25 @@ func generateID() string {
     return string(id)
 }
 
-func getPins() []Pin {
+func getPins(addedBy string) []Pin {
     retPins := []Pin{}
 
-    rows, err := db.Query("SELECT id, lat, lng FROM pins;")
+    var queryString string
+    if addedBy != "" {
+        queryString = "SELECT id, lat, lng FROM pins WHERE created_by=$1;"
+    } else {
+        queryString = "SELECT id, lat, lng FROM pins;"
+    }
+
+    rows, err := db.Query(queryString, addedBy)
+
     if err != nil {
         panic(err)
     }
     defer rows.Close()
     for rows.Next() {
+
+        log.Println("here in row")
         // create new pin to hold row data
         var p Pin
         err = rows.Scan(&p.PinID, &p.Lat, &p.Lng)
