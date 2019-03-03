@@ -140,11 +140,7 @@ export default class MapPage extends Component {
     const namePrompt = (
       <NamePrompt closeNamePrompt={this.handleCloseNamePrompt}/>
     );
-
-    console.log('in MapPage');
-    console.log('this.handleRandomClick = ');
-    console.log(this.handleRandomClick);
-
+    
     return(
       <div>
         <Header onMapPage={true} 

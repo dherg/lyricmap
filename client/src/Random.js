@@ -9,16 +9,10 @@ export default class Random extends Component {
     }
 
     handleClick() {
-        console.log('yaya in Random');
-        console.log(this.props);
         this.props.handleRandomClick();
     }
 
     render() {
-
-        console.log('in Random');
-        console.log('this.props.handleRandomClick = ');
-        console.log(this.props.handleRandomClick);
 
         return (
             <div onClick={this.handleClick}>

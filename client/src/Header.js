@@ -24,8 +24,12 @@ export default class Header extends Component {
   updateCurrentUser(newUserID, newName) {
     window.globalCurrentUser.userID = newUserID;
     window.globalCurrentUser.displayName = newName;
+    // handle user update if passed prop (for determining logged in or not on user page)
+    if (this.props.handleUserUpdate) {
+      this.props.handleUserUpdate(newName);
+    }
     this.setState({"displayName": ""}); // set state to same thing - force rerender of displayname after it is updated in signin
-    this.props.handleUserUpdate(newName);
+
   }
 
   handlePromptForName(userID) {
@@ -33,11 +37,7 @@ export default class Header extends Component {
   }
 
   render() {
-
-    console.log('in Header');
-    console.log('this.props.handleRandomClick = ');
-    console.log(this.props.handleRandomClick);
-
+    
     // get currently logged in user info
     const userNav = (window.globalCurrentUser.displayName == null ? "" : window.globalCurrentUser.displayName);
     var userLink = (window.globalCurrentUser.userID == null ? "user" : window.globalCurrentUser.userID);

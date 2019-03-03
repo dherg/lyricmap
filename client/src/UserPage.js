@@ -78,6 +78,7 @@ export default class UserPage extends Component {
   }
 
   handleUserUpdate(newName) {
+    console.log('here in ahndleuserupdate')
     if (newName !== null) {
       this.setState({
         "isLoading": false, 
@@ -89,7 +90,10 @@ export default class UserPage extends Component {
 
 
   render() {
-  
+    console.log('this.state:')
+    console.log(this.state)
+    console.log('window.globalCurrentUser.userID')
+    console.log(window.globalCurrentUser.userID)
     const name = (this.state.userFound ? this.state.displayName : "User not found!");
     const display = (this.state.isLoading ? "Loading..." : name);
 

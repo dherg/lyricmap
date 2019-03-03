@@ -57,7 +57,6 @@ export default class SimpleMap extends Component {
         return response.json();
       })
       .then(function(data) {
-        console.log('saving pinData time: ' + (new Date()).getTime());
         pinData = data;
         console.log(pinData);
         return data;
