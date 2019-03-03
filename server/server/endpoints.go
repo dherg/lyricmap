@@ -270,7 +270,8 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        if r.Form["addedBy"] != nil {
+        if r.Form["addedBy"] != nil && len(r.Form["addedBy"]) > 0 {
+            log.Printf("r.Form[\"addedBy\" = %v", r.Form["addedBy"])
             getAllPins(w, r, r.Form["addedBy"][0])
             return
         } else {

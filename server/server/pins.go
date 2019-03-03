@@ -51,14 +51,17 @@ func generateID() string {
 func getPins(addedBy string) []Pin {
     retPins := []Pin{}
 
+    var rows *sql.Rows
+    var err error
+
     var queryString string
     if addedBy != "" {
         queryString = "SELECT id, lat, lng FROM pins WHERE created_by=$1;"
+        rows, err = db.Query(queryString, addedBy)
     } else {
         queryString = "SELECT id, lat, lng FROM pins;"
+        rows, err = db.Query(queryString)
     }
-
-    rows, err := db.Query(queryString, addedBy)
 
     if err != nil {
         panic(err)
