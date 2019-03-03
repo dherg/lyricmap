@@ -70,10 +70,12 @@ export function putDisplayName(newName) {
   .then(res => res.json())
   .then(res => {
     if (res.status === 200 && res["DisplayName"] !== "") {
-      window.globalCurrentUser.displayName = res["DisplayName"]
+      window.globalCurrentUser.displayName = res["DisplayName"];
+      return(newName);
     }
   })
   .catch(error => console.error('Error changing name:', error));
+  window.location.reload();
 }
 
 class AppRouter extends Component {
@@ -93,7 +95,6 @@ class AppRouter extends Component {
             <Switch>
               <Route path="/about" component={About} />
               <Route path="/users/:id" component={UserPage} />
-              <Route path="/users" component={UserPage} />
               <Route exact path="/" component={MapPage} />
               <Route component={NotFound} />
             </Switch>

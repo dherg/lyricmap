@@ -25,6 +25,7 @@ export default class Header extends Component {
     window.globalCurrentUser.userID = newUserID;
     window.globalCurrentUser.displayName = newName;
     this.setState({"displayName": ""}); // set state to same thing - force rerender of displayname after it is updated in signin
+    this.props.handleUserUpdate(newName);
   }
 
   handlePromptForName(userID) {

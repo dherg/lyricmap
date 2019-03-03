@@ -10,6 +10,7 @@ export default class UserPage extends Component {
   constructor(props) {
     super(props);
     this.handleUpdateDisplayName = this.handleUpdateDisplayName.bind(this);
+    this.handleUserUpdate = this.handleUserUpdate.bind(this);
 
     var userID = this.props.match.params.id;
     console.log(userID)
@@ -65,11 +66,30 @@ export default class UserPage extends Component {
 
   // PUT new display name for the currently logged in user
   handleUpdateDisplayName(newName) {
-    putDisplayName(newName);
+    var fetchedName = putDisplayName(newName);
+    if (fetchedName !== null) {
+      this.setState({
+        isLoading: false,
+        userFound: true,
+        displayName: fetchedName,
+      });
+      window.globalCurrentUser.displayName = fetchedName;
+    }
+  }
+
+  handleUserUpdate(newName) {
+    if (newName !== null) {
+      this.setState({
+        "isLoading": false, 
+        "displayName": newName,
+        "userFound": true,
+      })
+    }
   }
 
 
   render() {
+  
     const name = (this.state.userFound ? this.state.displayName : "User not found!");
     const display = (this.state.isLoading ? "Loading..." : name);
 
@@ -80,7 +100,7 @@ export default class UserPage extends Component {
 
     return (
       <div>
-        <Header />
+        <Header handleUserUpdate={this.handleUserUpdate}/>
         <div className="UserPage">
           {display}
         </div>
