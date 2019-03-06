@@ -65,7 +65,7 @@ export default class MapBox extends Component {
                    isAddingPin={this.props.isAddingPin}
                    handleAddPin={(lat, lng) => this.props.handleAddPin(lat, lng)}
                    handlePinListUpdate={(pinList) => this.props.handlePinListUpdate(pinList)}
-                   randomPin={this.props.randomPin}/>
+                   linkedPin={this.props.linkedPin}/>
       </div>
     );
   }

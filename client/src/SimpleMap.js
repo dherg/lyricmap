@@ -74,8 +74,8 @@ export default class SimpleMap extends Component {
 
   componentDidUpdate(prevProps) {
 
-    if (this.props.randomPin !== prevProps.randomPin && this.props.randomPin !== null) {
-      this.handlePinClick(this.props.randomPin.PinID, this.props.randomPin.Lat, this.props.randomPin.Lng);
+    if (this.props.linkedPin !== prevProps.linkedPin && this.props.linkedPin !== null) {
+      this.handlePinClick(this.props.linkedPin.PinID, this.props.linkedPin.Lat, this.props.linkedPin.Lng);
     }
   }
 

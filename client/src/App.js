@@ -17,6 +17,64 @@ window.globalCurrentUser = {
                     "displayName": null
                   };
 
+// fetch pin info and update state for given pinID
+export function fetchPinInfo(pinID) {
+  console.log('clicked pin id = ' + pinID)
+  // Make request
+  var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
+  // const that = this;
+  return fetch(url + '?id=' + String(pinID), {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(function(res) {
+      if (res.status == 404) {
+        return(null)
+      } else if (res.status >= 400) {
+        throw new Error("Bad response from server.");
+      }
+      return res.json();
+    }
+  )
+  .then(res => { 
+    // return null in case of 404
+    if (res == null) {
+      return null;
+    }
+    // get data for pin 0 (should only be one pin)
+    res = res[0]
+    // save info from the request
+    var spotifyID = res["SpotifyID"];
+    var spotifyembed = (
+      <iframe src={"https://open.spotify.com/embed/track/" + String(spotifyID)} width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
+    );
+
+    console.log('return: ')
+    var ret = {
+      pinID: res["PinID"],
+      lat: res["Lat"],
+      lng: res["Lng"],
+      spotifyembed: spotifyID ? spotifyembed : null,
+      title: res["Title"],
+      artist: res["Artist"],
+      album: res["Album"],
+      releaseDate: res["ReleaseDate"],
+      lyrics: res["Lyric"],
+      genre: res["Genres"],
+      createdByID: res["CreatedBy"],
+      createdDate: res["CreatedDate"]
+    };
+    console.log(ret)
+
+    return(ret);
+
+  });
+}
+
 // GET list of pins with optional filters:
 //  - addedBy={userID}
 // No filters returns list of all pins
@@ -123,6 +181,7 @@ class AppRouter extends Component {
             <Switch>
               <Route path="/about" component={About} />
               <Route path="/users/:id" component={UserPage} />
+              <Route exact path="/pins/:id" component={MapPage} />
               <Route exact path="/" component={MapPage} />
               <Route component={NotFound} />
             </Switch>

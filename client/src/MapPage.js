@@ -7,6 +7,8 @@ import Header from './Header';
 import MapBox from './MapBox';
 import NamePrompt from './NamePrompt';
 
+import { fetchPinInfo } from './App';
+
 // the header + MapBox
 export default class MapPage extends Component {
 
@@ -18,6 +20,15 @@ export default class MapPage extends Component {
     this.handlePromptForName = this.handlePromptForName.bind(this);
     this.handleCloseNamePrompt = this.handleCloseNamePrompt.bind(this);
     this.handleRandomClick = this.handleRandomClick.bind(this);
+    this.fetchPinDetails = this.fetchPinDetails.bind(this);
+
+    // check if rendered as part of /pins/:id
+    var pinID = this.props.match.params.id;
+    console.log(pinID)
+    if (typeof pinID !== "undefined" && pinID !== "") {
+      console.log('got real pinID. fetching details')
+      this.fetchPinDetails(pinID);
+    }
 
     this.state = {
       center: null,
@@ -27,8 +38,35 @@ export default class MapPage extends Component {
       showAddPinWindow: false,
       showNamePrompt: false,
       pinList: null,
-      randomPin: null,
+      linkedPin: null,
     }
+  }
+
+  fetchPinDetails(pinID) {
+    var that = this;
+    fetchPinInfo(pinID).then(function(result) {
+      // result will be null in case of 404
+      if (result == null) {
+        return
+      } else {
+        that.linkToPin(result.pinID, result.lat, result.lng);
+      }
+    });
+  }
+
+  linkToPin(pinID, pinLat, pinLng) {
+
+    // close other windows 
+    this.handleCloseNamePrompt();
+    this.handleCloseAddPinWindowClick();
+
+    this.setState({
+      linkedPin: {
+                    "PinID" : pinID, 
+                    "Lat" : pinLat, 
+                    "Lng" : pinLng
+                 }
+    });
   }
 
   setMapDimensions(mapwidth, mapheight) {
@@ -115,20 +153,14 @@ export default class MapPage extends Component {
 
   handleRandomClick() {
 
-    console.log('handleRandomClick');
     if (this.state.pinList === null || this.state.pinList.length === 0 ){
       return;
     }
 
-    // close other windows 
-    this.handleCloseNamePrompt();
-    this.handleCloseAddPinWindowClick();
-
     // choose random pin from this.state.pinList 
     var randomPin = this.state.pinList[Math.floor(Math.random() * this.state.pinList.length)];
-    this.setState({
-      randomPin: randomPin,
-    });
+
+    this.linkToPin(randomPin.PinID, randomPin.Lat, randomPin.Lng);
   }
 
   render() {
@@ -140,7 +172,7 @@ export default class MapPage extends Component {
     const namePrompt = (
       <NamePrompt closeNamePrompt={this.handleCloseNamePrompt}/>
     );
-    
+
     return(
       <div>
         <Header onMapPage={true} 
@@ -156,7 +188,7 @@ export default class MapPage extends Component {
                 isAddingPin={this.state.isAddingPin}
                 handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}
                 handlePinListUpdate={(pinList) => this.handlePinListUpdate(pinList)}
-                randomPin={this.state.randomPin}/>
+                linkedPin={this.state.linkedPin}/>
         {this.state.showAddPinWindow ? addPinWindow : null}
         {this.state.showNamePrompt ? namePrompt : null}
       </div>

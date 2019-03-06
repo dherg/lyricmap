@@ -2,6 +2,10 @@ import React, {Component} from 'react';
 
 import { Link } from 'react-router-dom';
 
+import { fetchPinInfo } from './App';
+import { postPin } from './App';
+
+
 // side panel with info about clicked pin
 export default class InfoWindow extends Component {
 
@@ -20,45 +24,7 @@ export default class InfoWindow extends Component {
       createdByName: null,
       createdDate: null
     };
-  }
-
-  // fetch pin info and update state for given pinID
-  fetchPinInfo(pinID) {
-    console.log('clicked pin id = ' + pinID)
-    // Make request
-    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
-    // const that = this;
-    fetch(url + '?id=' + String(this.props.clickedPinID), {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(res => res.json() )
-      .then(res => { 
-        // get data for pin 0 (should only be one pin)
-        res = res[0]
-        // save info from the request
-        var spotifyID = res["SpotifyID"];
-        var spotifyembed = (
-          <iframe src={"https://open.spotify.com/embed/track/" + String(spotifyID)} width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
-        );
-
-        this.setState({
-          spotifyembed: spotifyID ? spotifyembed : null,
-          title: res["Title"],
-          artist: res["Artist"],
-          album: res["Album"],
-          releaseDate: res["ReleaseDate"],
-          lyrics: res["Lyric"],
-          genre: res["Genres"],
-          createdByID: res["CreatedBy"],
-          createdDate: res["CreatedDate"]
-        })
-      });
-  }
+  }  
 
   fetchCreatorDisplayName(userID) {
     // get url for environment 
@@ -93,14 +59,13 @@ export default class InfoWindow extends Component {
   }
 
   componentDidMount() {
-    // fetch pin data
-    this.fetchPinInfo(this.props.clickedPinID);
+    fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
   }
 
   componentDidUpdate(prevProps, prevState) {
     // update all the props if pinID has changed
     if (this.props.clickedPinID !== prevProps.clickedPinID) {
-      this.fetchPinInfo(this.props.clickedPinID);
+      fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
     } else if (this.state.createdByID !== prevState.createdByID && this.state.createdByID !== null) {
       // if we've now fetched pin info, try to fetch display name
       console.log('fetching display name')
