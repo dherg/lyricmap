@@ -8,6 +8,7 @@ import (
     "io/ioutil"
     "context"
     "os"
+    "strings"
     "time"
     "database/sql"
     "math/rand"
@@ -79,10 +80,10 @@ func getSpotifyMetadata (p *Pin) error {
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching track with SpotifyID: %v\n%v", p.SpotifyID, err)
         log.Printf("err.Error(): %v", err.Error())
-        // Check if it's a token expired error. if so get new token
-        // This request will fail but next should work
-        if err.Error() == "oauth2: token expired and refresh token is not set" {
+        // Check if it's a token expired error. if so get new token and retry
+        if strings.Contains(err.Error(), "oauth2: token expired and refresh token is not set") {
             client = getSpotifyClient()
+            return getSpotifyMetadata(p)
         }
         return err
     }
@@ -98,10 +99,10 @@ func getSpotifyMetadata (p *Pin) error {
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching album with SpotifyID: %v\n%v", fullTrack.Album.ID, err)
         log.Printf("err.Error(): %v", err.Error())
-        // Check if it's a token expired error. if so get new token
-        // This request will fail but next should work
-        if err.Error() == "oauth2: token expired and refresh token is not set" {
+        // Check if it's a token expired error. if so get new token and retry
+        if strings.Contains(err.Error(), "oauth2: token expired and refresh token is not set") {
             client = getSpotifyClient()
+            return getSpotifyMetadata(p)
         }
         return err
     }
@@ -115,10 +116,10 @@ func getSpotifyMetadata (p *Pin) error {
     if err != nil {
         log.Println("getSpotifyMetadata: Error searching artist with SpotifyID: %v\n%v", simpleAlbum.Artists[0].ID, err)
         log.Printf("err.Error(): %v", err.Error())
-        // Check if it's a token expired error. if so get new token
-        // This request will fail but next should work
-        if err.Error() == "oauth2: token expired and refresh token is not set" {
+        // Check if it's a token expired error. if so get new token and retry
+        if strings.Contains(err.Error(), "oauth2: token expired and refresh token is not set") {
             client = getSpotifyClient()
+            return getSpotifyMetadata(p)
         }
         return err
     }
@@ -149,10 +150,10 @@ func suggestTracks(query string) []Pin {
         log.Println("Error searching Spotify track info: ", err)
         log.Printf("err.Error(): %v", err.Error())
 
-        // Check if it's a token expired error. if so get new token
-        // This request will fail but next should work
-        if err.Error() == "oauth2: token expired and refresh token is not set" {
+        // Check if it's a token expired error. if so get new token and retry
+        if strings.Contains(err.Error(), "oauth2: token expired and refresh token is not set") {
             client = getSpotifyClient()
+            return suggestTracks(query)
         }
         return nil
     }
