@@ -367,8 +367,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
     // Write display name in response
     displayName, err := getUserDisplayName(userID)
-    if err != nil {
+    if err == sql.ErrNoRows {
+        log.Printf("no user found for userID %v even though should have been registered!", userID)
+        http.Error(w, "Login can't be completed at this time", http.StatusInternalServerError)
         panic(err)
+        return
     }
     // set header response content type to JSON
     w.Header().Set("Content-Type", "application/json")

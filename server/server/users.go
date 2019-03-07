@@ -129,16 +129,20 @@ func getUserDisplayName(userID string) (string, error) {
 
     var displayName sql.NullString
     row := db.QueryRow(sqlStatement, userID)
-    err := row.Scan(&displayName)
-    if err != nil {
-        panic(err)
-    }
-    if displayName.Valid {
-        log.Println("display name: ", displayName.String)
+    switch err := row.Scan(&displayName); err {
+    case sql.ErrNoRows:
+        log.Printf("No rows were returned for user ID %s", userID)
+        return "", err
+    case nil:
+        if displayName.Valid {
+            log.Println("display name: ", displayName.String)
         return displayName.String, nil
-    } else {
-        log.Println("userID not found")
-        return "", nil
+        } else {
+            log.Println("userID not found")
+            return "", nil
+        }
+    default:
+        panic(err)
     }
 
 }

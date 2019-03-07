@@ -78,8 +78,8 @@ func getPinsByUserId(addedBy string) []Pin {
 
     retPins := []Pin{}
 
-    queryString := "SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by, created_time FROM pins;"
-    rows, err := db.Query(queryString)
+    queryString := "SELECT id, lat, lng, title, artist, lyric, album, release_date, genres, spotify_id, spotify_artist, created_by, created_time FROM pins WHERE created_by=$1;"
+    rows, err := db.Query(queryString, addedBy)
 
     if err != nil {
         panic(err)
