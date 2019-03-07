@@ -12,7 +12,14 @@ export default class UserPage extends Component {
   constructor(props) {
     super(props);
     this.handleUpdateDisplayName = this.handleUpdateDisplayName.bind(this);
-    this.handleUserUpdate = this.handleUserUpdate.bind(this);
+    // this.handleUserUpdate = this.handleUserUpdate.bind(this);
+
+    this.state = {
+      'isLoadingUserDetails': true,
+      'displayName': "", // Only a valid display name when isLoading = false
+      'userFound': false,
+      'userAddedPinList': null,
+    };
 
     var userID = this.props.match.params.id;
     console.log(userID)
@@ -22,12 +29,6 @@ export default class UserPage extends Component {
       this.fetchUserPins(userID)
     }
 
-    this.state = {
-      'isLoadingUserDetails': true,
-      'displayName': "", // Only a valid display name when isLoading = false
-      'userFound': false,
-      'userAddedPinList': null,
-    };
   }
 
   // get the list of pins a user has created via GET to /pins?addedBy={userID}
@@ -36,7 +37,6 @@ export default class UserPage extends Component {
       this.setState({
         userAddedPinList: data,
       });
-      // this.props.handlePinListUpdate(this.state.pinList);
     });
   }
 
@@ -58,7 +58,10 @@ export default class UserPage extends Component {
         if (res.status === 404) {
           this.setState({
             'isLoadingUserDetails': false,
-          })
+            'displayName': "",
+            'userFound': false,
+            'userAddedPinList': null,
+          });
         } else if (res.status !== 200) {
           throw new Error("Not 200 response");
         } else {
@@ -91,26 +94,30 @@ export default class UserPage extends Component {
     }
   }
 
-  handleUserUpdate(newName) {
-    console.log('here in ahndleuserupdate')
-    if (newName !== null) {
-      this.setState({
-        "isLoadingUserDetails": false, 
-        "displayName": newName,
-        "userFound": true,
-      })
-    }
-  }
+  // handleUserUpdate(newName) {
+  //   if (newName !== null) {
+  //     this.setState({
+  //       "isLoadingUserDetails": false, 
+  //       "displayName": newName,
+  //       "userFound": true,
+  //     })
+  //   }
+  // }
 
   pinListToComponents(pinList) {
         if (pinList === null) {
           return;
         } else {
-          console.log('pinList');
-          console.log(pinList);
-          return (
-              pinList.map(pin => <UserAddedPin pinID={pin.PinID} pinTitle={pin.Title} pinArtist={pin.Artist}/>)
-          );
+
+          // convert list of pins to useraddedpin components with passed in props
+          var pinArray = [];
+          var i;
+          for (i = 0; i < pinList.length; i++) {
+            var pin = pinList[i];
+            var newComponent = <UserAddedPin index={i+1} key={pin.PinID} pinID={pin.PinID} pinTitle={pin.Title} pinArtist={pin.Artist}/>
+            pinArray.push(newComponent)
+          }
+          return(pinArray);
         }
     }
 
@@ -125,15 +132,21 @@ export default class UserPage extends Component {
                                   <UpdateDisplayNameBox updateDisplayName={this.handleUpdateDisplayName}/> :
                                   null);
 
+    console.log('name, display', name, display);
+
     return (
       <div>
-        <Header handleUserUpdate={this.handleUserUpdate}/>
-        <div className="UserPage">
-          {display}
-        </div>
+        <Header/>
+        <div id="User-Page">
+          <div id="User-Display-Name">
+            {display}
+          </div>
           {updateDisplayNameBox}
-          Pins added by this user:
-          {this.pinListToComponents(this.state.userAddedPinList)}
+          {this.state.userFound ? this.state.displayName + "'s pins" : null}
+          <div id="User-Added-Pin-List">
+            {this.pinListToComponents(this.state.userAddedPinList)}
+          </div>
+        </div>
       </div>
     );
   }

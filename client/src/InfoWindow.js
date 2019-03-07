@@ -3,8 +3,6 @@ import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 
 import { fetchPinInfo } from './App';
-import { postPin } from './App';
-
 
 // side panel with info about clicked pin
 export default class InfoWindow extends Component {

@@ -9,14 +9,14 @@ export default class UserAddedPin extends Component {
         super(props);
     }
 
-
     render() {
 
         return(
-            <div className="Header-link">
-                <Link to={"/pins/" + this.props.pinID}>
-                    ID: {this.props.pinID} Title: {this.props.pinTitle} Artist: {this.props.pinArtist}
-                </Link> 
+            <div className="User-Added-Pin">
+                <a href={"/pins/" + this.props.pinID}>
+                    {this.props.index}
+                    {this.props.pinTitle} - {this.props.pinArtist}
+                </a>
             </div>
         )
     }
