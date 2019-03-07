@@ -37,7 +37,7 @@ export default class Header extends Component {
   }
 
   render() {
-    
+
     // get currently logged in user info
     const userNav = (window.globalCurrentUser.displayName == null ? "" : window.globalCurrentUser.displayName);
     var userLink = (window.globalCurrentUser.userID == null ? "user" : window.globalCurrentUser.userID);
@@ -52,7 +52,7 @@ export default class Header extends Component {
             <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser} handlePromptForName={this.handlePromptForName}/>
           </div>
           <div className="Header-link">
-            <NavLink to={"users/" + window.globalCurrentUser.userID}>
+            <NavLink to={"/users/" + window.globalCurrentUser.userID}>
                {userNav}
             </NavLink> 
           </div>
