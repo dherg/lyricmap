@@ -22,13 +22,25 @@ export default class UserPage extends Component {
     };
 
     var userID = this.props.match.params.id;
-    console.log(userID)
+    console.log('USERID', userID)
     if (typeof userID !== "undefined" && userID !== "") {
       console.log('got real userID. fetching display name')
       this.fetchUserDetails(userID)
       this.fetchUserPins(userID)
     }
 
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      var userID = this.props.match.params.id;
+      console.log('USERID', userID)
+      if (typeof userID !== "undefined" && userID !== "") {
+        console.log('got real userID. fetching display name')
+        this.fetchUserDetails(userID)
+        this.fetchUserPins(userID)
+      }
+    }
   }
 
   // get the list of pins a user has created via GET to /pins?addedBy={userID}
@@ -93,16 +105,6 @@ export default class UserPage extends Component {
       window.globalCurrentUser.displayName = fetchedName;
     }
   }
-
-  // handleUserUpdate(newName) {
-  //   if (newName !== null) {
-  //     this.setState({
-  //       "isLoadingUserDetails": false, 
-  //       "displayName": newName,
-  //       "userFound": true,
-  //     })
-  //   }
-  // }
 
   pinListToComponents(pinList) {
         if (pinList === null) {
