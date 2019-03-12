@@ -78,7 +78,7 @@ export default class InfoWindow extends Component {
 
     console.log(this.state.genre);
 
-    const userLink = "users/" + String(this.state.createdByID)
+    const userLink = "/users/" + String(this.state.createdByID)
 
     return (
       <div id='InfoWindow'>

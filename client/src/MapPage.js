@@ -22,14 +22,6 @@ export default class MapPage extends Component {
     this.handleRandomClick = this.handleRandomClick.bind(this);
     this.fetchPinDetails = this.fetchPinDetails.bind(this);
 
-    // check if rendered as part of /pins/:id
-    var pinID = this.props.match.params.id;
-    console.log(pinID)
-    if (typeof pinID !== "undefined" && pinID !== "") {
-      console.log('got real pinID. fetching details')
-      this.fetchPinDetails(pinID);
-    }
-
     this.state = {
       center: null,
       mapwidth: null,
@@ -39,6 +31,36 @@ export default class MapPage extends Component {
       showNamePrompt: false,
       pinList: null,
       linkedPin: null,
+    }
+
+    // check if rendered as part of `/pins/:id`
+    var pinID = this.props.match.params.id;
+    console.log('pinID, ', pinID);
+    console.log('this.props');
+    console.log(this.props);
+    if (typeof pinID !== "undefined" && pinID !== "") {
+      console.log('got real pinID. fetching details')
+      this.fetchPinDetails(pinID);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+
+    // check if routed to as root
+    var path = this.props.location.pathname;
+    if (prevProps.match.path !== path && path === "/") {
+      console.log('reset to root')
+      this.setState({
+        linkedPin: null,
+      })
+    } else {
+      // check if routed to as /pins/{pinID}
+      var pinID = this.props.match.params.id;
+      console.log('pinID, ', pinID);
+      if (prevProps.match.params.id !== pinID && typeof pinID !== "undefined" && pinID != "") {
+        console.log('component updated with real pinID. fetching details')
+        this.fetchPinDetails(pinID);
+      }
     }
   }
 

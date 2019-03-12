@@ -86,7 +86,7 @@ export default class Header extends Component {
     return (
       <div className="App-header">
         <div className="Logo-box">
-          <Link to="" className="Logo-box">
+          <Link to="/" className="Logo-box">
             <div>
               <img src={logo} className="App-logo" alt="logo" />
             </div>

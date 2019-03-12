@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import { Link } from 'react-router-dom';
+
 export default class Pin extends Component {
   static propTypes = {
     pinID: PropTypes.string,
@@ -25,11 +27,12 @@ export default class Pin extends Component {
 
   render() {
     return (
-
+      <Link to={`/pins/${this.props.pinID}`}>
         <div className="Pin-container">
             <div className="Pin-body" onClick={this.onClick}>
             </div>
         </div>
+      </Link>
 
     );
   }

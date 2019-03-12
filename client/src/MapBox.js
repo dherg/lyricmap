@@ -39,12 +39,16 @@ export default class MapBox extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.isAddingPin !== prevProps.isAddingPin && this.props.isAddingPin === true) {
+    if (this.props.isAddingPin !== prevProps.isAddingPin && this.props.isAddingPin) {
       this.setState({
         showInfoWindow: false,
       });
+    } else if (this.props.linkedPin !== prevProps.linkedPin && this.props.linkedPin === null) {
+      this.handleCloseInfoWindowClick();
     }
   }
+
+
 
   render() {
 
@@ -57,7 +61,7 @@ export default class MapBox extends Component {
       <div id="MapBoxWithInfoWindow"
            ref={ (divElement) => {this.divElement = divElement}}
       >
-        {this.state.showInfoWindow ? infoWindow : null}
+        {this.props.linkedPin ? infoWindow : null}
         <SimpleMap onPinClick={this.handlePinClick} 
                    center={this.props.center}
                    zoom={this.props.zoom}
