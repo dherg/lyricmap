@@ -87,9 +87,6 @@ export default class InfoWindow extends Component {
         <div id='PinLyrics'>
           {this.state.lyrics}
         </div>
-        <div id='SpotifyEmbed'>
-          {this.state.spotifyembed}
-        </div>
         <div id='PinTitle'>
           {this.state.title}
         </div>
@@ -114,6 +111,9 @@ export default class InfoWindow extends Component {
         <div className="PinDetail">
           Added on: {this.state.createdDate}
         </div> 
+        <div id='SpotifyEmbed'>
+          {this.state.spotifyembed}
+        </div>
       </div>
     );
   }

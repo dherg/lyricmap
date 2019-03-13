@@ -21,8 +21,7 @@ export default class UserPage extends Component {
       'userAddedPinList': null,
     };
 
-    var userID = this.props.match.params.id;
-    console.log('USERID', userID)
+    var userID = this.props.userID;
     if (typeof userID !== "undefined" && userID !== "") {
       console.log('got real userID. fetching display name')
       this.fetchUserDetails(userID)
@@ -32,9 +31,8 @@ export default class UserPage extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.match.params.id !== this.props.match.params.id) {
-      var userID = this.props.match.params.id;
-      console.log('USERID', userID)
+    if (prevProps.userID !== this.props.userID) {
+      var userID = this.props.userID;
       if (typeof userID !== "undefined" && userID !== "") {
         console.log('got real userID. fetching display name')
         this.fetchUserDetails(userID)
@@ -130,7 +128,7 @@ export default class UserPage extends Component {
     const display = (this.state.isLoadingUserDetails ? "Loading..." : name);
 
     // only show box to change display name if on the currently logged in user's page
-    const updateDisplayNameBox = (this.props.match.params.id === window.globalCurrentUser.userID ? 
+    const updateDisplayNameBox = (this.props.userID === window.globalCurrentUser.userID ? 
                                   <UpdateDisplayNameBox updateDisplayName={this.handleUpdateDisplayName}/> :
                                   null);
 
@@ -138,15 +136,16 @@ export default class UserPage extends Component {
 
     return (
       <div>
-        <Header/>
         <div id="User-Page">
           <div id="User-Display-Name">
             {display}
           </div>
           {updateDisplayNameBox}
-          {this.state.userFound ? this.state.displayName + "'s pins" : null}
-          <div id="User-Added-Pin-List">
-            {this.pinListToComponents(this.state.userAddedPinList)}
+          <div id="User-Added-Pin-Display">
+            {this.state.userFound ? this.state.displayName + "'s pins" : null}
+            <div id="User-Added-Pin-List">
+              {this.pinListToComponents(this.state.userAddedPinList)}
+            </div>
           </div>
         </div>
       </div>

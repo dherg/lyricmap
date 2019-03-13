@@ -73,13 +73,9 @@ export default class SimpleMap extends Component {
   }
 
   componentDidUpdate(prevProps) {
-
     if (this.props.linkedPin !== prevProps.linkedPin && this.props.linkedPin !== null) {
       this.handlePinClick(this.props.linkedPin.PinID, this.props.linkedPin.Lat, this.props.linkedPin.Lng);
     } 
-    // else if (this.props.linkedPin !== prevProps.linkedPin && this.props.linkedPin == null) {
-    //   this.props.closeInfoWindow();
-    // }
   }
 
   render() {

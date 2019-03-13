@@ -18,10 +18,7 @@
   height: 10vh;
   padding: 1vh;
   color: white;
-  /*text-align: left;*/
-
   display: flex;
-  /*justify-content: space-between;*/
 }
 
 .App-title {
@@ -49,17 +46,9 @@
 
 /* Location search box */
 #floating-panel {
-  /*position: absolute;*/
-  /*top: 10px;*/
-  /*left: 25%;*/
   z-index: 5;
-  /*background-color: black;*/
-  /*padding: 5px;*/
-  /*border: 1px solid #999;*/
   text-align: center;
   font-family: 'Roboto','sans-serif';
-  /*line-height: 30px;*/
-  /*padding-left: 10px;*/
 }
 
 .submit {
@@ -82,8 +71,6 @@
 
 div > h3 {
   vertical-align: bottom;
-  /*display: flex;
-  align-items: flex-end;*/
 }
 
 #InfoWindowUserLink {
@@ -128,10 +115,7 @@ div > h3 {
 }
 
 #AddPinLyricForm {
-  /*display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;*/
-  /*display: block;*/
+
 }
 
 #AddPinLyricTextArea {
@@ -174,7 +158,6 @@ div > h3 {
 
 .react-autosuggest__suggestions-container {
   position: relative;
-  /*padding: 10px 20px;*/
   width: 100%;
   display: none;
   text-align: center;
@@ -183,10 +166,6 @@ div > h3 {
 .react-autosuggest__suggestions-container--open {
   display: block;
   position: relative;
-  /*top: 51px;
-  width: 280px;*/
-  /*width: 100%;*/
-  /*padding: 10px 20px;*/
   border: 1px solid #aaa;
   background-color: #fff;
   font-family: Helvetica, sans-serif;
@@ -207,7 +186,6 @@ div > h3 {
   cursor: pointer;
   padding: 10px 20px;
   color: black;
-  /*height: 20px*/
   height: 64px;
 }
 
@@ -262,8 +240,6 @@ div > h3 {
 /* Pin css based on https://codepen.io/ptzld/pen/adqLxp */
 
 .Pin-container {
-  /*width: 100vw;*/
-  /*height: 100vh;*/
   position: absolute;
   left: -10px;
   top: -20px;
@@ -344,13 +320,39 @@ div > h3 {
 
 }
 
-#UserPage {
-  background-color: black;
+#User-Page {
+
 }
 
 .User-Added-Pin > a {
   color: black;
   text-decoration: none;
+}
+.User-Added-Pin > a:hover {
+  color: gray;
+}
+
+#User-Display-Name {
+  margin: auto;
+  text-align: center;
+}
+
+#User-Added-Pin-Display {
+  margin: auto;
+  text-align: center;
+  left: 20vw;
+  right: 20vw;
+  background-color: #c4c2b8;
+  width: 50%
+}
+
+#User-Added-Pin-List {
+  text-align: left;
+  
+}
+
+html {
+  background-color: #edebde;
 }
 
 @keyframes App-logo-spin {

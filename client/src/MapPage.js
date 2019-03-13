@@ -6,6 +6,7 @@ import AddPinWindow from './AddPinWindow';
 import Header from './Header';
 import MapBox from './MapBox';
 import NamePrompt from './NamePrompt';
+import UserPage from './UserPage';
 
 import { fetchPinInfo } from './App';
 
@@ -31,36 +32,57 @@ export default class MapPage extends Component {
       showNamePrompt: false,
       pinList: null,
       linkedPin: null,
+      linkedUser: null,
     }
 
-    // check if rendered as part of `/pins/:id`
-    var pinID = this.props.match.params.id;
-    console.log('pinID, ', pinID);
-    console.log('this.props');
-    console.log(this.props);
-    if (typeof pinID !== "undefined" && pinID !== "") {
+    // check if rendered as part of `/users/:id`
+    var path = this.props.match.path;
+    if (path === "/pins/:id" && this.props.match.params.id !== "") {
       console.log('got real pinID. fetching details')
-      this.fetchPinDetails(pinID);
+      this.fetchPinDetails(this.props.match.params.id);
+    } else if (path === "/users/:id" && this.props.match.params.id !== "") {
+      console.log('got real userID')
+      this.state.linkedUser = this.props.match.params.id;
     }
+
   }
 
   componentDidUpdate(prevProps) {
 
-    // check if routed to as root
-    var path = this.props.location.pathname;
-    if (prevProps.match.path !== path && path === "/") {
-      console.log('reset to root')
-      this.setState({
-        linkedPin: null,
-      })
-    } else {
-      // check if routed to as /pins/{pinID}
-      var pinID = this.props.match.params.id;
-      console.log('pinID, ', pinID);
-      if (prevProps.match.params.id !== pinID && typeof pinID !== "undefined" && pinID != "") {
-        console.log('component updated with real pinID. fetching details')
-        this.fetchPinDetails(pinID);
-      }
+    var path = this.props.match.path;
+    if (prevProps.match.path === path && prevProps.match.params.id == this.props.match.params.id) {
+      return;
+    }
+
+    switch (path) {
+      case "/":
+        console.log('reset to root')
+        this.setState({
+          linkedPin: null,
+          linkedUser: null
+        })
+        break;
+      case "/pins/:id":
+        var pinID = this.props.match.params.id;
+        console.log('pinID, ', pinID);
+        if (typeof pinID !== "undefined" && pinID != "") {
+          console.log('component updated with real pinID. fetching details')
+          this.setState({
+            linkedUser: null,
+          })
+          this.fetchPinDetails(pinID);
+        }
+        break;
+      case "/users/:id":
+        var userID = this.props.match.params.id;
+        console.log('userID, ', userID);
+        if (typeof userID !== "undefined" && userID != "") {
+          console.log('Real pinID. fetching details')
+          this.setState({
+            linkedPin: null,
+            linkedUser: userID,
+          })
+        }
     }
   }
 
@@ -195,7 +217,7 @@ export default class MapPage extends Component {
       <NamePrompt closeNamePrompt={this.handleCloseNamePrompt}/>
     );
 
-    return(
+    const mapPage = (
       <div>
         <Header onMapPage={true} 
                 changeMapCenter={(g) => this.changeMapCenter(g)} 
@@ -215,5 +237,19 @@ export default class MapPage extends Component {
         {this.state.showNamePrompt ? namePrompt : null}
       </div>
     );
+
+    const userPage = (
+      <div>
+        <Header />
+        <UserPage userID={this.state.linkedUser}/>
+      </div>
+    );
+
+    if (this.state.linkedUser !== null) {
+      return(userPage)
+    } else {
+      return mapPage
+    }
+
   }
 }
