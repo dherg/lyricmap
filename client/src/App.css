@@ -7,15 +7,9 @@
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 10vh;
-  float: left;
-}
-
 .App-header {
   background-color: #222;
-  height: 10vh;
+  height: 8vh;
   padding: 1vh;
   color: white;
   display: flex;
@@ -73,13 +67,24 @@
   font-size: large;
 }
 
-.Logo-box {
+#Logo-box {
   display: flex;
+  position: relative;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: flex-start;
   color: white;
   text-decoration: none;
+  width: 30%;
+  font-size: 7vh;
+}
+
+#Logo-box > a > div {
+  position: absolute;
+  color: white;
+  text-decoration: none;
+  width: 100%;
+  bottom: 0px;
 }
 
 #Sign-In-Box {
@@ -92,7 +97,7 @@
 }
 
 .Sign-In-Box-Element {
-  padding: 2px;
+  padding-left: 2%;
   color: white;
   text-decoration: none;
 }
