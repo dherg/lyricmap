@@ -29,12 +29,25 @@
   background-color: white;
 }
 
-.Header-link-box {
+#Header-Nonlogo {
+  height: 100%;
+  width: 100%;
   position: relative;
+}
+
+.Header-link-box {
+  position: absolute;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: flex-end; /* vertical positioning of flex items in div */
-  width: 100vw;
+  /*width: 100vw;*/
+  width: 100%;
+  bottom: 0;
+}
+
+.Header-link-box > div {
+  padding-left: 2%;
+  font-weight: bold;
 }
 
 /* Links in header box */
@@ -67,6 +80,27 @@
   justify-content: flex-start;
   color: white;
   text-decoration: none;
+}
+
+#Sign-In-Box {
+  position: absolute;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end; /* vertical positioning of flex items in div */
+  width: 100%;
+  top: 0;
+}
+
+.Sign-In-Box-Element {
+  padding: 2px;
+  color: white;
+  text-decoration: none;
+}
+
+.Sign-In-Box-Element > a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 div > h3 {

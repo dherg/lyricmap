@@ -24,10 +24,6 @@ export default class Header extends Component {
   updateCurrentUser(newUserID, newName) {
     window.globalCurrentUser.userID = newUserID;
     window.globalCurrentUser.displayName = newName;
-    // handle user update if passed prop (for determining logged in or not on user page)
-    // if (this.props.handleUserUpdate) {
-    //   this.props.handleUserUpdate(newName);
-    // }
     this.setState({"displayName": ""}); // set state to same thing - force rerender of displayname after it is updated in signin
   }
 
@@ -48,14 +44,6 @@ export default class Header extends Component {
       headerBox = (
         <div className="Header-link-box">
           <div className="Header-link">
-            <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser} handlePromptForName={this.handlePromptForName}/>
-          </div>
-          <div className="Header-link">
-            <NavLink to={"/users/" + window.globalCurrentUser.userID}>
-               {userNav}
-            </NavLink> 
-          </div>
-          <div className="Header-link">
             <Random handleRandomClick={this.props.handleRandomClick}/>
           </div>
           <div className="Header-link">
@@ -68,14 +56,6 @@ export default class Header extends Component {
     } else {
       headerBox = (
         <div className="Header-link-box">
-          <div className="Header-link">
-            <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser}/>
-          </div>
-          <div className="Header-link">
-            <NavLink to={userLink}>
-               {userNav}
-            </NavLink> 
-          </div>
           <div className="Header-link">
             <NavLink to="about">About</NavLink> 
           </div>
@@ -95,7 +75,19 @@ export default class Header extends Component {
             </div>
           </Link>
         </div>
-        {headerBox}
+        <div id="Header-Nonlogo">
+          <div id="Sign-In-Box">
+            <div className="Sign-In-Box-Element">
+              <NavLink to={"/users/" + window.globalCurrentUser.userID}>
+                 {userNav}
+              </NavLink> 
+            </div>
+            <div className="Sign-In-Box-Element">
+              <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser} handlePromptForName={this.handlePromptForName}/>
+            </div>
+          </div>
+          {headerBox}
+        </div>
       </div>
     ); // close return
   } // close render()
