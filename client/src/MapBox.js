@@ -61,7 +61,7 @@ export default class MapBox extends Component {
       <div id="MapBoxWithInfoWindow"
            ref={ (divElement) => {this.divElement = divElement}}
       >
-        {this.props.linkedPin ? infoWindow : null}
+        {this.state.showInfoWindow ? infoWindow : null}
         <SimpleMap onPinClick={this.handlePinClick} 
                    center={this.props.center}
                    zoom={this.props.zoom}
