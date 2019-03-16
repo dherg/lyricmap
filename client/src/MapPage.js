@@ -59,7 +59,8 @@ export default class MapPage extends Component {
         console.log('reset to root')
         this.setState({
           linkedPin: null,
-          linkedUser: null
+          linkedUser: null,
+          isAddingPin: false
         })
         break;
       case "/pins/:id":
@@ -69,6 +70,7 @@ export default class MapPage extends Component {
           console.log('component updated with real pinID. fetching details')
           this.setState({
             linkedUser: null,
+            isAddingPin: false,
           })
           this.fetchPinDetails(pinID);
         }
@@ -81,6 +83,7 @@ export default class MapPage extends Component {
           this.setState({
             linkedPin: null,
             linkedUser: userID,
+            isAddingPin: false,
           })
         }
     }
