@@ -14,7 +14,7 @@ export default class AddPinButton extends Component {
 
     const button = (
       this.props.isAddingPin ? 
-      <input id="add-pin-button" type="button" value="Click on map to add pin..." disabled /> : 
+      <input id="add-pin-button" type="button" value="Click on map to add Pin, or click here to cancel " onClick={this.props.handleAddPinButton} /> : 
       <input id="add-pin-button" type="button" value="Add a Pin" onClick={this.props.handleAddPinButton} />
     );
     return(
