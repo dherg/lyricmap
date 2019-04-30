@@ -32,7 +32,7 @@
 .Header-link-box {
   position: absolute;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-around;
   align-items: flex-end; /* vertical positioning of flex items in div */
   /*width: 100vw;*/
   width: 100%;
