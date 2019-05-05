@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import { Link } from 'react-router-dom';
 
+import ListGroup from 'react-bootstrap/ListGroup'
 
 export default class UserAddedPin extends Component {
 
@@ -12,12 +13,10 @@ export default class UserAddedPin extends Component {
     render() {
 
         return(
-            <div className="User-Added-Pin">
-                <a href={"/pins/" + this.props.pinID}>
+                <ListGroup.Item action href={"/pins/" + this.props.pinID}>
                     {this.props.index}
                     {this.props.pinTitle} - {this.props.pinArtist}
-                </a>
-            </div>
+                </ListGroup.Item>
         )
     }
 

@@ -57,7 +57,7 @@ export default class Header extends Component {
       headerBox = (
         <div className="Header-link-box">
           <div className="Header-link">
-            <NavLink to="about">About</NavLink> 
+            <NavLink to="/about">About</NavLink> 
           </div>
         </div>
       ); // end headerBox assignment

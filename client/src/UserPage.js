@@ -1,24 +1,31 @@
 import React, {Component} from 'react';
 
 import Header from './Header';
-import UpdateDisplayNameBox from './UpdateDisplayNameBox';
+import UpdateDisplayNameModal from './UpdateDisplayNameModal';
 import UserAddedPin from './UserAddedPin';
 
 import { getPins } from './App';
 import { putDisplayName } from './App';
+
+import { Link, NavLink } from 'react-router-dom';
+
+import ListGroup from 'react-bootstrap/ListGroup'
+import Modal from 'react-bootstrap/Modal'
 
 export default class UserPage extends Component {
 
   constructor(props) {
     super(props);
     this.handleUpdateDisplayName = this.handleUpdateDisplayName.bind(this);
-    // this.handleUserUpdate = this.handleUserUpdate.bind(this);
+    this.handleShowDisplayNameChangeModal = this.handleShowDisplayNameChangeModal.bind(this);
+    this.handleHideDisplayNameChangeModal = this.handleHideDisplayNameChangeModal.bind(this);
 
     this.state = {
       'isLoadingUserDetails': true,
       'displayName': "", // Only a valid display name when isLoading = false
       'userFound': false,
       'userAddedPinList': null,
+      'showChangeDisplayNameModal': false,
     };
 
     var userID = this.props.userID;
@@ -104,6 +111,18 @@ export default class UserPage extends Component {
     }
   }
 
+  handleShowDisplayNameChangeModal() {
+    this.setState({
+      showChangeDisplayNameModal: true
+    })
+  }
+
+  handleHideDisplayNameChangeModal() {
+    this.setState({
+      showChangeDisplayNameModal: false
+    })
+  }
+
   pinListToComponents(pinList) {
         if (pinList === null) {
           return;
@@ -127,27 +146,34 @@ export default class UserPage extends Component {
     const name = (this.state.userFound ? this.state.displayName : "User not found!");
     const display = (this.state.isLoadingUserDetails ? "Loading..." : name);
 
-    // only show box to change display name if on the currently logged in user's page
-    const updateDisplayNameBox = (this.props.userID === window.globalCurrentUser.userID ? 
-                                  <UpdateDisplayNameBox updateDisplayName={this.handleUpdateDisplayName}/> :
-                                  null);
-
+    // only show option to change display name if on the currently logged in user's page
+    const updateDisplayNameLink = (this.props.userID === window.globalCurrentUser.userID ? 
+                                  <div onClick={this.handleShowDisplayNameChangeModal}> (Change Name) </div> :
+                                  null
+                                  );
     console.log('name, display', name, display);
 
     return (
       <div>
         <div id="User-Page">
           <div id="User-Display-Name">
-            {display}
-          </div>
-          {updateDisplayNameBox}
-          <div id="User-Added-Pin-Display">
-            {this.state.userFound ? this.state.displayName + "'s pins" : null}
-            <div id="User-Added-Pin-List">
-              {this.pinListToComponents(this.state.userAddedPinList)}
+            <div id="Display-Name">
+              {display}
+            </div>
+            <div id="Display-Name-Update-Link">
+              {updateDisplayNameLink}
             </div>
           </div>
+          <div id="User-Added-Pin-Display">
+            {this.state.userFound ? this.state.displayName + "'s pins" : null}
+            <ListGroup>
+              {this.pinListToComponents(this.state.userAddedPinList)}
+            </ListGroup>
+          </div>
         </div>
+        <UpdateDisplayNameModal show={this.state.showChangeDisplayNameModal} 
+                                handleHideModal={this.handleHideDisplayNameChangeModal}
+                                updateDisplayName={this.handleUpdateDisplayName}/>
       </div>
     );
   }

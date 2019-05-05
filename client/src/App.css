@@ -371,11 +371,6 @@ div > h3 {
   color: gray;
 }
 
-#User-Display-Name {
-  margin: auto;
-  text-align: center;
-}
-
 #User-Added-Pin-Display {
   margin: auto;
   text-align: center;
@@ -383,6 +378,35 @@ div > h3 {
   right: 20vw;
   background-color: #c4c2b8;
   width: 50%
+}
+
+#User-Display-Name {
+  text-align: center;
+  justify-content: center;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+#Display-Name {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: xx-large;
+  display: inline-block;
+  width: content;
+}
+
+#Display-Name-Update-Link {
+  font-size: 0.6em;
+  text-decoration: underline;
+  cursor: pointer;
+  display: inline-block;
+}
+
+#Display-Name-Update-Link:hover {
+  font-size: 0.6em;
+  text-decoration: underline;
+  color: orange;
 }
 
 #User-Added-Pin-List {

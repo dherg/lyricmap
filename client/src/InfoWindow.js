@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 
 import { fetchPinInfo } from './App';
 
+import Card from 'react-bootstrap/Card'
+
 // side panel with info about clicked pin
 export default class InfoWindow extends Component {
 
@@ -83,7 +85,15 @@ export default class InfoWindow extends Component {
     return (
       <div id='InfoWindow'>
         <span className='CloseWindow'
-              onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
+          onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
+        <Card style={{ width: '18rem' }}>
+          <Card.Header>{this.state.lyrics}</Card.Header>
+          <Card.Title>{this.state.title}</Card.Title>
+          <Card.Text>
+            By {this.state.artist} on {this.state.album} ({this.state.releaseDate})
+            {this.state.spotifyembed}
+          </Card.Text>
+        </Card>
         <div id='PinLyrics'>
           {this.state.lyrics}
         </div>
