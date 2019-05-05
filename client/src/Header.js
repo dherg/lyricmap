@@ -17,14 +17,21 @@ export default class Header extends Component {
     this.handlePromptForName = this.handlePromptForName.bind(this);
 
     this.state = {
-      displayName: ""
+      currentUser: null,
     }
   }
 
   updateCurrentUser(newUserID, newName) {
     window.globalCurrentUser.userID = newUserID;
     window.globalCurrentUser.displayName = newName;
-    this.setState({"displayName": ""}); // set state to same thing - force rerender of displayname after it is updated in signin
+    this.setState({currentUser: {
+                                  userID: newUserID,
+                                  displayName: newName
+                                }
+                  }); // set state to same thing - force rerender of displayname after it is updated in signin
+    if (this.props.handleUpdateCurrentUser) {
+      this.props.handleUpdateCurrentUser(this.state.currentUser);
+    }
   }
 
   handlePromptForName(userID) {

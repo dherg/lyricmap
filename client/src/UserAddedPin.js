@@ -14,8 +14,7 @@ export default class UserAddedPin extends Component {
 
         return(
                 <ListGroup.Item action href={"/pins/" + this.props.pinID}>
-                    {this.props.index}
-                    {this.props.pinTitle} - {this.props.pinArtist}
+                    {this.props.index}. {this.props.pinTitle} - {this.props.pinArtist}
                 </ListGroup.Item>
         )
     }

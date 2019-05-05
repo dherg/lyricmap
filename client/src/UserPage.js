@@ -147,10 +147,16 @@ export default class UserPage extends Component {
     const display = (this.state.isLoadingUserDetails ? "Loading..." : name);
 
     // only show option to change display name if on the currently logged in user's page
-    const updateDisplayNameLink = (this.props.userID === window.globalCurrentUser.userID ? 
-                                  <div onClick={this.handleShowDisplayNameChangeModal}> (Change Name) </div> :
-                                  null
-                                  );
+    console.log('this.props.userID: ', this.props.userID)
+    console.log('window.globalCurrentUser.userID: ', window.globalCurrentUser.userID)
+
+    let updateDisplayNameLink;
+    if (this.props.currentUser && (this.props.currentUser.userID === this.props.userID)) {
+      updateDisplayNameLink = <div onClick={this.handleShowDisplayNameChangeModal}> (Change Name) </div>
+    } else {
+      updateDisplayNameLink = null
+    }
+
     console.log('name, display', name, display);
 
     return (

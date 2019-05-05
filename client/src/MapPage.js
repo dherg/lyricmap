@@ -21,6 +21,7 @@ export default class MapPage extends Component {
     this.handlePromptForName = this.handlePromptForName.bind(this);
     this.handleCloseNamePrompt = this.handleCloseNamePrompt.bind(this);
     this.handleRandomClick = this.handleRandomClick.bind(this);
+    this.handleUpdateCurrentUser = this.handleUpdateCurrentUser.bind(this);
     this.fetchPinDetails = this.fetchPinDetails.bind(this);
 
     this.state = {
@@ -33,6 +34,7 @@ export default class MapPage extends Component {
       pinList: null,
       linkedPin: null,
       linkedUser: null,
+      currentUser: null,
     }
 
     // check if rendered as part of `/users/:id`
@@ -198,7 +200,6 @@ export default class MapPage extends Component {
   }
 
   handleRandomClick() {
-
     if (this.state.pinList === null || this.state.pinList.length === 0 ){
       return;
     }
@@ -207,6 +208,12 @@ export default class MapPage extends Component {
     var randomPin = this.state.pinList[Math.floor(Math.random() * this.state.pinList.length)];
 
     this.linkToPin(randomPin.PinID, randomPin.Lat, randomPin.Lng);
+  }
+
+  handleUpdateCurrentUser(newUser) {
+    this.setState({
+      currentUser: newUser,
+    })
   }
 
   render() {
@@ -242,8 +249,8 @@ export default class MapPage extends Component {
 
     const userPage = (
       <div>
-        <Header />
-        <UserPage userID={this.state.linkedUser}/>
+        <Header handleUpdateCurrentUser={this.handleUpdateCurrentUser}/>
+        <UserPage userID={this.state.linkedUser} currentUser={this.state.currentUser}/>
       </div>
     );
 
