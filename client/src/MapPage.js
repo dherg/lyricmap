@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import { fitBounds } from 'google-map-react/utils';
 
+import AddPinModal from './AddPinModal';
 import AddPinWindow from './AddPinWindow';
 import Header from './Header';
 import MapBox from './MapBox';
@@ -17,7 +18,7 @@ export default class MapPage extends Component {
     super(props);
     this.handleAddPinButton = this.handleAddPinButton.bind(this);
     this.handleAddPin = this.handleAddPin.bind(this);
-    this.handleCloseAddPinWindowClick = this.handleCloseAddPinWindowClick.bind(this);
+    this.handleCloseAddPinModalClick = this.handleCloseAddPinModalClick.bind(this);
     this.handlePromptForName = this.handlePromptForName.bind(this);
     this.handleCloseNamePrompt = this.handleCloseNamePrompt.bind(this);
     this.handleRandomClick = this.handleRandomClick.bind(this);
@@ -29,7 +30,7 @@ export default class MapPage extends Component {
       mapwidth: null,
       mapheight: null,
       isAddingPin: false,
-      showAddPinWindow: false,
+      showAddPinModal: false,
       showNamePrompt: false,
       pinList: null,
       linkedPin: null,
@@ -107,7 +108,7 @@ export default class MapPage extends Component {
 
     // close other windows 
     this.handleCloseNamePrompt();
-    this.handleCloseAddPinWindowClick();
+    this.handleCloseAddPinModalClick();
 
     this.setState({
       linkedPin: {
@@ -168,17 +169,18 @@ export default class MapPage extends Component {
     console.log("adding pin at " + lat + ", " + lng);
     this.setState({
       isAddingPin: false,
-      showAddPinWindow: true,
+      showAddPinModal: true,
       addingPinLat: lat,
       addingPinLng: lng,
     });
   }
 
-  handleCloseAddPinWindowClick() {
+  handleCloseAddPinModalClick() {
     this.setState({
       isAddingPin: false,
-      showAddPinWindow: false,
+      showAddPinModal: false,
     });
+    console.log('this.state = ', this.state)
   }
 
   handlePromptForName() {
@@ -218,10 +220,6 @@ export default class MapPage extends Component {
 
   render() {
 
-    const addPinWindow = (
-      <AddPinWindow onCloseAddPinWindowClick={this.handleCloseAddPinWindowClick} lat={this.state.addingPinLat} lng={this.state.addingPinLng}/>
-    );
-
     const namePrompt = (
       <NamePrompt closeNamePrompt={this.handleCloseNamePrompt}/>
     );
@@ -242,7 +240,7 @@ export default class MapPage extends Component {
                 handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}
                 handlePinListUpdate={(pinList) => this.handlePinListUpdate(pinList)}
                 linkedPin={this.state.linkedPin}/>
-        {this.state.showAddPinWindow ? addPinWindow : null}
+        <AddPinModal show={this.state.showAddPinModal} onCloseAddPinModalClick={this.handleCloseAddPinModalClick}/>
         {this.state.showNamePrompt ? namePrompt : null}
       </div>
     );

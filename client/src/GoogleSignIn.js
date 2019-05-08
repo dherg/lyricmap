@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import Button from 'react-bootstrap/Button'
+
 export default class GoogleSignIn extends Component {
 
   constructor(props) {
@@ -11,9 +13,9 @@ export default class GoogleSignIn extends Component {
     window.gapi.load('auth2');
     window.gapi.signin2.render('my-signin2', {
         'scope': 'email',
-        'width': 80,
-        'height': 20,
-        'longtitle': false,
+        // 'width': 80,
+        // 'height': 20,
+        // 'longtitle': false,
         'theme': 'dark',
         'onsuccess': this.onSignIn,
     });
@@ -60,9 +62,7 @@ export default class GoogleSignIn extends Component {
 
   render() {
     return (
-      <div>
-        <div id="my-signin2" data-onsuccess={"onSignIn"}></div>
-      </div>
+          <div id="my-signin2" data-onsuccess={"onSignIn"}></div>
     );
   }
 }

@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce';
 
 import { postPin } from './App';
 
+import Button from 'react-bootstrap/Button'
 
 export default class SuggestionSearch extends Component {
 
@@ -136,7 +137,7 @@ export default class SuggestionSearch extends Component {
     postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, this.state.lyric, this.state.selection.SpotifyID)
 
     // set adding pin and show addpinwindow to false
-    this.props.onCloseAddPinWindowClick();
+    this.props.onCloseAddPinModalClick();
 
   }
 
@@ -162,6 +163,9 @@ export default class SuggestionSearch extends Component {
         <form id="AddPinLyricForm"> 
           <textarea id="AddPinLyricTextArea" onChange={this.handleLyricChange}/>
           <input id="AddPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
+          <Button variant="primary" type="submit" onClick={this.handleSubmit}>
+            Submit Pin
+          </Button>
         </form>
       </div>
     );

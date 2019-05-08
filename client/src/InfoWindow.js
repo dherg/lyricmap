@@ -86,9 +86,11 @@ export default class InfoWindow extends Component {
       <div id='InfoWindow'>
         <span className='CloseWindow'
           onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
-        <Card style={{ width: '18rem' }}>
-          <Card.Header>{this.state.lyrics}</Card.Header>
+        <Card className="bg-dark" style={{ width: '18rem' }}>
           <Card.Title>{this.state.title}</Card.Title>
+          <Card.Text>
+            {this.state.lyrics}
+          </Card.Text>
           <Card.Text>
             By {this.state.artist} on {this.state.album} ({this.state.releaseDate})
             {this.state.spotifyembed}

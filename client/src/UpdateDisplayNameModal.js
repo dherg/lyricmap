@@ -11,7 +11,6 @@ export default class UpdateDisplayNameBox extends Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    // this.handleKeyPress = this.handleKeyPress.bind(this);
 
     this.state = {
       'text': "",    
@@ -29,12 +28,6 @@ export default class UpdateDisplayNameBox extends Component {
   handleChange(event) {
     this.setState({text: event.target.value});
   }
-
-  // handleKeyPress(e) {
-  //   if (e.key === 'Enter' && this.state.text !== '') {
-  //     this.handleSubmit();
-  //   }
-  // }
 
   render() {
     return(
