@@ -220,10 +220,6 @@ export default class MapPage extends Component {
 
   render() {
 
-    const namePrompt = (
-      <NamePrompt closeNamePrompt={this.handleCloseNamePrompt}/>
-    );
-
     const mapPage = (
       <div>
         <Header onMapPage={true} 
@@ -241,7 +237,8 @@ export default class MapPage extends Component {
                 handlePinListUpdate={(pinList) => this.handlePinListUpdate(pinList)}
                 linkedPin={this.state.linkedPin}/>
         <AddPinModal show={this.state.showAddPinModal} onCloseAddPinModalClick={this.handleCloseAddPinModalClick}/>
-        {this.state.showNamePrompt ? namePrompt : null}
+        <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt}/>
+
       </div>
     );
 

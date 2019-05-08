@@ -2,64 +2,61 @@ import React, {Component} from 'react';
 
 import { putDisplayName } from './App';
 
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+
 // modal to prompt new user to set their display name
 export default class NamePrompt extends Component {
   constructor(props) {
     super(props);
-    this.handleNicknameInputChange = this.handleNicknameInputChange.bind(this);
-    this.validateSubmission = this.validateSubmission.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
-      nickname: "",
+      validated: false
     };
   }
 
-  handleNicknameInputChange(event) {
-    this.setState({
-      nickname: event.target.value
-    });
-  }
+  handleSubmit(event) {
 
-  validateSubmission() {
-    if (this.state.nickname === "") {
-      alert("Your nickname can't be blank!");
-      return(false)
-    } else if (this.state.nickname.length > 32) {
-      alert("Your nickname can't be longer than 32 characters")
-      return(false)
-    } else {
-      return(true)
-    }
+    event.preventDefault();
+    event.stopPropagation();
 
-  }
+    const form = event.currentTarget;
 
-  handleSubmit() {
-    // validate the text, do nothing if submission not valid
-    if (!this.validateSubmission()) {
+    if (form.checkValidity() === false) {
       return;
     }
+    this.setState({ validated: true });
 
     // Put new display name
-    putDisplayName(this.state.nickname)
+    putDisplayName(form.elements.nickname.value)
 
-    // close name prompt
     this.props.closeNamePrompt();
 
   }
 
   render() {
     return(
-      <div id="Name-Prompt-Box">
-        <div>
-          To finish setting up your account, give yourself a nickname! 
-        </div>
-        <input id="Name-Prompt-Input" type="textbox" placeholder="Your new nickname" onChange={this.handleNicknameInputChange}/>
-        <input className="submit" type="button" value="Submit Name" onClick={this.handleSubmit}/>
-        <div>
-          (Don't worry, you can change this later on your user page.)
-        </div>
-      </div>
+      <Modal show={this.props.show}>
+        <Modal.Header>
+          <Modal.Title>What should we call you?</Modal.Title>
+        </Modal.Header>
+        <Form noValidate validated={this.state.validated} onSubmit={e => this.handleSubmit(e)}>
+          <Form.Group controlId="formNickname">
+            <Form.Control name="nickname" required type="text" placeholder="Enter a nickname." maxLength="32"/>
+            <Form.Control.Feedback type="invalid">
+              Your nickname can't be blank!
+            </Form.Control.Feedback>
+            <Form.Text className="text-muted">
+              Don't worry, you can change your nickname later.
+            </Form.Text>
+          </Form.Group>
+          <Modal.Footer>
+            <Button type="submit">Submit</Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
     )
   }
 
