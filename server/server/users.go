@@ -3,6 +3,7 @@ package main
 import (
     "log"
     "fmt"
+    "time"
     "net/http"
     "io/ioutil"
     "encoding/json"
@@ -13,10 +14,13 @@ import (
 // registerUser registers a new user in the user table with id userID
 func registerUser(userID string) error {
     log.Printf("registering user %s", userID)
-    sqlStatement := `INSERT INTO users (id)
-                        VALUES($1)
+
+    creationTime := time.Now()
+
+    sqlStatement := `INSERT INTO users (id, created_time)
+                        VALUES($1, $2)
                     `
-    _, err := db.Exec(sqlStatement, userID)
+    _, err := db.Exec(sqlStatement, userID, creationTime)
     if err != nil {
         panic(err)
     }

@@ -156,26 +156,15 @@ func validatePin(p Pin) bool {
 }
 
 func storePin(p Pin) {
-    // add pin metadata
+
     log.Println("calling storePin with pin: ", p)
 
-    // try to get spotify metadata
     err := getSpotifyMetadata(&p)
     if err != nil {
         log.Println("Error getting spotify metadata: ", err)
     }
 
-    // add pin to db
-    // generate a pinID
     p.PinID = generateID()
-
-    // get pin date added
-    // year, month, day := time.Now().Date()
-    // p.CreatedDate = time.Now()
-    // try to get a string out of p.CreatedDate
-    // dateString := p.CreatedDate.Format("January 2, 2006") // "January 2, 2006" is template for time.Time.Format()
-    // log.Println(dateString)
-    // fmt.Printf("insert time:\n%v\n%v\n%v", year, month, day)
 
     creationTime := time.Now()
 
