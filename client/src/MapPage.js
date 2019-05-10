@@ -244,8 +244,10 @@ export default class MapPage extends Component {
 
     const userPage = (
       <div>
-        <Header handleUpdateCurrentUser={this.handleUpdateCurrentUser}/>
+        <Header handleUpdateCurrentUser={this.handleUpdateCurrentUser}
+                handlePromptForName={this.handlePromptForName}/>
         <UserPage userID={this.state.linkedUser} currentUser={this.state.currentUser}/>
+        <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt}/>
       </div>
     );
 

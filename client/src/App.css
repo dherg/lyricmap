@@ -361,6 +361,7 @@ div > h3 {
 
 #User-Page {
   background-color: #edebde;
+  text-align: center;
 }
 
 .User-Added-Pin > a {
@@ -373,11 +374,15 @@ div > h3 {
 
 #User-Added-Pin-Display {
   margin: auto;
-  text-align: center;
+  text-align: left;
   left: 20vw;
   right: 20vw;
   background-color: #c4c2b8;
   width: 50%
+}
+
+#User-Added-Pin-List-Title {
+  text-align: center;
 }
 
 #User-Display-Name {

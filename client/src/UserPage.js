@@ -11,6 +11,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 import ListGroup from 'react-bootstrap/ListGroup'
 import Modal from 'react-bootstrap/Modal'
+import Spinner from 'react-bootstrap/Spinner'
 
 export default class UserPage extends Component {
 
@@ -146,15 +147,41 @@ export default class UserPage extends Component {
     const name = (this.state.userFound ? this.state.displayName : "User not found!");
     const display = (this.state.isLoadingUserDetails ? "Loading..." : name);
 
-    // only show option to change display name if on the currently logged in user's page
-    console.log('this.props.userID: ', this.props.userID)
-    console.log('window.globalCurrentUser.userID: ', window.globalCurrentUser.userID)
+    // show spinner unless user details and user pin list have loaded
+    if (this.state.isLoadingUserDetails || this.state.userAddedPinList === null) {
+      return(
+        <div id="User-Page">
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        </div>
+      );
+    }
+
+    var onCurrentUsersPage = this.props.currentUser && (this.props.currentUser.userID === this.props.userID);
 
     let updateDisplayNameLink;
-    if (this.props.currentUser && (this.props.currentUser.userID === this.props.userID)) {
+    if (onCurrentUsersPage) {
       updateDisplayNameLink = <div onClick={this.handleShowDisplayNameChangeModal}> (Change Name) </div>
     } else {
-      updateDisplayNameLink = null
+      updateDisplayNameLink = null;
+    }
+
+    var pinListComponents = this.pinListToComponents(this.state.userAddedPinList);
+
+    var pinListTitle = null;
+    if (onCurrentUsersPage) {
+      if (pinListComponents && pinListComponents.length == 0) {
+        pinListTitle = <div> You haven't added any pins yet. <a href="/"> Go add some! </a> </div>
+      } else {
+        pinListTitle = "Your pins"
+      }
+    } else {
+      if (pinListComponents && pinListComponents.length == 0) {
+        pinListTitle = "This user hasn't added any pins!"
+      } else {
+        pinListTitle = this.state.userFound ? this.state.displayName + "'s pins" : null
+      }
     }
 
     console.log('name, display', name, display);
@@ -171,9 +198,11 @@ export default class UserPage extends Component {
             </div>
           </div>
           <div id="User-Added-Pin-Display">
-            {this.state.userFound ? this.state.displayName + "'s pins" : null}
+            <div id="User-Added-Pin-List-Title">
+              {pinListTitle}
+            </div>
             <ListGroup>
-              {this.pinListToComponents(this.state.userAddedPinList)}
+              {pinListComponents}
             </ListGroup>
           </div>
         </div>
