@@ -121,7 +121,7 @@ func updateDisplayName(userID string, newName string) {
     }
 }
 
-// getUserDisplayName gets the display name for a given userID, returns nil if no display name found
+// getUserDisplayName gets the display name for a given userID, returns "" if no display name found
 func getUserDisplayName(userID string) (string, error) {
     log.Println("Getting display name for ", userID)
 
@@ -136,9 +136,9 @@ func getUserDisplayName(userID string) (string, error) {
     case nil:
         if displayName.Valid {
             log.Println("display name: ", displayName.String)
-        return displayName.String, nil
+            return displayName.String, nil
         } else {
-            log.Println("userID not found")
+            log.Printf("No display name set for user ID %s", userID)
             return "", nil
         }
     default:
