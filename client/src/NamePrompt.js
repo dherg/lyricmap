@@ -42,16 +42,19 @@ export default class NamePrompt extends Component {
         <Modal.Header>
           <Modal.Title>What should we call you?</Modal.Title>
         </Modal.Header>
+        
         <Form noValidate validated={this.state.validated} onSubmit={e => this.handleSubmit(e)}>
-          <Form.Group controlId="formNickname">
-            <Form.Control name="nickname" required type="text" placeholder="Enter a nickname." maxLength="32"/>
-            <Form.Control.Feedback type="invalid">
-              Your nickname can't be blank!
-            </Form.Control.Feedback>
-            <Form.Text className="text-muted">
-              Don't worry, you can change your nickname later.
-            </Form.Text>
-          </Form.Group>
+          <Modal.Body>
+            <Form.Group controlId="formNickname">
+              <Form.Control name="nickname" required type="text" placeholder="Enter a nickname." maxLength="32"/>
+              <Form.Control.Feedback type="invalid">
+                Your nickname can't be blank!
+              </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                Don't worry, you can change your nickname later.
+              </Form.Text>
+            </Form.Group>
+          </Modal.Body>
           <Modal.Footer>
             <Button type="submit">Submit</Button>
           </Modal.Footer>
