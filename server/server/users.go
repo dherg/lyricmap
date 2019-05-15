@@ -183,8 +183,8 @@ func checkUserLogIn(w http.ResponseWriter, r *http.Request) {
                 userID,
             })
     } else {
-        // return 403 unauthorized
-        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        // return 403 forbidden
+        http.Error(w, "Forbidden", http.StatusForbidden)
         return
     }
 
@@ -210,7 +210,7 @@ func handleUserLogIn(w http.ResponseWriter, r *http.Request) {
     // if err != nil, do not log user in. ID is not valid
     if err != nil {
         log.Printf("Token = %s found invalid, not logging in.")
-        http.Error(w, "Invalid Google ID", http.StatusUnauthorized)
+        http.Error(w, "Invalid Google ID", http.StatusForbidden)
     }
 
     // Check to see whether user for this token is registered or not.
@@ -219,7 +219,7 @@ func handleUserLogIn(w http.ResponseWriter, r *http.Request) {
     // if userID == "", error out
     if userID == "" {
         log.Printf("403: userID == \"\"")
-        http.Error(w, "userID not found", http.StatusUnauthorized)
+        http.Error(w, "userID not found", http.StatusForbidden)
         return
     }
     row := db.QueryRow(`SELECT FROM users WHERE id = $1`, userID)
