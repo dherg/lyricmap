@@ -95,6 +95,9 @@ export default class Header extends Component {
     const userNav = (window.globalCurrentUser.displayName == null ? "" : window.globalCurrentUser.displayName);
     var userLink = (window.globalCurrentUser.userID == null ? "user" : window.globalCurrentUser.userID);
 
+    const signInButton = <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>
+    const signOutButton = <Button variant="primary" onClick={this.handleSignOutButtonClick}> Sign Out </Button>
+
     // conditionally render header links based on whether on map page or not
     // true if on map page, false or undefined if not
     let headerBox;
@@ -135,7 +138,7 @@ export default class Header extends Component {
             </Form>
           </Nav>
           <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
-          <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>
+          {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
         </Navbar.Collapse>
       );
     } else {
@@ -145,7 +148,7 @@ export default class Header extends Component {
             <Nav.Link href="/about">About</Nav.Link>
           </Nav>
           <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
-          <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>
+          {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
         </Navbar.Collapse>
       );
     }

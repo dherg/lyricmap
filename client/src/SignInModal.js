@@ -25,8 +25,9 @@ export default class SignInModal extends Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <GoogleSignIn handleUpdateCurrentUser={this.props.updateCurrentUser} handlePromptForName={this.props.handlePromptForName}/>
-            <Button onClick={this.props.handleSignOutButtonClick}> Sign Out </Button>
+            <GoogleSignIn handleUpdateCurrentUser={this.props.updateCurrentUser} 
+                          handlePromptForName={this.props.handlePromptForName}
+                          handleSignInFinished={this.props.handleHideModal}/>
           </Modal.Body>
 
         </Modal>

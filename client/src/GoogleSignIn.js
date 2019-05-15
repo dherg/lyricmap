@@ -56,6 +56,7 @@ export default class GoogleSignIn extends Component {
         console.log("prompt to set display name")
         this.props.handlePromptForName(profile.getId())
       }
+      this.props.handleSignInFinished();
     });
 
   } // end onSignIn()
