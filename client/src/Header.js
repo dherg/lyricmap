@@ -4,8 +4,8 @@ import logo from './logo.svg';
 import { Link, NavLink } from 'react-router-dom';
 
 import AddPinButton from './AddPinButton';
-import GoogleSignIn from './GoogleSignIn';
 import SearchBar from './SearchBar';
+import SignInModal from './SignInModal';
 import Random from './Random';
 
 import Navbar from 'react-bootstrap/Navbar'
@@ -21,9 +21,14 @@ export default class Header extends Component {
     super(props);
     this.updateCurrentUser = this.updateCurrentUser.bind(this);
     this.handlePromptForName = this.handlePromptForName.bind(this);
+    this.handleSignInButtonClick = this.handleSignInButtonClick.bind(this);
+    this.handleCloseSignInModalClick = this.handleCloseSignInModalClick.bind(this);
+    this.handleSignOutButtonClick = this.handleSignOutButtonClick.bind(this);
+    
 
     this.state = {
       currentUser: null,
+      showSignInModal: false, 
     }
   }
 
@@ -41,7 +46,47 @@ export default class Header extends Component {
   }
 
   handlePromptForName(userID) {
-    this.props.handlePromptForName(userID)
+    this.props.handlePromptForName(userID);
+  }
+
+  handleSignInButtonClick() {
+    this.setState({
+      showSignInModal: true,
+    });
+  }
+
+  handleCloseSignInModalClick() {
+    this.setState({
+      showSignInModal: false,
+    });
+  }
+
+  handleSignOutButtonClick() {
+    // send request to backend to signout
+    var auth2 = window.gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+      console.log('User signed out.');
+    });
+     // get url for environment 
+    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/logout';
+
+    // send logout request
+    fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    })
+
+    // set user vars
+    this.setState({
+      currentUser: null,
+      showSignInModal: false
+    });
+    window.globalCurrentUser.displayName = null;
+    window.globalCurrentUser.userID = null; 
   }
 
   render() {
@@ -85,12 +130,12 @@ export default class Header extends Component {
             <Nav.Link onClick={this.props.handleRandomClick}>Random Pin</Nav.Link>
             <Nav.Link onClick={this.props.handleAddPinButton}>Add Pin</Nav.Link>
             <Form inline>
-              <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+              <FormControl type="text" placeholder="Search for a location" className="mr-sm-2" />
               <Button variant="outline-success">Search</Button>
             </Form>
           </Nav>
           <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
-          <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser} handlePromptForName={this.handlePromptForName}/>
+          <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>
         </Navbar.Collapse>
       );
     } else {
@@ -100,16 +145,23 @@ export default class Header extends Component {
             <Nav.Link href="/about">About</Nav.Link>
           </Nav>
           <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
-          <GoogleSignIn handleUpdateCurrentUser={this.updateCurrentUser} handlePromptForName={this.handlePromptForName}/>
+          <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>
         </Navbar.Collapse>
       );
     }
 
     return (
-      <Navbar>
-        <Navbar.Brand href="/">Lyric Map</Navbar.Brand>
-        {navLinks}
-      </Navbar>
+      <div>
+        <Navbar>
+          <Navbar.Brand href="/">Lyric Map</Navbar.Brand>
+          {navLinks}
+        </Navbar>
+        <SignInModal show={this.state.showSignInModal} 
+                     updateCurrentUser={this.updateCurrentUser} 
+                     handlePromptForName={this.handlePromptForName}
+                     handleHideModal={this.handleCloseSignInModalClick}
+                     handleSignOutButtonClick={this.handleSignOutButtonClick}/>
+      </div>
     ); // close return
   } // close render()
 }

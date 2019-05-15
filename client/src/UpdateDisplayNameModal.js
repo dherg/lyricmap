@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form'
 import Modal from 'react-bootstrap/Modal'
 
 
-export default class UpdateDisplayNameBox extends Component {
+export default class UpdateDisplayNameModal extends Component {
 
   constructor(props) {
     super(props);
