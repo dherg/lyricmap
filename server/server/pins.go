@@ -211,3 +211,42 @@ func addPins(r *http.Request) {
 func updatePins() {
 
 }
+
+func getAllPins(w http.ResponseWriter, r *http.Request) {
+    var pinData []Pin
+
+    pinData = getPins()
+
+    log.Println("returning ", pinData)
+    // set header response content type to JSON
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(pinData)
+}
+
+func getPinsByUser(w http.ResponseWriter, r *http.Request, addedBy string) {
+    var pinData []Pin
+
+    pinData = getPinsByUserId(addedBy)
+
+    log.Println("returning ", pinData)
+    // set header response content type to JSON
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(pinData)
+}
+
+func getSinglePin(w http.ResponseWriter, r *http.Request, pinID string) {
+    var pinData []Pin
+    pinData = getPinByID(pinID)
+    log.Println("returning ", pinData)
+    if pinData != nil {
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(pinData)
+    } else {
+        // pinID not found. return 404
+        log.Println("pinID not found. Returning 404 \"\"")
+        w.WriteHeader(http.StatusNotFound)
+        message := fmt.Sprintf("404: Pin ID '%s' not found", pinID)
+        w.Write([]byte(message))
+
+    }
+}
