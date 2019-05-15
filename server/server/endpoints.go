@@ -49,7 +49,7 @@ var (
     pinsDBPort = os.Getenv("PINS_DB_PORT")
     pinsDBUser = os.Getenv("PINS_DB_USER")
     pinsDBPass = os.Getenv("PINS_DB_PASS")
-    pinsDBName = os.Getenv("PINS_DB_NAME") // db name
+    pinsDBName = os.Getenv("PINS_DB_NAME")
 )
 
 // declare Spotify api client variable
@@ -310,77 +310,18 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-    // ensure that it is POST
-    if r.Method != "POST" {
+
+    switch r.Method {
+    case "GET":
+        checkUserLogIn(w, r)
+    case "POST":
+        handleUserLogIn(w, r)
+    default:
         log.Println("Invalid HTTP method for login. Expected POST, got %v" + r.Method)
         w.WriteHeader(http.StatusMethodNotAllowed) // return 405
-        w.Write([]byte("405 - login must be a POST request"))
+        w.Write([]byte("405 - HTTP Method Not Allowed"))
         return
     }
-
-    // get token out of request
-    body, err := ioutil.ReadAll(r.Body)
-    if err != nil {
-        panic(err)
-    }
-    var token IDToken
-    err = json.Unmarshal(body, &token)
-    if err != nil {
-        panic(err)
-    }
-
-    userID, err := validateGoogleToken(token.IDToken) // TODO: get sub from this response to use as the google ID
-    // if err != nil, do not log user in. ID is not valid
-    if err != nil {
-        log.Printf("Token = %s found invalid, not logging in.")
-        http.Error(w, "Invalid Google ID", http.StatusUnauthorized)
-    }
-
-    // Check to see whether user for this token is registered or not.
-    // If not registered, register user
-    // check user table for this id
-    log.Printf(userID)
-    // if userID == "", error out
-    if userID == "" {
-        log.Printf("403: userID == \"\"")
-        http.Error(w, "userID not found", http.StatusUnauthorized)
-        return
-    }
-    row := db.QueryRow(`SELECT FROM users WHERE id = $1`, userID)
-    err = row.Scan()
-    if err == sql.ErrNoRows { // user is not registered
-        log.Printf("user %s is not registered, registering", userID)
-        // insert user
-        err = registerUser(userID)
-        if err != nil {
-            panic(err)
-        }
-    } else if err != nil {
-        panic(err)
-    }
-
-    // Create session for user
-    err = createUserSession(userID, w, r)
-    if err != nil {
-        panic(err)
-    }
-
-    // Write display name in response
-    displayName, err := getUserDisplayName(userID)
-    if err == sql.ErrNoRows {
-        log.Printf("no user found for userID %v even though should have been registered!", userID)
-        http.Error(w, "Login can't be completed at this time", http.StatusInternalServerError)
-        panic(err)
-        return
-    }
-    // set header response content type to JSON
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(
-        struct {
-            DisplayName string
-        }{
-            displayName,
-        })
 
 }
 

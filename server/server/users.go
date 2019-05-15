@@ -34,15 +34,12 @@ func checkRequestAuthentication(r *http.Request) (string, bool, error) {
     }
 
     // Check if user is authenticated
-    log.Println("session.Values['authenticated']:")
-    log.Println(session.Values["authenticated"])
     if session.Values["authenticated"] == nil {
         log.Println("No authenticated field found in session cookie")
         return "", false, err
     } else if auth, ok := session.Values["authenticated"].(bool); !ok || !auth  {
         return session.Values["userID"].(string), false, err
     } else {
-        log.Println("here 37, sesh.userID = ", session.Values["userID"])
         return session.Values["userID"].(string), true, err
     }
 }
@@ -148,5 +145,116 @@ func getUserDisplayName(userID string) (string, error) {
     default:
         panic(err)
     }
+}
 
+// checkUserLogIn checks for a session cookie to tell if the user is logged in or not.
+// If so, the response contains the user's userID and display name.
+// If not, the response is 403
+func checkUserLogIn(w http.ResponseWriter, r *http.Request) {
+    
+    userID, isAuthenticated, err := checkRequestAuthentication(r)
+    if err != nil {
+        http.Error(w, "Login can't be completed at this time", http.StatusInternalServerError)
+        panic(err)
+        return
+    }
+
+    if userID != "" && isAuthenticated {
+        displayName, err := getUserDisplayName(userID)
+        if err == sql.ErrNoRows {
+            log.Printf("no user found for userID %v even though should have been registered!", userID)
+            http.Error(w, "Login can't be completed at this time", http.StatusInternalServerError)
+            panic(err)
+            return
+        } else if err != nil {
+            http.Error(w, "Login can't be completed at this time", http.StatusInternalServerError)
+            panic(err)
+            return
+        }
+        // return userID and displayName
+        // set header response content type to JSON
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(
+            struct {
+                DisplayName string
+                UserID string
+            }{
+                displayName,
+                userID,
+            })
+    } else {
+        // return 403 unauthorized
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+
+}
+
+// handleUserLogIn takes a request with a google ID token, validates the token, and creates a user session
+// the userID will be added to the users table if not already added
+func handleUserLogIn(w http.ResponseWriter, r *http.Request) {
+
+    // get token out of request
+    body, err := ioutil.ReadAll(r.Body)
+    if err != nil {
+        panic(err)
+    }
+    var token IDToken
+    err = json.Unmarshal(body, &token)
+    if err != nil {
+        panic(err)
+    }
+
+    userID, err := validateGoogleToken(token.IDToken) // TODO: get sub from this response to use as the google ID
+    // if err != nil, do not log user in. ID is not valid
+    if err != nil {
+        log.Printf("Token = %s found invalid, not logging in.")
+        http.Error(w, "Invalid Google ID", http.StatusUnauthorized)
+    }
+
+    // Check to see whether user for this token is registered or not.
+    // If not registered, register user
+    log.Printf(userID)
+    // if userID == "", error out
+    if userID == "" {
+        log.Printf("403: userID == \"\"")
+        http.Error(w, "userID not found", http.StatusUnauthorized)
+        return
+    }
+    row := db.QueryRow(`SELECT FROM users WHERE id = $1`, userID)
+    err = row.Scan()
+    if err == sql.ErrNoRows { // user is not registered
+        log.Printf("user %s is not registered, registering", userID)
+        // insert user
+        err = registerUser(userID)
+        if err != nil {
+            panic(err)
+        }
+    } else if err != nil {
+        panic(err)
+    }
+
+    // Create session for user
+    err = createUserSession(userID, w, r)
+    if err != nil {
+        panic(err)
+    }
+
+    // Write display name in response
+    displayName, err := getUserDisplayName(userID)
+    if err == sql.ErrNoRows {
+        log.Printf("no user found for userID %v even though should have been registered!", userID)
+        http.Error(w, "Login can't be completed at this time", http.StatusInternalServerError)
+        panic(err)
+        return
+    }
+    // set header response content type to JSON
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(
+        struct {
+            DisplayName string
+        }{
+            displayName,
+        })
 }
