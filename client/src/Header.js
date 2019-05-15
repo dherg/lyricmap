@@ -32,6 +32,38 @@ export default class Header extends Component {
     }
   }
 
+  componentDidMount() {
+    // Make request
+    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/login';
+    fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(function(res) {
+        if (res.status === 403) {
+          return(null)
+        } else if (res.status >= 400) {
+          throw new Error("Bad response from server when checking if logged in.");
+        }
+        return res.json();
+      }
+    )
+    .then(res => { 
+      // return null in case of 403
+      if (res == null) {
+        return;
+      }
+      console.log(res)
+      if (res["DisplayName"] !== null && res["UserID"] !== null) {
+        this.updateCurrentUser(res["UserID"], res["DisplayName"])
+      }
+    });
+  }
+
   updateCurrentUser(newUserID, newName) {
     window.globalCurrentUser.userID = newUserID;
     window.globalCurrentUser.displayName = newName;
@@ -62,15 +94,17 @@ export default class Header extends Component {
   }
 
   handleSignOutButtonClick() {
-    // send request to backend to signout
-    var auth2 = window.gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-      console.log('User signed out.');
-    });
-     // get url for environment 
-    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/logout';
+    // sign out of google 
+    window.gapi.load('auth2', 
+      function() { 
+        window.gapi.auth2.init(); 
+        var auth2 = window.gapi.auth2.getAuthInstance();
+        console.log('auth2:', auth2);
+        auth2.signOut()
+      });
 
-    // send logout request
+     // send request to backend to signout
+    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/logout';
     fetch(url, {
       method: 'POST',
       credentials: 'include',
