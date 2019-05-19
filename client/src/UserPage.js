@@ -84,13 +84,11 @@ export default class UserPage extends Component {
           throw new Error("Not 200 response");
         } else {
           res.json().then(function(data) {
-              if (data["DisplayName"] !== "") {
-                that.setState({
+            that.setState({
                   "isLoadingUserDetails": false, 
                   "displayName": data["DisplayName"],
                   "userFound": true,
-                })
-              }
+            });
           })
         }
       })

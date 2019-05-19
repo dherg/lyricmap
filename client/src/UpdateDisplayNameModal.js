@@ -1,32 +1,38 @@
 import React, {Component} from 'react';
 
+import { putDisplayName } from './App';
+
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Modal from 'react-bootstrap/Modal'
-
 
 export default class UpdateDisplayNameModal extends Component {
 
   constructor(props) {
     super(props);
-    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
-      'text': "",    
+      validated: false
     };
   }
 
   // handle clicking the "submit" button
   handleSubmit(event) {
     event.preventDefault();
-    console.log('this.state.text = ', this.state.text)
-    this.props.updateDisplayName(this.state.text);
-  }
+    event.stopPropagation();
 
-  // handle change in text box
-  handleChange(event) {
-    this.setState({text: event.target.value});
+    const form = event.currentTarget;
+
+    if (form.checkValidity() === false) {
+      return;
+    }
+    this.setState({ validated: true });
+
+    // Put new display name
+    putDisplayName(form.elements.nickname.value)
+
+    this.props.closeNamePrompt();
   }
 
   render() {
@@ -43,9 +49,12 @@ export default class UpdateDisplayNameModal extends Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form onSubmit={this.handleSubmit}>
+            <Form noValidate validated={this.state.validated} onSubmit={e => this.handleSubmit(e)}>
               <Form.Group controlId="formBasicEmail">
-                <Form.Control placeholder="New name" onChange={this.handleChange}/>
+                <Form.Control name="nickname" required type="text" placeholder="Enter a new name." maxLength="32"/>
+                <Form.Control.Feedback type="invalid">
+                  Your nickname can't be blank!
+                </Form.Control.Feedback>
                 <Form.Text className="text-muted">
                   Don't worry, you can change it when you want.
                 </Form.Text>
