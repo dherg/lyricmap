@@ -166,12 +166,9 @@ export default class Header extends Component {
             <Nav.Link href="/about">About</Nav.Link>
             <Nav.Link onClick={this.handleRandomClick}>Random Pin</Nav.Link>
             <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
-            <Form inline id="Search-Bar">
-              <FormControl type="text" placeholder="Search for a location" className="mr-sm-2" />
-              <Button variant="outline-success">Search</Button>
-            </Form>
+            <SearchBar changeMapCenter={this.props.changeMapCenter} closeNavIfExpanded={this.handleCollapseNavBar}/>
           </Nav>
-          <Nav.Link inline href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
+          <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
           {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
         </Navbar.Collapse>
       );

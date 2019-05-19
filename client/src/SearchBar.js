@@ -1,5 +1,9 @@
 import React, {Component} from 'react';
 
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import FormControl from 'react-bootstrap/FormControl'
+
 const google = window.google;
 
 // Search bar
@@ -10,23 +14,12 @@ export default class SearchBar extends Component {
 
     this.changeMapCenter = this.changeMapCenter.bind(this);
     this.geocodeAddress = this.geocodeAddress.bind(this);
-    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-
-    this.state = {
-      text: '',
-    }
   }
 
   // take in geometry object and update the map center with .location and .viewport
   changeMapCenter(geometry) {
     this.props.changeMapCenter(geometry);
-  }
-
-  // handle change in text box
-  handleChange(event) {
-    this.setState({text: event.target.value});
   }
 
   geocodeAddress(address) {
@@ -46,22 +39,21 @@ export default class SearchBar extends Component {
   }
 
   // handle clicking the "submit" button
-  handleSubmit() {
-    this.geocodeAddress(this.state.text);
-  }
-
-  handleKeyPress(e) {
-    if (e.key === 'Enter' && this.state.text !== '') {
-      this.handleSubmit();
-    }
+  handleSubmit(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const form = event.currentTarget;
+    this.geocodeAddress(form.elements.address.value);
+    this.props.closeNavIfExpanded();
   }
 
   render() {
+
     return(
-      <div id="floating-panel">
-        <input id="address" type="textbox" placeholder="Enter location" value={this.state.text} onChange={this.handleChange} onKeyPress={this.handleKeyPress}/>
-        <input className="submit" type="button" value="Search" onClick={this.handleSubmit}/>
-      </div>
+      <Form inline id="Search-Bar" onSubmit={e => this.handleSubmit(e)}>
+        <FormControl name="address" type="text" placeholder="Search for a location" className="mr-sm-2" />
+        <Button variant="outline-success" type="submit">Search</Button>
+      </Form>
     );
   }
 }

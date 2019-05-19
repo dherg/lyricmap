@@ -100,6 +100,13 @@ export default class MapPage extends Component {
         return
       } else {
         that.linkToPin(result.pinID, result.lat, result.lng);
+        // that.setState({
+        //   linkedPin: {
+        //                 "PinID" : result.pinID, 
+        //                 "Lat" : result.lat, 
+        //                 "Lng" : result.lng
+        //               }
+        // })
       }
     });
   }
@@ -117,6 +124,7 @@ export default class MapPage extends Component {
                     "Lng" : pinLng
                  }
     });
+    this.props.history.push('/pins/' + pinID);
   }
 
   setMapDimensions(mapwidth, mapheight) {
