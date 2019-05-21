@@ -22,7 +22,6 @@ export function fetchPinInfo(pinID) {
   console.log('clicked pin id = ' + pinID)
   // Make request
   var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
-  // const that = this;
   return fetch(url + '?id=' + String(pinID), {
     method: 'GET',
     credentials: 'include',

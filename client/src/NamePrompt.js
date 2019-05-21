@@ -42,7 +42,6 @@ export default class NamePrompt extends Component {
         <Modal.Header>
           <Modal.Title>What should we call you?</Modal.Title>
         </Modal.Header>
-        
         <Form noValidate validated={this.state.validated} onSubmit={e => this.handleSubmit(e)}>
           <Modal.Body>
             <Form.Group controlId="formNickname">

@@ -185,7 +185,7 @@ export default class Header extends Component {
     }
 
     return (
-      <div>
+      <div id="Header-Bar">
         <Navbar onSelect={this.handleCollapseNavBar} 
                 expanded={this.state.navExpanded} 
                 onToggle={this.toggleNavExpanded} 
