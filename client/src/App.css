@@ -60,8 +60,16 @@
 }
 
 #User-Header-Link {
-  word-wrap: break-word;
-  width: 100%;
+  /*word-wrap: break-word;
+  width: 100%;*/
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-left: 0rem;
+  padding-right: 0rem;
+}
+
+#Header-Display-Name-And-Button-Box {
+  /*display: inline-flex;*/
 }
 
 #Header-Bar {
@@ -69,11 +77,11 @@
 }
 
 #Search-Bar {
-
+  display: inline-flex;
 }
 
 #Search-Bar > input {
-  display: inline-block;
+  max-width: 73%; /* small enough to allow search button on same line */
 }
 
 /* Location search box */
@@ -446,6 +454,12 @@ div > h3 {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+@media only screen and (max-width: 767px) {
+    #Search-Bar {
+      display: none;
+    }
 }
 
 html, body {
