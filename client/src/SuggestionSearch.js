@@ -6,22 +6,19 @@ import debounce from 'lodash/debounce';
 import { postPin } from './App';
 
 import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
 
 export default class SuggestionSearch extends Component {
 
   constructor() {
     super();
 
-    this.handleLyricChange = this.handleLyricChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-
     this.state = {
       value: '',
       suggestions: [],
       isLoading: false,
-      trackSelected: false,
       selection: null,
-      lyric: "",
+      validated: false
     };
 
     this.latestRequest = null;
@@ -73,7 +70,7 @@ export default class SuggestionSearch extends Component {
 
         console.log('res = ' + res)
 
-        // If this is true there's a newer request happening, stop everything
+        // If this is true there's a newer request happening, stop here
         if(thisRequest !== this.latestRequest) {
           console.log('newer request, stop')
           return;
@@ -120,70 +117,76 @@ export default class SuggestionSearch extends Component {
     return value.trim().length > 2;
   };
 
-  handleLyricChange(event) {
-    this.setState({
-      lyric: event.target.value
-    });
-  }
+  handleSubmit(event) {
+    console.log(this.props);
 
-  handleSubmit() {
-    // validate the text, do nothing if lyric is blank
-    if (this.state.lyric === "") {
-      alert("Lyric cannot be left empty.")
-      return;
-    }
-
-    // Post pin
-    postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, this.state.lyric, this.state.selection.SpotifyID)
-
-    // set adding pin and show addpinwindow to false
-    this.props.onCloseAddPinModalClick();
-
+    const form = event.currentTarget;
+    event.preventDefault();
+    event.stopPropagation();
+    this.setState({ validated: true });
+    if (form.checkValidity() === true && this.state.selection !== null) {
+      // console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
+      postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, form.elements.lyric.value, this.state.selection.SpotifyID)
+      this.props.onCloseAddPinModalClick();
+    } 
   }
 
   render() {
     const { value, suggestions } = this.state;
 
     // Autosuggest will pass through all these props to the input.
+
+    // Manually set the classname for the Auto Suggestion box so that we can 
+    // apply bootstrap validation styling to it
+    let autosuggestClassName;
+    if (this.state.validated) {
+      if (this.state.selection !== null) {
+        autosuggestClassName = "form-control";
+      } else {
+        autosuggestClassName = "form-control"
+      }
+    } else {
+      autosuggestClassName = "form-control";
+    }
+
     const inputProps = {
-      placeholder: 'Type the name of a song',
+      placeholder: 'Search for a song on Spotify',
       value,
-      onChange: this.onChange
+      onChange: this.onChange,
+      className: autosuggestClassName
     };
 
-    const showManualAddPinButton = (
-      <div onClick={this.props.onShowManualAddPinClick}>
-        Can't find the song you're looking for on spotify? Click here to add it manually
-      </div>
-    );
-
-    const addPinLyricBox = (
-      <div id="AddPinLyric">
-        {"Lyric (only the relevant lines!) "}
-        <form id="AddPinLyricForm"> 
-          <textarea id="AddPinLyricTextArea" onChange={this.handleLyricChange}/>
-          <input id="AddPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
-          <Button variant="primary" type="submit" onClick={this.handleSubmit}>
+    return (
+        <Form noValidate
+              validated={this.state.validated}
+              onSubmit={e => this.handleSubmit(e)}>
+          <Form.Group controlId="formPinSuggestion">
+            <Form.Label>Track:</Form.Label>
+            <Autosuggest
+              suggestions={suggestions}
+              onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+              onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+              onSuggestionSelected={this.onSuggestionSelected}
+              shouldRenderSuggestions={this.shouldRenderSuggestions}
+              getSuggestionValue={this.getSuggestionValue}
+              renderSuggestion={this.renderSuggestion}
+              inputProps={inputProps}
+            />
+            <Form.Control.Feedback type="invalid">
+              Track selection is required.
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group controlId="formPinLyric">
+            <Form.Label>Lyric:</Form.Label>
+            <Form.Control required name="lyric" as="textarea" rows="2" placeholder="Enter the location-relevant portion of the lyrics"/>
+            <Form.Control.Feedback type="invalid">
+              The location lyric is required.
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Button variant="primary" type="submit">
             Submit Pin
           </Button>
-        </form>
-      </div>
-    );
-
-    return (
-      <div id="SuggestionSearch">
-        <Autosuggest
-          suggestions={suggestions}
-          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-          onSuggestionSelected={this.onSuggestionSelected}
-          shouldRenderSuggestions={this.shouldRenderSuggestions}
-          getSuggestionValue={this.getSuggestionValue}
-          renderSuggestion={this.renderSuggestion}
-          inputProps={inputProps}
-        />
-        {this.state.selection == null ? showManualAddPinButton : addPinLyricBox}
-      </div>
+        </Form>
     );
   }
 } // end SuggestionSearch component

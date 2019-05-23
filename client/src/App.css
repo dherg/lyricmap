@@ -171,22 +171,6 @@ div > h3 {
   line-height: 2em;
 }
 
-#AddPinWindow {
-  position: absolute;
-  left: 30vw;
-  top: 20vh;
-  min-width: 250px;
-  width: 40vw;
-  height: 60vh;
-  z-index: 300;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  text-align: center;
-  overflow: scroll;
-  padding: 10px;
-  line-height: 2em;
-}
-
 #AddPinLyricForm {
 
 }

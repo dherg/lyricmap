@@ -2,92 +2,70 @@ import React, {Component} from 'react';
 
 import { postPin } from './App';
 
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+
 // Component to add pin when song is not found in spotify search
 export default class ManualAddPin extends Component {
 
   constructor(props) {
     super(props);
-    this.handleTitleChange = this.handleTitleChange.bind(this);
-    this.handleArtistChange = this.handleArtistChange.bind(this);
-    this.handleLyricChange = this.handleLyricChange.bind(this);
-    this.validateSubmission = this.validateSubmission.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
-      title: "",
-      artist: "",
-      lyric: ""
+      validated: false
     };
   }
 
-  handleTitleChange(event) {
-    this.setState({
-      title: event.target.value
-    });
-  }
+  handleSubmit(event) {
 
-  handleArtistChange(event) {
-    this.setState({
-      artist: event.target.value
-    });
-  }
+    console.log(this.props);
 
-  handleLyricChange(event) {
-    this.setState({
-      lyric: event.target.value
-    });
-  }
-
-  validateSubmission() {
-    if (this.state.title === "") {
-      alert("Song Name cannot be blank.");
-      return(false);
+    const form = event.currentTarget;
+    event.preventDefault();
+    event.stopPropagation();
+    this.setState({ validated: true });
+    if (form.checkValidity() === true) {
+      console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
+      postPin(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
+      this.props.onCloseAddPinModalClick();
     }
-    if (this.state.artist === "") {
-      alert("Artist cannot be blank.");
-      return(false);
-    }
-    if (this.state.lyric === "") {
-      alert("Lyric cannot be blank.");
-      return(false);
-    }
-    return(true);
-  }
-
-  handleSubmit() {
-    // validate the text, do nothing if submission not valid
-    if (!this.validateSubmission()) {
-      return;
-    }
-
-    // Post pin
-    postPin(this.props.lat, this.props.lng, this.state.title, this.state.artist, this.state.lyric);
-
-    // set adding pin and show addpinwindow to false
-    this.props.onCloseAddPinWindowClick();
-
   }
 
   render() {
+
     return(
-      <div id="ManualAddPin">
-        <div onClick={this.props.onShowSuggestionSearchClick}>
-          Want to search for the song on Spotify instead? Click here
-        </div>
-        <div id="addPinTitleBox">
-          {"Song Title: "}
-          <input id="addPinTitle" type="textbox" onChange={this.handleTitleChange}/>
-        </div>
-        <div id="addPinArtistBox">
-          {"Artist: "}
-          <input id="addPinArtist" type="textbox" onChange={this.handleArtistChange}/>
-        </div>
-        <div id="addPinLyric">
-          {"Lyric: "}
-          <input id="addPinLyric" type="textbox" onChange={this.handleLyricChange}/>
-        </div>
-        <input id="addPinSubmit" type="button" value="Submit Pin" onClick={this.handleSubmit}/>
-      </div>
+      <Form 
+        noValidate
+        validated={this.state.validated}
+        onSubmit={e => this.handleSubmit(e)}
+      >
+        <Form.Group controlId="formPinTitle">
+          <Form.Label>Track Title</Form.Label>
+          <Form.Control required name="title" type="text" placeholder="Enter track title" />
+          <Form.Control.Feedback type="invalid">
+            The track title is required.
+          </Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group controlId="formPinArtist">
+          <Form.Label>Artist</Form.Label>
+          <Form.Control required name="artist" type="text" placeholder="Enter artist name" />
+          <Form.Control.Feedback type="invalid">
+            The artist name is required.
+          </Form.Control.Feedback>
+        </Form.Group>
+        <Form.Group controlId="formPinLyric">
+          <Form.Label>Lyric</Form.Label>
+          <Form.Control required name="lyric" as="textarea" rows="2" placeholder="Enter the location-relevant portion of the lyrics"/>
+          <Form.Control.Feedback type="invalid">
+            The location lyric is required.
+          </Form.Control.Feedback>
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Submit Pin
+        </Button>
+      </Form>
     );
+
   }
 }

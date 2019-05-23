@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import { fitBounds } from 'google-map-react/utils';
 
 import AddPinModal from './AddPinModal';
-import AddPinWindow from './AddPinWindow';
 import Header from './Header';
 import MapBox from './MapBox';
 import NamePrompt from './NamePrompt';
@@ -244,7 +243,10 @@ export default class MapPage extends Component {
                 handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}
                 handlePinListUpdate={(pinList) => this.handlePinListUpdate(pinList)}
                 linkedPin={this.state.linkedPin}/>
-        <AddPinModal show={this.state.showAddPinModal} onCloseAddPinModalClick={this.handleCloseAddPinModalClick}/>
+        <AddPinModal show={this.state.showAddPinModal} 
+                     onCloseAddPinModalClick={this.handleCloseAddPinModalClick}
+                     lat={this.state.addingPinLat}
+                     lng={this.state.addingPinLng}/>
         <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt}/>
 
       </div>

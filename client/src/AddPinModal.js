@@ -6,7 +6,7 @@ import SuggestionSearch from './SuggestionSearch';
 import Modal from 'react-bootstrap/Modal'
 
 
-export default class AddPinWindow extends Component {
+export default class AddPinModal extends Component {
 
   constructor(props) {
     super(props);
@@ -32,6 +32,31 @@ export default class AddPinWindow extends Component {
 
   render() {
 
+    const manualAddPin = (
+      <ManualAddPin onCloseAddPinModalClick={this.props.onCloseAddPinModalClick}
+                    lat={this.props.lat}
+                    lng={this.props.lng}/>
+    );
+
+    const suggestionSearch = (
+      <SuggestionSearch onCloseAddPinModalClick={this.props.onCloseAddPinModalClick}
+                        lat={this.props.lat}
+                        lng={this.props.lng}/>
+    );
+
+    const switchToManual = (
+      <div onClick={this.onShowManualAddPinClick}>
+        Can't find the song you're looking for on spotify? Click here to add it manually
+      </div>
+    );
+
+    const switchToSuggested = (
+      <div onClick={this.onShowSuggestionSearchClick}>
+        Want to search for the song on Spotify instead? Click here
+      </div>
+    );
+
+
     return(
       <Modal show={this.props.show} onHide={this.props.onCloseAddPinModalClick}>
         <Modal.Header closeButton>
@@ -39,18 +64,12 @@ export default class AddPinWindow extends Component {
             Add a Pin 
           </Modal.Title>
         </Modal.Header>
-        {this.state.showManualAddPin ?
-          <ManualAddPin onCloseAddPinWindowClick={this.props.onCloseAddPinWindowClick}
-                        onShowSuggestionSearchClick={this.onShowSuggestionSearchClick}
-                        lat={this.props.lat}
-                        lng={this.props.lng}
-          /> : 
-          <SuggestionSearch onCloseAddPinWindowClick={this.props.onCloseAddPinWindowClick}
-                            onShowManualAddPinClick={this.onShowManualAddPinClick}
-                            lat={this.props.lat}
-                            lng={this.props.lng}
-          />
-        }
+        <Modal.Body>
+          {this.state.showManualAddPin ? manualAddPin : suggestionSearch}
+        </Modal.Body>
+        <Modal.Footer>
+          {this.state.showManualAddPin ? switchToSuggested : switchToManual}
+        </Modal.Footer>
       </Modal>
     );
   }
