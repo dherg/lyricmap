@@ -180,10 +180,10 @@ export default class Header extends Component {
           <Nav className="mr-auto">
             <Nav.Link href="/about">About</Nav.Link>
           </Nav>
-          <div id="Header-Display-Name-And-Button-Box">
-            <Nav.Link id="User-Header-Link" href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
+          <Nav className="ml-auto">
+            <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
             {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
-          </div>
+          </Nav>
         </Navbar.Collapse>
       );
     }
