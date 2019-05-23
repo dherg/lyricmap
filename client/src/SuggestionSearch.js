@@ -88,6 +88,7 @@ export default class SuggestionSearch extends Component {
     this.setState({
       value: newValue
     });
+
   };
 
   // Autosuggest will call this function every time you need to update suggestions.
@@ -104,10 +105,16 @@ export default class SuggestionSearch extends Component {
   };
 
   onSuggestionSelected = (event, {suggestion} ) => {
-    console.log('suggestion selected: ' + suggestion);
+    console.log('suggestion selected:');
+    console.log(suggestion)
     this.setState({
       selection: suggestion,
     });
+
+    // set custom validity for input  based on selection being made
+    var suggestionInputField = document.getElementById("autosuggest-input");
+    suggestionInputField.setCustomValidity("");
+
   };
 
   // Determine whether or not to render suggestions based on the current input
@@ -118,7 +125,6 @@ export default class SuggestionSearch extends Component {
   };
 
   handleSubmit(event) {
-    console.log(this.props);
 
     const form = event.currentTarget;
     event.preventDefault();
@@ -128,33 +134,33 @@ export default class SuggestionSearch extends Component {
       // console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
       postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, form.elements.lyric.value, this.state.selection.SpotifyID)
       this.props.onCloseAddPinModalClick();
-    } 
+    } else if (this.state.selection === null) {
+      // tried to submit but no song selected. set suggestion input field to invalid
+      var suggestionInputField = document.getElementById("autosuggest-input");
+      suggestionInputField.setCustomValidity("invalid");
+    }
   }
 
   render() {
     const { value, suggestions } = this.state;
 
-    // Autosuggest will pass through all these props to the input.
-
-    // Manually set the classname for the Auto Suggestion box so that we can 
-    // apply bootstrap validation styling to it
-    let autosuggestClassName;
-    if (this.state.validated) {
-      if (this.state.selection !== null) {
-        autosuggestClassName = "form-control";
-      } else {
-        autosuggestClassName = "form-control"
-      }
-    } else {
-      autosuggestClassName = "form-control";
-    }
-
+    // Props to pass through to AutoSuggest input element
     const inputProps = {
       placeholder: 'Search for a song on Spotify',
       value,
       onChange: this.onChange,
-      className: autosuggestClassName
+      className: "form-control"
     };
+
+    // customize suggestion input rendering to apply bootstrap validation stylings
+    const renderInputComponent = inputProps => (
+      <div>
+        <input required id="autosuggest-input" {...inputProps}/>
+        <div className="invalid-feedback">
+          Track selection is required.
+        </div>
+      </div>
+    );
 
     return (
         <Form noValidate
@@ -169,6 +175,7 @@ export default class SuggestionSearch extends Component {
               onSuggestionSelected={this.onSuggestionSelected}
               shouldRenderSuggestions={this.shouldRenderSuggestions}
               getSuggestionValue={this.getSuggestionValue}
+              renderInputComponent={renderInputComponent}
               renderSuggestion={this.renderSuggestion}
               inputProps={inputProps}
             />

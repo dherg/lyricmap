@@ -97,7 +97,6 @@ export function getPins(addedBy=null) {
     })
     .then(function(data) {
       pinData = data;
-      console.log(pinData);
       return data;
     });
 }
