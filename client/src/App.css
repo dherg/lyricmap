@@ -241,9 +241,11 @@ div > h3 {
 
 .react-autosuggest__suggestion {
   cursor: pointer;
-  padding: 10px 20px;
+  padding-right: 10px;
   color: black;
   height: 64px;
+  border-style: hidden solid solid hidden;
+  border-width: 1px
 }
 
 .react-autosuggest__suggestion--highlighted {
@@ -254,6 +256,21 @@ div > h3 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  height: 64px;
+  
+}
+
+.Suggestion > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  align-items: center;
+  justify-content: space-around;
 }
 
 

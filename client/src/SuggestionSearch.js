@@ -27,7 +27,7 @@ export default class SuggestionSearch extends Component {
 
   // Populate the input value based on the selected suggestion
   getSuggestionValue = (suggestion) => (
-    suggestion.SpotifyTitle
+    suggestion.SpotifyTitle + " by " + suggestion.SpotifyArtist
   );
 
   // Control how a suggestion is rendered
@@ -37,7 +37,7 @@ export default class SuggestionSearch extends Component {
         <img src={suggestion.SmallImageURL} alt={suggestion.SpotifyTitle + " album cover"}/>
       </div>
       <div>
-        {suggestion.SpotifyTitle}
+        <b> {suggestion.SpotifyTitle} </b>
       </div>
       <div>
         {suggestion.SpotifyArtist}
@@ -178,6 +178,7 @@ export default class SuggestionSearch extends Component {
               renderInputComponent={renderInputComponent}
               renderSuggestion={this.renderSuggestion}
               inputProps={inputProps}
+
             />
             <Form.Control.Feedback type="invalid">
               Track selection is required.
