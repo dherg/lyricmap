@@ -10,6 +10,8 @@ import UserPage from './UserPage';
 
 import { fetchPinInfo } from './App';
 
+import Alert from 'react-bootstrap/Alert'
+
 // the header + MapBox
 export default class MapPage extends Component {
 
@@ -23,6 +25,7 @@ export default class MapPage extends Component {
     this.handleRandomClick = this.handleRandomClick.bind(this);
     this.handleUpdateCurrentUser = this.handleUpdateCurrentUser.bind(this);
     this.fetchPinDetails = this.fetchPinDetails.bind(this);
+    this.handleDismissMustBeSignedInAlert = this.handleDismissMustBeSignedInAlert.bind(this);
 
     this.state = {
       center: null,
@@ -30,6 +33,7 @@ export default class MapPage extends Component {
       mapheight: null,
       isAddingPin: false,
       showAddPinModal: false,
+      showMustBeSignedInAlert: false,
       showNamePrompt: false,
       pinList: null,
       linkedPin: null,
@@ -168,7 +172,9 @@ export default class MapPage extends Component {
       });
     } else {
       // show popup saying you have to be logged in
-      alert("You must be logged in to add a pin!")
+      this.setState({
+        showMustBeSignedInAlert: true,
+      });
     }
   }
 
@@ -225,6 +231,12 @@ export default class MapPage extends Component {
     })
   }
 
+  handleDismissMustBeSignedInAlert() {
+    this.setState({
+      showMustBeSignedInAlert: false,
+    });
+  }
+
   render() {
 
     const mapPage = (
@@ -236,6 +248,13 @@ export default class MapPage extends Component {
                 handlePromptForName={this.handlePromptForName}
                 handleRandomClick={this.handleRandomClick}
                 pinList={this.state.pinList}/>
+        <Alert id="Must-Sign-In-Alert" 
+               dismissible
+               onClose={this.handleDismissMustBeSignedInAlert} 
+               show={this.state.showMustBeSignedInAlert}
+               variant="danger">
+            You must be signed in to add a pin!
+        </Alert>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}

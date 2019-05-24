@@ -189,6 +189,14 @@ div > h3 {
   margin-top: 10px;
 }
 
+#Must-Sign-In-Alert {
+  position: absolute;
+  z-index: 130;
+  margin-top: 56px;
+  width: 100%;
+  text-align: center;
+}
+
 .react-autosuggest__container {
   position: relative;
 }
@@ -298,6 +306,8 @@ div > h3 {
 .PinDetail {
 
 }
+
+
 
 .CloseWindow {
   float: right;
