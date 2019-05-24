@@ -27,12 +27,14 @@ export default class MapPage extends Component {
     this.handleUpdateCurrentUser = this.handleUpdateCurrentUser.bind(this);
     this.fetchPinDetails = this.fetchPinDetails.bind(this);
     this.handleDismissMustBeSignedInAlert = this.handleDismissMustBeSignedInAlert.bind(this);
+    this.handleDismissAddPinInstructionAlert = this.handleDismissAddPinInstructionAlert.bind(this);
 
     this.state = {
       center: null,
       mapwidth: null,
       mapheight: null,
       isAddingPin: false,
+      showAddPinInstructionAlert: false, 
       showAddPinModal: false,
       showMustBeSignedInAlert: false,
       showNamePrompt: false,
@@ -170,6 +172,7 @@ export default class MapPage extends Component {
     if (window.globalCurrentUser.userID !== null) {
       this.setState({
         isAddingPin: !this.state.isAddingPin,
+        showAddPinInstructionAlert: true,
       });
     } else {
       // show popup saying you have to be logged in
@@ -238,6 +241,12 @@ export default class MapPage extends Component {
     });
   }
 
+  handleDismissAddPinInstructionAlert() {
+    this.setState({
+      showAddPinInstructionAlert: false, 
+    });
+  }
+
   render() {
 
     const mapPage = (
@@ -253,6 +262,10 @@ export default class MapPage extends Component {
                      show={this.state.showMustBeSignedInAlert}
                      variant="danger"
                      message="You must be signed in to add a pin."/>
+        <HeaderAlert onClose={this.handleDismissAddPinInstructionAlert}
+                     show={this.state.showAddPinInstructionAlert}
+                     variant="primary"
+                     message="Click on the map at the exact location the song references to add a pin."/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
