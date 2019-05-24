@@ -220,8 +220,12 @@ func addPins(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Content-Type", "application/json")
         json.NewEncoder(w).Encode(struct {
                 PinID string
+                Lat float32
+                Lng float32
             }{
                 pinID,
+                p.Lat,
+                p.Lng,
             })
     }
 }
