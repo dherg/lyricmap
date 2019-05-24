@@ -4,6 +4,7 @@ import { fitBounds } from 'google-map-react/utils';
 
 import AddPinModal from './AddPinModal';
 import Header from './Header';
+import HeaderAlert from './HeaderAlert';
 import MapBox from './MapBox';
 import NamePrompt from './NamePrompt';
 import UserPage from './UserPage';
@@ -248,13 +249,10 @@ export default class MapPage extends Component {
                 handlePromptForName={this.handlePromptForName}
                 handleRandomClick={this.handleRandomClick}
                 pinList={this.state.pinList}/>
-        <Alert id="Must-Sign-In-Alert" 
-               dismissible
-               onClose={this.handleDismissMustBeSignedInAlert} 
-               show={this.state.showMustBeSignedInAlert}
-               variant="danger">
-            You must be signed in to add a pin!
-        </Alert>
+        <HeaderAlert onClose={this.handleDismissMustBeSignedInAlert}
+                     show={this.state.showMustBeSignedInAlert}
+                     variant="danger"
+                     message="You must be signed in to add a pin."/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
