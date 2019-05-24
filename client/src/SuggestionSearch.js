@@ -68,8 +68,6 @@ export default class SuggestionSearch extends Component {
       .then(res => res.json() )
       .then(res => { 
 
-        console.log('res = ' + res)
-
         // If this is true there's a newer request happening, stop here
         if(thisRequest !== this.latestRequest) {
           console.log('newer request, stop')
@@ -105,8 +103,6 @@ export default class SuggestionSearch extends Component {
   };
 
   onSuggestionSelected = (event, {suggestion} ) => {
-    console.log('suggestion selected:');
-    console.log(suggestion)
     this.setState({
       selection: suggestion,
     });
@@ -133,7 +129,7 @@ export default class SuggestionSearch extends Component {
     if (form.checkValidity() === true && this.state.selection !== null) {
       // console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
       postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, form.elements.lyric.value, this.state.selection.SpotifyID)
-      this.props.onCloseAddPinModalClick();
+      this.props.onPinSubmitted();
     } else if (this.state.selection === null) {
       // tried to submit but no song selected. set suggestion input field to invalid
       var suggestionInputField = document.getElementById("autosuggest-input");

@@ -21,6 +21,7 @@ export default class MapPage extends Component {
     this.handleAddPinButton = this.handleAddPinButton.bind(this);
     this.handleAddPin = this.handleAddPin.bind(this);
     this.handleCloseAddPinModalClick = this.handleCloseAddPinModalClick.bind(this);
+    this.handlePinSubmitted = this.handlePinSubmitted.bind(this);
     this.handlePromptForName = this.handlePromptForName.bind(this);
     this.handleCloseNamePrompt = this.handleCloseNamePrompt.bind(this);
     this.handleRandomClick = this.handleRandomClick.bind(this);
@@ -28,6 +29,7 @@ export default class MapPage extends Component {
     this.fetchPinDetails = this.fetchPinDetails.bind(this);
     this.handleDismissMustBeSignedInAlert = this.handleDismissMustBeSignedInAlert.bind(this);
     this.handleDismissAddPinInstructionAlert = this.handleDismissAddPinInstructionAlert.bind(this);
+    this.handleDismissPinSubmittedAlert = this.handleDismissPinSubmittedAlert.bind(this);
 
     this.state = {
       center: null,
@@ -38,6 +40,7 @@ export default class MapPage extends Component {
       showAddPinModal: false,
       showMustBeSignedInAlert: false,
       showNamePrompt: false,
+      showPinSubmittedAlert: false, 
       pinList: null,
       linkedPin: null,
       linkedUser: null,
@@ -187,6 +190,7 @@ export default class MapPage extends Component {
     this.setState({
       isAddingPin: false,
       showAddPinModal: true,
+      showAddPinInstructionAlert: false,
       addingPinLat: lat,
       addingPinLng: lng,
     });
@@ -198,6 +202,15 @@ export default class MapPage extends Component {
       showAddPinModal: false,
     });
     console.log('this.state = ', this.state)
+  }
+
+  handlePinSubmitted() {
+    console.log('handlePinSubmitted()');
+    this.setState({
+      isAddingPin: false,
+      showAddPinModal: false,
+      showPinSubmittedAlert: true,
+    });
   }
 
   handlePromptForName() {
@@ -247,6 +260,13 @@ export default class MapPage extends Component {
     });
   }
 
+  handleDismissPinSubmittedAlert() {
+    this.setState({
+      showPinSubmittedAlert: false,
+    });
+  }
+
+
   render() {
 
     const mapPage = (
@@ -266,6 +286,10 @@ export default class MapPage extends Component {
                      show={this.state.showAddPinInstructionAlert}
                      variant="primary"
                      message="Click on the map at the exact location the song references to add a pin."/>
+        <HeaderAlert onClose={this.handleDismissPinSubmittedAlert}
+                     show={this.state.showPinSubmittedAlert}
+                     variant="info"
+                     message="Pin submitted! (Refresh to view)"/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
@@ -275,6 +299,7 @@ export default class MapPage extends Component {
                 linkedPin={this.state.linkedPin}/>
         <AddPinModal show={this.state.showAddPinModal} 
                      onCloseAddPinModalClick={this.handleCloseAddPinModalClick}
+                     onPinSubmitted={this.handlePinSubmitted}
                      lat={this.state.addingPinLat}
                      lng={this.state.addingPinLng}/>
         <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt}/>

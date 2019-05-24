@@ -28,7 +28,7 @@ export default class ManualAddPin extends Component {
     if (form.checkValidity() === true) {
       console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
       postPin(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
-      this.props.onCloseAddPinModalClick();
+      this.props.onPinSubmitted();
     }
   }
 

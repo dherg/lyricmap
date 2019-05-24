@@ -34,12 +34,14 @@ export default class AddPinModal extends Component {
 
     const manualAddPin = (
       <ManualAddPin onCloseAddPinModalClick={this.props.onCloseAddPinModalClick}
+                    onPinSubmitted={this.props.onPinSubmitted}
                     lat={this.props.lat}
                     lng={this.props.lng}/>
     );
 
     const suggestionSearch = (
       <SuggestionSearch onCloseAddPinModalClick={this.props.onCloseAddPinModalClick}
+                        onPinSubmitted={this.props.onPinSubmitted}
                         lat={this.props.lat}
                         lng={this.props.lng}/>
     );
