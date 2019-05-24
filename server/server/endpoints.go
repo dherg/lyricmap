@@ -62,18 +62,12 @@ var sessionStore = sessions.NewCookieStore([]byte(os.Getenv("GORILLA_SESSION_KEY
 var db *sql.DB 
 
 // getSpotifyMetadata searches Spotify for complete track metadata given a pointer to a Pin with valid SpotifyID
-// TODO: unnecessary with new spotify suggestion add pin flow?
 func getSpotifyMetadata (p *Pin) error {
 
     // Check to see if SpotifyID exists. If not, can't get metadata so don't add
     if p.SpotifyID == "" {
         return nil
     }
-
-    // get pin info
-    // album name
-    // release date, (in FullAlbum)
-    // genre (in FullAlbum)
 
     // get FullTrack from ID
     fullTrack, err := client.GetTrack(spotify.ID(p.SpotifyID))
@@ -255,12 +249,12 @@ func PinsHandler(w http.ResponseWriter, r *http.Request) {
     case "POST":
         _, isAuthenticated, err := checkRequestAuthentication(r)
         if err == nil && isAuthenticated {
-            addPins(r)
+            addPins(w, r)
         } else {
             if err != nil {
                 panic(err)
             }
-            log.Println("401 Request not authenticated to add pin: ", r)
+            log.Println("401 Request not authorized to add pin: ", r)
             w.WriteHeader(http.StatusUnauthorized)
             w.Write([]byte("401: User not authorized to add pin."))
             return

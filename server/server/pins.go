@@ -155,10 +155,11 @@ func validatePin(p Pin) bool {
     return true
 }
 
-func storePin(p Pin) {
+func storePin(p Pin) (string, error) {
 
     log.Println("calling storePin with pin: ", p)
 
+    // Fill in more info from Spotify (if pin contains valid spotifyID)
     err := getSpotifyMetadata(&p)
     if err != nil {
         log.Println("Error getting spotify metadata: ", err)
@@ -175,9 +176,11 @@ func storePin(p Pin) {
     if err != nil {
         panic(err)
     }
+
+    return p.PinID, err
 }
 
-func addPins(r *http.Request) {
+func addPins(w http.ResponseWriter, r *http.Request) {
 
     // read body into byte array
     body, err := ioutil.ReadAll(r.Body)
@@ -202,10 +205,25 @@ func addPins(r *http.Request) {
 
     if !validatePin(p) {
         log.Printf("pin %v invalid\n", p)
+        http.Error(w, "Pin fields invalid", http.StatusBadRequest)
         return
     }
 
-    go storePin(p)
+    pinID, err := storePin(p)
+    if err != nil {
+        log.Printf("Error saving pin to DB, returning 500")
+        http.Error(w, "Error saving pin.", http.StatusInternalServerError)
+        return
+    } else {
+        log.Printf("Success saving pin, returning pinID")
+        w.WriteHeader(http.StatusCreated)
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(struct {
+                PinID string
+            }{
+                pinID,
+            })
+    }
 }
 
 func updatePins() {
