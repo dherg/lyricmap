@@ -109,13 +109,6 @@ export default class MapPage extends Component {
         return
       } else {
         that.linkToPin(result.pinID, result.lat, result.lng);
-        // that.setState({
-        //   linkedPin: {
-        //                 "PinID" : result.pinID, 
-        //                 "Lat" : result.lat, 
-        //                 "Lng" : result.lng
-        //               }
-        // })
       }
     });
   }
@@ -174,7 +167,7 @@ export default class MapPage extends Component {
     // check if user is logged in or not before allowing them to add pin
     if (window.globalCurrentUser.userID !== null) {
       this.setState({
-        isAddingPin: !this.state.isAddingPin,
+        isAddingPin: true,
         showAddPinInstructionAlert: true,
       });
     } else {
@@ -201,11 +194,9 @@ export default class MapPage extends Component {
       isAddingPin: false,
       showAddPinModal: false,
     });
-    console.log('this.state = ', this.state)
   }
 
   handlePinSubmitted() {
-    console.log('handlePinSubmitted()');
     this.setState({
       isAddingPin: false,
       showAddPinModal: false,
