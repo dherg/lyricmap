@@ -22,14 +22,6 @@ export default class SimpleMap extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.zoom !== prevProps.zoom) {
-      this.setState({
-        zoom: this.props.zoom,
-      })
-    }
-  }
-
   componentDidMount() {
     getPins().then(data => {
       this.setState({
@@ -74,6 +66,12 @@ export default class SimpleMap extends Component {
       var joinedPinList = this.state.pinList.concat(this.props.addedPins);
       this.setState({
         pinList: joinedPinList,
+      })
+    }
+    if (this.props.center !== prevProps.center || this.props.zoom !== prevProps.zoom) {
+      this.setState({
+        center: this.props.center,
+        zoom: this.props.zoom
       })
     }
   }

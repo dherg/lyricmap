@@ -2,14 +2,9 @@ import React, {Component} from 'react';
 
 import GoogleSignIn from './GoogleSignIn';
 
-import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 
 export default class SignInModal extends Component {
-
-  constructor(props) {
-    super(props);
-  }
 
   render() {
     return(

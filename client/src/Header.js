@@ -1,18 +1,11 @@
 import React, {Component} from 'react';
-import logo from './logo.svg';
 
-import { Link, NavLink } from 'react-router-dom';
-
-import AddPinButton from './AddPinButton';
 import SearchBar from './SearchBar';
 import SignInModal from './SignInModal';
-import Random from './Random';
 
-import Navbar from 'react-bootstrap/Navbar'
-import Form from 'react-bootstrap/Form'
 import Nav from 'react-bootstrap/Nav'
+import Navbar from 'react-bootstrap/Navbar'
 import Button from 'react-bootstrap/Button'
-import FormControl from 'react-bootstrap/FormControl'
 
 // Site header bar
 export default class Header extends Component {
@@ -152,8 +145,7 @@ export default class Header extends Component {
   render() {
 
     // get currently logged in user info
-    const userNav = (window.globalCurrentUser.displayName == null ? "" : window.globalCurrentUser.displayName);
-    var userLink = (window.globalCurrentUser.userID == null ? "user" : window.globalCurrentUser.userID);
+    const userNav = (window.globalCurrentUser.displayName == null ? null : <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {window.globalCurrentUser.displayName} </Nav.Link>);
 
     const signInButton = <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>
     const signOutButton = <Button variant="primary" onClick={this.handleSignOutButtonClick}> Sign Out </Button>
@@ -169,7 +161,7 @@ export default class Header extends Component {
             <SearchBar changeMapCenter={this.props.changeMapCenter} closeNavIfExpanded={this.handleCollapseNavBar}/>
           </Nav>
           <Nav className="ml-auto">
-            <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
+            {userNav}
             {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
           </Nav>
         </Navbar.Collapse>

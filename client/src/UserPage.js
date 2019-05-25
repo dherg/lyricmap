@@ -1,16 +1,12 @@
 import React, {Component} from 'react';
 
-import Header from './Header';
 import UpdateDisplayNameModal from './UpdateDisplayNameModal';
 import UserAddedPin from './UserAddedPin';
 
 import { getPins } from './App';
 import { putDisplayName } from './App';
 
-import { Link, NavLink } from 'react-router-dom';
-
 import ListGroup from 'react-bootstrap/ListGroup'
-import Modal from 'react-bootstrap/Modal'
 import Spinner from 'react-bootstrap/Spinner'
 
 export default class UserPage extends Component {
@@ -169,13 +165,13 @@ export default class UserPage extends Component {
 
     var pinListTitle = null;
     if (onCurrentUsersPage) {
-      if (pinListComponents && pinListComponents.length == 0) {
+      if (pinListComponents && pinListComponents.length === 0) {
         pinListTitle = <div> You haven't added any pins yet. <a href="/"> Go add some! </a> </div>
       } else {
         pinListTitle = "Your pins"
       }
     } else {
-      if (pinListComponents && pinListComponents.length == 0) {
+      if (pinListComponents && pinListComponents.length === 0) {
         pinListTitle = "This user hasn't added any pins!"
       } else {
         pinListTitle = this.state.userFound ? this.state.displayName + "'s pins" : null

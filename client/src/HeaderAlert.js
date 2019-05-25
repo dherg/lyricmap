@@ -5,11 +5,6 @@ import Alert from 'react-bootstrap/Alert'
 // Customizable alert to appear below header
 export default class HeaderAlert extends Component {
 
-  constructor(props) {
-    super(props);
-
-  }
-
   render() {
     return (
       <Alert id="Header-Alert" 

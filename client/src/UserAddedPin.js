@@ -1,14 +1,8 @@
 import React, {Component} from 'react';
 
-import { Link } from 'react-router-dom';
-
 import ListGroup from 'react-bootstrap/ListGroup'
 
 export default class UserAddedPin extends Component {
-
-    constructor(props) {
-        super(props);
-    }
 
     render() {
 

@@ -3,13 +3,11 @@ import './App.css';
 
 // my imports
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 // my components
 import About from './About';
 import MapPage from './MapPage';
 import NotFound from './NotFound';
-import UserPage from './UserPage';
 
 // keep track of signed in user
 window.globalCurrentUser = {
@@ -86,18 +84,12 @@ export function getPins(addedBy=null) {
 
   var url = process.env.REACT_APP_LYRICMAP_API_HOST + resource;
 
-  var pinData;
-
   return fetch(url)
     .then(function(response) {
       if (response.status >= 400) {
         throw new Error("Bad response from server");
       }
       return response.json();
-    })
-    .then(function(data) {
-      pinData = data;
-      return data;
     });
 }
 

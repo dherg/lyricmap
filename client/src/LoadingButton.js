@@ -5,10 +5,6 @@ import Spinner from 'react-bootstrap/Spinner'
 
 export default class LoadingButton extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
 
         const normalButton = (

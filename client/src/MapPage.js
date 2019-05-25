@@ -11,8 +11,6 @@ import UserPage from './UserPage';
 
 import { fetchPinInfo } from './App';
 
-import Alert from 'react-bootstrap/Alert'
-
 // the header + MapBox
 export default class MapPage extends Component {
 
@@ -63,7 +61,7 @@ export default class MapPage extends Component {
   componentDidUpdate(prevProps) {
 
     var path = this.props.match.path;
-    if (prevProps.match.path === path && prevProps.match.params.id == this.props.match.params.id) {
+    if (prevProps.match.path === path && prevProps.match.params.id === this.props.match.params.id) {
       return;
     }
 
@@ -79,7 +77,7 @@ export default class MapPage extends Component {
       case "/pins/:id":
         var pinID = this.props.match.params.id;
         console.log('pinID, ', pinID);
-        if (typeof pinID !== "undefined" && pinID != "") {
+        if (typeof pinID !== "undefined" && pinID !== "") {
           console.log('component updated with real pinID. fetching details')
           this.setState({
             linkedUser: null,
@@ -91,7 +89,7 @@ export default class MapPage extends Component {
       case "/users/:id":
         var userID = this.props.match.params.id;
         console.log('userID, ', userID);
-        if (typeof userID !== "undefined" && userID != "") {
+        if (typeof userID !== "undefined" && userID !== "") {
           console.log('Real pinID. fetching details')
           this.setState({
             linkedPin: null,
@@ -99,6 +97,9 @@ export default class MapPage extends Component {
             isAddingPin: false,
           })
         }
+        break;
+      default:
+        break;
     }
   }
 

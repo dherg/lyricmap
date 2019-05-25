@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import { postPin } from './App';
 import LoadingButton from './LoadingButton';
 
-import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 
 // Component to add pin when song is not found in spotify search

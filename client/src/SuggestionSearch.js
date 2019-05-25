@@ -6,7 +6,6 @@ import debounce from 'lodash/debounce';
 import { postPin } from './App';
 import LoadingButton from './LoadingButton';
 
-import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 
 export default class SuggestionSearch extends Component {
@@ -131,9 +130,7 @@ export default class SuggestionSearch extends Component {
     this.setState({ validated: true });
     if (form.checkValidity() === true && this.state.selection !== null) {
       // console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
-      this.setState({
-        isLoadingSubmissionResponse: true
-      })
+      this.setState({ isLoadingSubmissionResponse: true });
       postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, form.elements.lyric.value, this.state.selection.SpotifyID)
         .then(data => {
           if (data === null) {
