@@ -198,7 +198,7 @@ export default class MapPage extends Component {
   }
 
   handlePinSubmittedResponse(response) {
-
+    console.log('handlePinSubmittedResponse, response = ', response);
     this.setState({
       isAddingPin: false,
       showAddPinModal: false,
@@ -263,6 +263,9 @@ export default class MapPage extends Component {
 
   render() {
 
+    var pinAddedSuccessMessage = "Pin added!";
+    var pinAddedErrorMessage = "Error submitting pin, please try again later.";
+
     const mapPage = (
       <div>
         <Header onMapPage={true} 
@@ -283,14 +286,15 @@ export default class MapPage extends Component {
         <HeaderAlert onClose={this.handleDismissPinSubmittedAlert}
                      show={this.state.showPinSubmittedAlert}
                      variant={this.state.pinSubmitResponse === null ? "danger" : "info"}
-                     message={this.state.pinSubmitResponse === null ? "Error submitting pin, please try again later." : "Pin submitted! (It might take some time for your pin to appear on the map.)"}/>
+                     message={this.state.pinSubmitResponse === null ? pinAddedErrorMessage : pinAddedSuccessMessage}/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
                 isAddingPin={this.state.isAddingPin}
                 handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}
                 handlePinListUpdate={(pinList) => this.handlePinListUpdate(pinList)}
-                linkedPin={this.state.linkedPin}/>
+                linkedPin={this.state.linkedPin}
+                addedPins={this.state.pinSubmitResponse}/>
         <AddPinModal show={this.state.showAddPinModal} 
                      onCloseAddPinModalClick={this.handleCloseAddPinModalClick}
                      onPinSubmittedResponse={this.handlePinSubmittedResponse}

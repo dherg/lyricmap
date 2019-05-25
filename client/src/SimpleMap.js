@@ -22,15 +22,10 @@ export default class SimpleMap extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.center !== nextProps.center) {
+  componentDidUpdate(prevProps) {
+    if (this.props.zoom !== prevProps.zoom) {
       this.setState({
-        center: nextProps.center,
-      });
-    }
-    if (this.props.zoom !== nextProps.zoom) {
-      this.setState({
-        zoom: nextProps.zoom,
+        zoom: this.props.zoom,
       })
     }
   }
@@ -42,7 +37,6 @@ export default class SimpleMap extends Component {
       });
       this.props.handlePinListUpdate(this.state.pinList);
     });
-    console.log('this.state.pinList: ' + this.state.pinList);
   }
 
   pinListToComponents(pinList) {
@@ -76,6 +70,12 @@ export default class SimpleMap extends Component {
     if (this.props.linkedPin !== prevProps.linkedPin && this.props.linkedPin !== null) {
       this.handlePinClick(this.props.linkedPin.PinID, this.props.linkedPin.Lat, this.props.linkedPin.Lng);
     } 
+    if (this.props.addedPins !== prevProps.addedPins) {
+      var joinedPinList = this.state.pinList.concat(this.props.addedPins);
+      this.setState({
+        pinList: joinedPinList,
+      })
+    }
   }
 
   render() {
@@ -93,7 +93,6 @@ export default class SimpleMap extends Component {
           onClick={this.addPin}
           options={{streetViewControl: true}}
         >
-
           {this.pinListToComponents(this.state.pinList)}
         </GoogleMapReact>
 
