@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 
 import { postPin } from './App';
+import LoadingButton from './LoadingButton';
 
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -13,6 +14,7 @@ export default class ManualAddPin extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
+      isLoadingSubmissionResponse: false,
       validated: false
     };
   }
@@ -27,8 +29,20 @@ export default class ManualAddPin extends Component {
     this.setState({ validated: true });
     if (form.checkValidity() === true) {
       console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
-      postPin(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
-      this.props.onPinSubmitted();
+      this.setState({ isLoadingSubmissionResponse: true });
+      postPin(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value)
+        .then(data => {
+            if (data === null) {
+              console.log('error on post')
+            } else {
+              console.log('successfully added:')
+              console.log(data)
+            }
+            this.props.onPinSubmittedResponse(data);
+          })
+        .catch(err => {
+          this.props.onPinSubmittedResponse(null);
+        });
     }
   }
 
@@ -61,9 +75,7 @@ export default class ManualAddPin extends Component {
             The location lyric is required.
           </Form.Control.Feedback>
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Submit Pin
-        </Button>
+        <LoadingButton isLoading={this.state.isLoadingSubmissionResponse} variant="primary"/>
       </Form>
     );
 

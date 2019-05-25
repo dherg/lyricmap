@@ -11,7 +11,6 @@ export default class HeaderAlert extends Component {
   }
 
   render() {
-    console.log(this.props.show)
     return (
       <Alert id="Header-Alert" 
              dismissible

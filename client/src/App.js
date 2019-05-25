@@ -114,7 +114,7 @@ export function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=nu
   // get url for environment 
   var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
 
-  fetch(url, {
+  return fetch(url, {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -132,7 +132,13 @@ export function postPin(lat, lng, title, artist, lyric, spotifyID=null, album=nu
       year: (year === null ? undefined : year),
       genre: (genre === null ? undefined : genre),
     })
-  });
+  }).then(function(response) {
+      if (response.status >= 400) {
+        return(null)
+      }
+      return response.json();
+    });
+
 }
 
 // PUT request to update display name

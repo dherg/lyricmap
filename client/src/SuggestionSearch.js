@@ -4,6 +4,7 @@ import Autosuggest from 'react-autosuggest';
 import debounce from 'lodash/debounce';
 
 import { postPin } from './App';
+import LoadingButton from './LoadingButton';
 
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -17,8 +18,10 @@ export default class SuggestionSearch extends Component {
       value: '',
       suggestions: [],
       isLoading: false,
+      isLoadingSubmissionResponse: false,
       selection: null,
       validated: false
+
     };
 
     this.latestRequest = null;
@@ -128,8 +131,19 @@ export default class SuggestionSearch extends Component {
     this.setState({ validated: true });
     if (form.checkValidity() === true && this.state.selection !== null) {
       // console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
+      this.setState({
+        isLoadingSubmissionResponse: true
+      })
       postPin(this.props.lat, this.props.lng, this.state.selection.SpotifyTitle, this.state.selection.SpotifyArtist, form.elements.lyric.value, this.state.selection.SpotifyID)
-      this.props.onPinSubmitted();
+        .then(data => {
+          if (data === null) {
+            console.log('error on post')
+          } else {
+            console.log('successfully added:')
+            console.log(data)
+          }
+          this.props.onPinSubmittedResponse(data);
+        });
     } else if (this.state.selection === null) {
       // tried to submit but no song selected. set suggestion input field to invalid
       var suggestionInputField = document.getElementById("autosuggest-input");
@@ -187,9 +201,7 @@ export default class SuggestionSearch extends Component {
               The location lyric is required.
             </Form.Control.Feedback>
           </Form.Group>
-          <Button variant="primary" type="submit">
-            Submit Pin
-          </Button>
+          <LoadingButton isLoading={this.state.isLoadingSubmissionResponse} variant="primary"/>
         </Form>
     );
   }

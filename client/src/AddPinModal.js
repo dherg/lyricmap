@@ -18,6 +18,15 @@ export default class AddPinModal extends Component {
     };
   }
 
+  // On a new pin add, reset to suggestedSearch
+  componentDidUpdate(prevProps) {
+    if (this.props.lat !== prevProps.lat) {
+      this.setState({
+        showManualAddPin: false,
+      });
+    }
+  }
+
   onShowSuggestionSearchClick() {
     this.setState({
       showManualAddPin: false,
@@ -34,14 +43,14 @@ export default class AddPinModal extends Component {
 
     const manualAddPin = (
       <ManualAddPin onCloseAddPinModalClick={this.props.onCloseAddPinModalClick}
-                    onPinSubmitted={this.props.onPinSubmitted}
+                    onPinSubmittedResponse={this.props.onPinSubmittedResponse}
                     lat={this.props.lat}
                     lng={this.props.lng}/>
     );
 
     const suggestionSearch = (
-      <SuggestionSearch onCloseAddPinModalClick={this.props.onCloseAddPinModalClick}
-                        onPinSubmitted={this.props.onPinSubmitted}
+      <SuggestionSearch onCloseAddPinModalClick={this.onCloseAddPinModalClick}
+                        onPinSubmittedResponse={this.props.onPinSubmittedResponse}
                         lat={this.props.lat}
                         lng={this.props.lng}/>
     );
@@ -57,7 +66,6 @@ export default class AddPinModal extends Component {
         Want to search for the song on Spotify instead? Click here
       </div>
     );
-
 
     return(
       <Modal show={this.props.show} onHide={this.props.onCloseAddPinModalClick}>

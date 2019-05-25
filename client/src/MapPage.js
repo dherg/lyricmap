@@ -21,7 +21,7 @@ export default class MapPage extends Component {
     this.handleAddPinButton = this.handleAddPinButton.bind(this);
     this.handleAddPin = this.handleAddPin.bind(this);
     this.handleCloseAddPinModalClick = this.handleCloseAddPinModalClick.bind(this);
-    this.handlePinSubmitted = this.handlePinSubmitted.bind(this);
+    this.handlePinSubmittedResponse = this.handlePinSubmittedResponse.bind(this);
     this.handlePromptForName = this.handlePromptForName.bind(this);
     this.handleCloseNamePrompt = this.handleCloseNamePrompt.bind(this);
     this.handleRandomClick = this.handleRandomClick.bind(this);
@@ -42,6 +42,7 @@ export default class MapPage extends Component {
       showNamePrompt: false,
       showPinSubmittedAlert: false, 
       pinList: null,
+      pinSubmitResponse: null,
       linkedPin: null,
       linkedUser: null,
       currentUser: null,
@@ -196,11 +197,13 @@ export default class MapPage extends Component {
     });
   }
 
-  handlePinSubmitted() {
+  handlePinSubmittedResponse(response) {
+
     this.setState({
       isAddingPin: false,
       showAddPinModal: false,
       showPinSubmittedAlert: true,
+      pinSubmitResponse: response,
     });
   }
 
@@ -279,8 +282,8 @@ export default class MapPage extends Component {
                      message="Click on the map at the exact location the song references to add a pin."/>
         <HeaderAlert onClose={this.handleDismissPinSubmittedAlert}
                      show={this.state.showPinSubmittedAlert}
-                     variant="info"
-                     message="Pin submitted! (Refresh to view)"/>
+                     variant={this.state.pinSubmitResponse === null ? "danger" : "info"}
+                     message={this.state.pinSubmitResponse === null ? "Error submitting pin, please try again later." : "Pin submitted! (It might take some time for your pin to appear on the map.)"}/>
         <MapBox center={this.state.center} 
                 zoom={this.state.zoom}
                 setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
@@ -290,7 +293,7 @@ export default class MapPage extends Component {
                 linkedPin={this.state.linkedPin}/>
         <AddPinModal show={this.state.showAddPinModal} 
                      onCloseAddPinModalClick={this.handleCloseAddPinModalClick}
-                     onPinSubmitted={this.handlePinSubmitted}
+                     onPinSubmittedResponse={this.handlePinSubmittedResponse}
                      lat={this.state.addingPinLat}
                      lng={this.state.addingPinLng}/>
         <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt}/>
