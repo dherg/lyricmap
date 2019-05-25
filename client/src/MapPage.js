@@ -122,12 +122,17 @@ export default class MapPage extends Component {
     this.handleCloseNamePrompt();
     this.handleCloseAddPinModalClick();
 
+    // update state with linkedPin and close any alerts
     this.setState({
       linkedPin: {
                     "PinID" : pinID, 
                     "Lat" : pinLat, 
                     "Lng" : pinLng
-                 }
+                 },
+      showAddPinInstructionAlert: false,
+      showAddPinModal: false,
+      showPinSubmittedAlert: false,
+      showMustBeSignedInAlert: false,
     });
     this.props.history.push('/pins/' + pinID);
   }
