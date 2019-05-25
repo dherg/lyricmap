@@ -28,6 +28,7 @@ export default class MapPage extends Component {
     this.handleDismissMustBeSignedInAlert = this.handleDismissMustBeSignedInAlert.bind(this);
     this.handleDismissAddPinInstructionAlert = this.handleDismissAddPinInstructionAlert.bind(this);
     this.handleDismissPinSubmittedAlert = this.handleDismissPinSubmittedAlert.bind(this);
+    this.handleToggleNavBarClick = this.handleToggleNavBarClick.bind(this);
 
     this.state = {
       center: null,
@@ -261,6 +262,15 @@ export default class MapPage extends Component {
     });
   }
 
+  // When navBar collapse toggle is clicked on, hide alerts
+  handleToggleNavBarClick() {
+    this.setState({
+      showPinSubmittedAlert: false,
+      showAddPinInstructionAlert: false,
+      showMustBeSignedInAlert: false,
+    });
+  }
+
 
   render() {
 
@@ -275,7 +285,8 @@ export default class MapPage extends Component {
                 isAddingPin={this.state.isAddingPin} 
                 handlePromptForName={this.handlePromptForName}
                 handleRandomClick={this.handleRandomClick}
-                pinList={this.state.pinList}/>
+                pinList={this.state.pinList}
+                onToggleNavBarClick={this.handleToggleNavBarClick}/>
         <HeaderAlert onClose={this.handleDismissMustBeSignedInAlert}
                      show={this.state.showMustBeSignedInAlert}
                      variant="danger"

@@ -124,12 +124,14 @@ export default class Header extends Component {
     this.setState({
       navExpanded: !this.state.navExpanded,
     })
+    this.props.onToggleNavBarClick();
   }
 
   handleCollapseNavBar() {
     this.setState({
       navExpanded: false,
     });
+    this.props.onToggleNavBarClick();
   }
 
   handleRandomClick() {
@@ -173,7 +175,7 @@ export default class Header extends Component {
             <Nav.Link href="/about">About</Nav.Link>
           </Nav>
           <Nav className="ml-auto">
-            <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {userNav} </Nav.Link>
+            {userNav}
             {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
           </Nav>
         </Navbar.Collapse>
