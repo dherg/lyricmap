@@ -8,11 +8,6 @@ export default class Pin extends Component {
     pinID: PropTypes.string,
     lat: PropTypes.number,
     lng: PropTypes.number,
-    text: PropTypes.string,
-  };
-
-  static defaultProps = {
-    text : 'test',
   };
 
   constructor(props) {
