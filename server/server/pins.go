@@ -26,7 +26,8 @@ type Pin struct {
     SpotifyID string `json:",omitempty"`
     SpotifyTitle string `json:",omitempty"` // the title of the track in spotify
     SpotifyArtist string `json:",omitempty"` // artist of track in spotify
-    SmallImageURL string `json:",omitempty"` // URL of album image in smallest format
+    SmallImageURL string `json:",omitempty"` // URL of album image in smallest size format
+    MediumImageURL string `json:",omitempty"` // URL of album image in medium size format
     CreatedBy string `json:",omitempty"`
     CreatedDate string `json:",omitempty"`
 }
@@ -124,6 +125,9 @@ func getPinByID(pinID string) []Pin {
     default:
         panic(err)
     }
+
+    // add external image links to pin fields
+    getSpotifyMetadata(&p)
 
     return([]Pin{p})
 }

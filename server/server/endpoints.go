@@ -101,6 +101,10 @@ func getSpotifyMetadata (p *Pin) error {
         return err
     }
 
+    // get image URLs (images are stored in biggest first order, and we want smallest two, so get last two in slice)
+    p.SmallImageURL = string(simpleAlbum.Images[len(simpleAlbum.Images) - 1].URL)
+    p.MediumImageURL = string(simpleAlbum.Images[len(simpleAlbum.Images) - 2].URL)
+
     // get release date from fullAlbum
     p.ReleaseDate = string(fullAlbum.ReleaseDate)
     
