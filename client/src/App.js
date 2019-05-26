@@ -63,7 +63,9 @@ export function fetchPinInfo(pinID) {
       lyrics: res["Lyric"],
       genre: res["Genres"],
       createdByID: res["CreatedBy"],
-      createdDate: res["CreatedDate"]
+      createdDate: res["CreatedDate"],
+      smallImageURL: res["SmallImageURL"],
+      mediumImageURL: res["MediumImageURL"],
     };
     console.log(ret)
 

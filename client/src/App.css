@@ -162,12 +162,13 @@ div > h3 {
   min-width: 250px;
   width: 30vw;
   height: 100%;
+  /*bottom: 0;*/
   z-index: 1;
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
   text-align: center;
   overflow: scroll;
-  padding: 10px;
+  /*padding: 10px;*/
   line-height: 2em;
 }
 
@@ -309,11 +310,14 @@ div > h3 {
 
 
 
-.CloseWindow {
-  float: right;
-  border: 1px solid gray;
-  margin-right: -10px;
-  margin-top: -10px;
+#Close-Info-Window-Button {
+    float: right;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 1px 0 white;
+    opacity: 1;
 }
 
 .active {
