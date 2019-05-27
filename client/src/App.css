@@ -1,18 +1,14 @@
 .SimpleMap {
-  height: 100%;
+  /*height: 100%;*/
+  top: 3.5rem;
   width: 100%;
+  bottom: 0;
+  position: absolute;
+  z-index: 0;
 }
 
 .App {
   text-align: center;
-}
-
-.App-header {
-  background-color: #222;
-  height: 8vh;
-  padding: 1vh;
-  color: white;
-  display: flex;
 }
 
 .App-title {
@@ -73,7 +69,12 @@
 }
 
 #Header-Bar {
+  z-index: 1005;
+}
 
+#Map-Page {
+  display: flex;
+  flex-direction: column;
 }
 
 #Search-Bar {
@@ -161,11 +162,12 @@ div > h3 {
 }
 
 #InfoWindow {
-  position: absolute;
+  position: relative;
   left: 0px;
   min-width: 250px;
-  width: 40vw;
-  height: 100%;
+  width: 40vw;  
+  /*height: 40.75rem;*/
+  /*height: 100%;*/
   /*bottom: 0;*/
   z-index: 1;
   background-color: rgba(0, 0, 0, 0.8);

@@ -283,7 +283,7 @@ export default class MapPage extends Component {
     var pinAddedErrorMessage = "Error submitting pin, please try again later.";
 
     const mapPage = (
-      <div>
+      <div id="Map-Page">
         <Header onMapPage={true} 
                 changeMapCenter={(g) => this.changeMapCenter(g)} 
                 handleAddPinButton={this.handleAddPinButton} 
