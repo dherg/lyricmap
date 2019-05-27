@@ -37,11 +37,17 @@
 
 #basic-navbar-nav {
   width: 100%;
+  flex: 1 1 auto;
+  min-width: 0px;
 }
 
 .nav-link {
-  word-wrap: break-word;
+  /*width: content;*/
+  /*flex: 1 0 auto;*/
+  white-space: nowrap;
 }
+
+
 
 .Header-link-box > div {
   padding-left: 2%;
@@ -79,10 +85,36 @@
 
 #Search-Bar {
   display: inline-flex;
+  flex-flow: nowrap;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 #Search-Bar > input {
   max-width: 73%; /* small enough to allow search button on same line */
+  min-width: 0px;
+  flex: 0 1 auto;
+}
+
+#Header-Left-Side {
+  flex: 1 1 auto;
+}
+
+#Header-Right-Side {
+  white-space: nowrap;
+  flex: 0 1 auto;
+  min-width: 0px;
+  display: flex;
+  flex-wrap: nowrap;
+  /*text-overflow: fade;*/
+  overflow: hidden;
+}
+
+#Header-Right-Side > a {
+  flex: 0 1 auto;
+  min-width: 0px;
+  text-overflow: fade;
+  overflow: hidden;
 }
 
 /* Location search box */
@@ -148,6 +180,7 @@ div > h3 {
 
 #InfoWindowUserLink {
   color: white;
+  word-break: break-word;
 }
 
 #MapBoxWithInfoWindow {
@@ -192,10 +225,12 @@ div > h3 {
   background-color: rgba(0,0,0,.3);
   width: 100%;
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
 }
 
 #Info-Window-Header > p {
-  margin-bottom: 0;
+  flex: 1;
 }
 
 #Info-Window-Lyrics {
@@ -393,6 +428,7 @@ div > h3 {
 
 
 #Close-Info-Window-Button {
+    /*padding: 0.5vw;*/
     float: right;
     font-size: 3rem;
     font-weight: 700;
@@ -552,6 +588,7 @@ div > h3 {
   display: flex;
   flex-direction: column;
 }
+
 
 @media only screen and (max-width: 767px) {
     #Search-Bar {

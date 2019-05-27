@@ -147,7 +147,7 @@ export default class Header extends Component {
   render() {
 
     // get currently logged in user info
-    const userNav = (window.globalCurrentUser.displayName == null ? null : <Nav.Link href={"/users/" + window.globalCurrentUser.userID}> {window.globalCurrentUser.displayName} </Nav.Link>);
+    const userNav = (window.globalCurrentUser.displayName == null ? null : <Nav.Link id="User-Display-Name-Nav" href={"/users/" + window.globalCurrentUser.userID}> {window.globalCurrentUser.displayName} </Nav.Link>);
 
     const signInButton = <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>
     const signOutButton = <Button variant="primary" onClick={this.handleSignOutButtonClick}> Sign Out </Button>
@@ -156,13 +156,13 @@ export default class Header extends Component {
     if (this.props.onMapPage) {
       navLinks = (
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto">
+          <Nav id="Header-Left-Side" className="mr-auto">
             <Nav.Link href="/about">About</Nav.Link>
             <Nav.Link onClick={this.handleRandomClick}>Random Pin</Nav.Link>
             <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
             <SearchBar changeMapCenter={this.props.changeMapCenter} closeNavIfExpanded={this.handleCollapseNavBar}/>
           </Nav>
-          <Nav className="ml-auto">
+          <Nav id="Header-Right-Side" className="ml-auto">
             {userNav}
             {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
           </Nav>
@@ -171,10 +171,10 @@ export default class Header extends Component {
     } else {
       navLinks = (
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto">
+          <Nav id="Header-Left-Side" className="mr-auto">
             <Nav.Link href="/about">About</Nav.Link>
           </Nav>
-          <Nav className="ml-auto">
+          <Nav id="Header-Right-Side" className="ml-auto">
             {userNav}
             {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
           </Nav>

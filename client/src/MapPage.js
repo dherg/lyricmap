@@ -267,7 +267,7 @@ export default class MapPage extends Component {
     });
   }
 
-  // When navBar collapse toggle is clicked on, hide alerts
+  // When navBar collapse toggle is clicked on, hide alerts and info window
   handleToggleNavBarClick() {
     this.setState({
       showPinSubmittedAlert: false,
@@ -325,7 +325,8 @@ export default class MapPage extends Component {
     const userPage = (
       <div>
         <Header handleUpdateCurrentUser={this.handleUpdateCurrentUser}
-                handlePromptForName={this.handlePromptForName}/>
+                handlePromptForName={this.handlePromptForName}
+                onToggleNavBarClick={this.handleToggleNavBarClick}/>
         <UserPage userID={this.state.linkedUser} currentUser={this.state.currentUser}/>
         <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt}/>
       </div>

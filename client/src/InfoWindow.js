@@ -108,13 +108,15 @@ export default class InfoWindow extends Component {
     const infoWindowContent = (
       <div id="Info-Window-Content">
         <div id="Info-Window-Header">
+          <div>
+            <h4><b>{this.state.title}</b> by <b>{this.state.artist}</b></h4>
+          </div>
           <div id="Close-Info-Window-Button">
             <button type="button" class="close" onClick={this.props.onCloseInfoWindowClick}>
               <span aria-hidden="true" id="Close-Info-Window-Button">x</span>
               <span class="sr-only">Close Info Window</span>
             </button>
           </div>
-          <h4><b>{this.state.title}</b> by <b>{this.state.artist}</b></h4>
         </div>
         <div id="Info-Window-Data-Container">
           <div id="Album-Art-And-Lyric-Container">
