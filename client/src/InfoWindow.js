@@ -116,37 +116,39 @@ export default class InfoWindow extends Component {
           </div>
           <h4><b>{this.state.title}</b> by <b>{this.state.artist}</b></h4>
         </div>
-        <div id="Album-Art-And-Lyric-Container">
-            <img id="Album-Art" src={this.state.mediumImageURL} />
-            <div id="Info-Window-Lyrics"> 
-              {this.state.lyrics}
-            </div>
-        </div>
-        <div id="Song-Info-Container"> 
-          <Table id="Song-Info" variant="dark" size="sm">
-            <tbody>
-              <tr>
-                <td>Album</td>
-                <td><b>{this.state.album}</b></td>
-              </tr>
-              <tr>
-                <td>Release Date</td>
-                <td><b>{this.state.releaseDate}</b></td>
-              </tr>
-              <tr>
-                <td>Genres</td>
-                <td><b>{genres}</b></td>
-              </tr>
-              <tr>
-                <td>Added On</td>
-                <td><b>{this.state.createdDate}</b></td>
-              </tr>
-              <tr>
-                <td>Added By</td>
-                <td><b><Link id="InfoWindowUserLink" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link></b></td>
-              </tr>
-            </tbody>
-          </Table>
+        <div id="Info-Window-Data-Container">
+          <div id="Album-Art-And-Lyric-Container">
+              <img id="Album-Art" src={this.state.mediumImageURL} />
+              <div id="Info-Window-Lyrics"> 
+                {this.state.lyrics}
+              </div>
+          </div>
+          <div id="Song-Info-Container"> 
+            <Table id="Song-Info" variant="dark" size="sm">
+              <tbody>
+                <tr>
+                  <td>Album</td>
+                  <td><b>{this.state.album}</b></td>
+                </tr>
+                <tr>
+                  <td>Release Date</td>
+                  <td><b>{this.state.releaseDate}</b></td>
+                </tr>
+                <tr>
+                  <td>Genres</td>
+                  <td><b>{genres}</b></td>
+                </tr>
+                <tr>
+                  <td>Added On</td>
+                  <td><b>{this.state.createdDate}</b></td>
+                </tr>
+                <tr>
+                  <td>Added By</td>
+                  <td><b><Link id="InfoWindowUserLink" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link></b></td>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
         </div>
         {spotifyEmbed}
       </div>

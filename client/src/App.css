@@ -175,7 +175,7 @@ div > h3 {
   border-style: solid solid solid solid;
   border-color: rgba(0, 0, 0, 0.8);;
   border-top-right-radius: 1vw;
-  border-bottom-right-radius: 1vw;
+  /*border-bottom-right-radius: 1vw;*/
 }
 
 #Info-Window-Content {
@@ -191,7 +191,7 @@ div > h3 {
   margin: auto;
   background-color: rgba(0,0,0,.3);
   width: 100%;
-  flex: 1 0 auto;
+  flex: 0 0 auto;
 }
 
 #Info-Window-Header > p {
@@ -209,10 +209,16 @@ div > h3 {
   border-radius: 1vw;
 }
 
-#Song-Info-Container {
-  flex: 0 1 auto;
+#Info-Window-Data-Container {
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
+}
+
+#Song-Info-Container {
+  /*flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;*/
 }
 
 #Song-Info {
@@ -360,6 +366,9 @@ div > h3 {
 
 #Spotify-Embed {
   width: 100%;
+ /* border: none solid solid none;
+  border-color: black;
+  border-bottom-right-radius: 1vw;*/
   /*position: relative;*/
   /*bottom: 0;
   left: 0;
