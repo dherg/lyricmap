@@ -108,7 +108,7 @@ export default class InfoWindow extends Component {
     const infoWindowContent = (
       <div id="Info-Window-Content">
         <div id="Info-Window-Header">
-          <div>
+          <div id="Info-Window-Title-Text">
             <h4><b>{this.state.title}</b> by <b>{this.state.artist}</b></h4>
           </div>
           <div id="Close-Info-Window-Button">

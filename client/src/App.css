@@ -229,8 +229,8 @@ div > h3 {
   align-items: center;
 }
 
-#Info-Window-Header > p {
-  flex: 1;
+#Info-Window-Title-Text {
+  flex: 1 1 auto;
 }
 
 #Info-Window-Lyrics {
@@ -436,6 +436,9 @@ div > h3 {
     color: white;
     text-shadow: 0 1px 0 white;
     opacity: 1;
+    /*width: content;*/
+
+
 }
 
 .active {
