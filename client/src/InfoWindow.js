@@ -6,7 +6,7 @@ import { fetchPinInfo } from './App';
 
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import Jumbotron from 'react-bootstrap/Jumbotron';
+import Table from 'react-bootstrap/Table';
 import Spinner from 'react-bootstrap/Spinner';
 
 
@@ -86,7 +86,7 @@ export default class InfoWindow extends Component {
     const userLink = "/users/" + String(this.state.createdByID);
 
     const spotifyEmbed = (
-      <iframe src={"https://open.spotify.com/embed/track/" + String(this.state.spotifyID)} id="Spotify-Embed" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
+      <iframe src={"https://open.spotify.com/embed/track/" + String(this.state.spotifyID)} id="Spotify-Embed" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
     );
 
     const loadingPinSpinner = (
@@ -106,14 +106,14 @@ export default class InfoWindow extends Component {
     );
 
     const infoWindowContent = (
-      <div>
-        <div id="Close-Info-Window-Button">
-          <button type="button" class="close" onClick={this.props.onCloseInfoWindowClick}>
-            <span aria-hidden="true" id="Close-Info-Window-Button">x</span>
-            <span class="sr-only">Close Info Window</span>
-          </button>
-        </div>
+      <div id="Info-Window-Content">
         <div id="Info-Window-Header">
+          <div id="Close-Info-Window-Button">
+            <button type="button" class="close" onClick={this.props.onCloseInfoWindowClick}>
+              <span aria-hidden="true" id="Close-Info-Window-Button">x</span>
+              <span class="sr-only">Close Info Window</span>
+            </button>
+          </div>
           <h4><b>{this.state.title}</b> by <b>{this.state.artist}</b></h4>
         </div>
         <div id="Album-Art-And-Lyric-Container">
@@ -122,9 +122,32 @@ export default class InfoWindow extends Component {
               {this.state.lyrics}
             </div>
         </div>
-        <p>
-          Here is where info about song goes (scrollable)
-        </p>
+        <div id="Song-Info-Container"> 
+          <Table id="Song-Info" variant="dark" size="sm">
+            <tbody>
+              <tr>
+                <td>Album</td>
+                <td><b>{this.state.album}</b></td>
+              </tr>
+              <tr>
+                <td>Release Date</td>
+                <td><b>{this.state.releaseDate}</b></td>
+              </tr>
+              <tr>
+                <td>Genres</td>
+                <td><b>{genres}</b></td>
+              </tr>
+              <tr>
+                <td>Added On</td>
+                <td><b>{this.state.createdDate}</b></td>
+              </tr>
+              <tr>
+                <td>Added By</td>
+                <td><b><Link id="InfoWindowUserLink" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link></b></td>
+              </tr>
+            </tbody>
+          </Table>
+        </div>
         {spotifyEmbed}
       </div>
     );
