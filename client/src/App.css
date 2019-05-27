@@ -156,11 +156,15 @@ div > h3 {
   flex: 1; /* set mapbox to grow to fill remaining page */
 }
 
+#Close-Info-Window-Button {
+  padding-right: 0.5vw;
+}
+
 #InfoWindow {
   position: absolute;
   left: 0px;
   min-width: 250px;
-  width: 30vw;
+  width: 40vw;
   height: 100%;
   /*bottom: 0;*/
   z-index: 1;
@@ -170,6 +174,56 @@ div > h3 {
   overflow: scroll;
   /*padding: 10px;*/
   line-height: 2em;
+  border-style: solid solid solid solid;
+  border-color: rgba(0, 0, 0, 0.8);;
+  /*border-radius: 1vw;*/
+  border-top-right-radius: 1vw;
+  border-bottom-right-radius: 1vw;
+}
+
+#Info-Window-Header {
+  padding: 2%;
+  border-style: none none solid none;
+  border-color: rgba(0, 0, 0, 0.8);
+  margin: auto;
+  background-color: rgba(0,0,0,.3);
+  width: content;
+  /*border-radius: 1vw;*/
+}
+
+#Info-Window-Header > p {
+  margin-bottom: 0;
+}
+
+#Info-Window-Lyrics {
+  width: 20vw;
+  margin: auto;
+  background-color: rgba(0,0,0,.3);
+  font-size: small;
+  font-style: bold;
+  font-weight: bold;
+  white-space: pre-line;
+  border-radius: 1vw;
+
+}
+
+#Album-Art-And-Lyric-Container {
+  width: 100%;
+  padding: 2vw;
+  display: inline-flex;
+  justify-content: space-around;
+  border-color: rgba(0, 0, 0, 0.8);
+  border-style: none none solid none;
+  /*border-radius: 1vw;*/
+}
+
+#Album-Art {
+  height: auto; 
+  width: auto; 
+  max-width: 200px; 
+  max-height: 200px;
+  margin: auto;
+  border-radius: 1vw;
 }
 
 #AddPinLyricForm {
@@ -292,8 +346,12 @@ div > h3 {
 
 }
 
-#SpotifyEmbed {
-  padding: 10px;
+#Spotify-Embed {
+  width: 100%;
+  height: 80px;
+  bottom: 0;
+  left: 0;
+  position: absolute;
 }
 
 #PinLyrics {

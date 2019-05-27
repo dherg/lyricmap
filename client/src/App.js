@@ -46,16 +46,13 @@ export function fetchPinInfo(pinID) {
     res = res[0]
     // save info from the request
     var spotifyID = res["SpotifyID"];
-    var spotifyembed = (
-      <iframe src={"https://open.spotify.com/embed/track/" + String(spotifyID)} width="250" height="80" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
-    );
 
     console.log('return: ')
     var ret = {
       pinID: res["PinID"],
       lat: res["Lat"],
       lng: res["Lng"],
-      spotifyembed: spotifyID ? spotifyembed : null,
+      spotifyID: res["SpotifyID"],
       title: res["Title"],
       artist: res["Artist"],
       album: res["Album"],

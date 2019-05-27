@@ -17,7 +17,7 @@ export default class InfoWindow extends Component {
     super(props);
 
     this.state = {
-      spotifyembed: null,
+      spotifyID: null,
       title: null,
       artist: null,
       album: null,
@@ -83,49 +83,56 @@ export default class InfoWindow extends Component {
 
     var genres = this.state.genre ? this.state.genre.join(", ") : null
 
-    const userLink = "/users/" + String(this.state.createdByID)
+    const userLink = "/users/" + String(this.state.createdByID);
 
-      // <Spinner
-      //             as="span"
-      //             animation="border"
-      //             size="sm"
-      //             role="status"
-      //             aria-hidden="true"/>
-
-    const loadingPinSpinner = (
-      <Spinner
-                  as="span"
-                  animation="border"
-                  role="status"
-                  aria-hidden="true"/>
+    const spotifyEmbed = (
+      <iframe src={"https://open.spotify.com/embed/track/" + String(this.state.spotifyID)} id="Spotify-Embed" frameBorder="0" allowtransparency="true" allow="encrypted-media" title="Spotify Player"></iframe>
     );
 
-    const infoWindowContent = (
+    const loadingPinSpinner = (
       <div>
-        <div>
+       <div id="Close-Info-Window-Button">
           <button type="button" class="close" onClick={this.props.onCloseInfoWindowClick}>
             <span aria-hidden="true" id="Close-Info-Window-Button">x</span>
             <span class="sr-only">Close Info Window</span>
           </button>
         </div>
-        <h1>Hello, world!</h1>
-        
+        <Spinner as="span"
+                 animation="border"
+                 role="status"
+                 aria-hidden="true"/>
+      </div>
+
+    );
+
+    const infoWindowContent = (
+      <div>
+        <div id="Close-Info-Window-Button">
+          <button type="button" class="close" onClick={this.props.onCloseInfoWindowClick}>
+            <span aria-hidden="true" id="Close-Info-Window-Button">x</span>
+            <span class="sr-only">Close Info Window</span>
+          </button>
+        </div>
+        <div id="Info-Window-Header">
+          <h4><b>{this.state.title}</b> by <b>{this.state.artist}</b></h4>
+        </div>
+        <div id="Album-Art-And-Lyric-Container">
+            <img id="Album-Art" src={this.state.mediumImageURL} />
+            <div id="Info-Window-Lyrics"> 
+              {this.state.lyrics}
+            </div>
+        </div>
         <p>
-          This is a simple hero unit, a simple jumbotron-style component for calling
-          extra attention to featured content or information.
+          Here is where info about song goes (scrollable)
         </p>
-        <p>
-          <Button variant="primary">Learn more</Button>
-        </p>
+        {spotifyEmbed}
       </div>
     );
 
     return (
-
         <div id="InfoWindow">
           {this.state.lyrics === null ? loadingPinSpinner : infoWindowContent}
         </div>
-
     );
 
     // return (
