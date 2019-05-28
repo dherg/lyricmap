@@ -13,7 +13,6 @@ export default class MapBox extends Component {
     this.handleCloseInfoWindowClick = this.handleCloseInfoWindowClick.bind(this);
 
     this.state = {
-      showInfoWindow: false,
       clickedPinID: null,
     };
   }
@@ -26,16 +25,16 @@ export default class MapBox extends Component {
 
   handlePinClick(clickedPinID) {
     this.setState({
-      showInfoWindow: true,
       clickedPinID: clickedPinID,
     });
+    this.props.showInfoWindow();
   }
 
   handleCloseInfoWindowClick() {
     this.setState({
-      showInfoWindow: false,
       clickedPinID: null,
     });
+    this.props.hideInfoWindow();
   }
 
   componentDidUpdate(prevProps) {
@@ -61,7 +60,7 @@ export default class MapBox extends Component {
       <div id="MapBoxWithInfoWindow"
            ref={ (divElement) => {this.divElement = divElement}}
       >
-        {this.state.showInfoWindow ? infoWindow : null}
+        {this.props.show ? infoWindow : null}
         <SimpleMap onPinClick={this.handlePinClick} 
                    center={this.props.center}
                    zoom={this.props.zoom}

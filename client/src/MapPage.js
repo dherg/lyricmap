@@ -29,6 +29,10 @@ export default class MapPage extends Component {
     this.handleDismissAddPinInstructionAlert = this.handleDismissAddPinInstructionAlert.bind(this);
     this.handleDismissPinSubmittedAlert = this.handleDismissPinSubmittedAlert.bind(this);
     this.handleToggleNavBarClick = this.handleToggleNavBarClick.bind(this);
+    this.handleSearchSubmitClick = this.handleSearchSubmitClick.bind(this);
+    this.handleShowInfoWindow = this.handleShowInfoWindow.bind(this);
+    this.handleHideInfoWindow = this.handleHideInfoWindow.bind(this);
+    
 
     this.state = {
       center: null,
@@ -37,6 +41,7 @@ export default class MapPage extends Component {
       isAddingPin: false,
       showAddPinInstructionAlert: false, 
       showAddPinModal: false,
+      showInfoWindow: false, 
       showMustBeSignedInAlert: false,
       showNamePrompt: false,
       showPinSubmittedAlert: false, 
@@ -133,6 +138,7 @@ export default class MapPage extends Component {
       showAddPinModal: false,
       showPinSubmittedAlert: false,
       showMustBeSignedInAlert: false,
+      showInfoWindow: true, 
     });
     this.props.history.push('/pins/' + pinID);
   }
@@ -276,6 +282,24 @@ export default class MapPage extends Component {
     });
   }
 
+  // On search submit button click, close InfoWindow
+  handleSearchSubmitClick() {
+    this.setState({
+      showInfoWindow: false,
+    });
+  }
+
+  handleShowInfoWindow() {
+    this.setState({
+      showInfoWindow: true,
+    });
+  }
+
+  handleHideInfoWindow() {
+    this.setState({
+      showInfoWindow: false,
+    });
+  }
 
   render() {
 
@@ -291,7 +315,8 @@ export default class MapPage extends Component {
                 handlePromptForName={this.handlePromptForName}
                 handleRandomClick={this.handleRandomClick}
                 pinList={this.state.pinList}
-                onToggleNavBarClick={this.handleToggleNavBarClick}/>
+                onToggleNavBarClick={this.handleToggleNavBarClick}
+                onSearchSubmitClick={this.handleSearchSubmitClick}/>
         <HeaderAlert onClose={this.handleDismissMustBeSignedInAlert}
                      show={this.state.showMustBeSignedInAlert}
                      variant="danger"
@@ -311,6 +336,9 @@ export default class MapPage extends Component {
                 handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}
                 handlePinListUpdate={(pinList) => this.handlePinListUpdate(pinList)}
                 linkedPin={this.state.linkedPin}
+                show={this.state.showInfoWindow}
+                showInfoWindow={this.handleShowInfoWindow}
+                hideInfoWindow={this.handleHideInfoWindow}
                 addedPins={this.state.pinSubmitResponse}/>
         <AddPinModal show={this.state.showAddPinModal} 
                      onCloseAddPinModalClick={this.handleCloseAddPinModalClick}

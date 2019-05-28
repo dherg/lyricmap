@@ -160,7 +160,7 @@ export default class Header extends Component {
             <Nav.Link href="/about">About</Nav.Link>
             <Nav.Link onClick={this.handleRandomClick}>Random Pin</Nav.Link>
             <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
-            <SearchBar changeMapCenter={this.props.changeMapCenter} closeNavIfExpanded={this.handleCollapseNavBar}/>
+            <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar}/>
           </Nav>
           <Nav id="Header-Right-Side" className="ml-auto">
             {userNav}

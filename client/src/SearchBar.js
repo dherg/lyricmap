@@ -45,6 +45,7 @@ export default class SearchBar extends Component {
     const form = event.currentTarget;
     this.geocodeAddress(form.elements.address.value);
     this.props.closeNavIfExpanded();
+    this.props.onSearchSubmitClick();
   }
 
   render() {
