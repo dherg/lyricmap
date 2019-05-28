@@ -187,7 +187,7 @@ export default class Header extends Component {
         <Navbar onSelect={this.handleCollapseNavBar} 
                 expanded={this.state.navExpanded} 
                 onToggle={this.toggleNavExpanded} 
-                expand="md" 
+                expand="lg" 
                 bg="dark" 
                 variant="dark">
           <Navbar.Brand href="/">Lyric Map</Navbar.Brand>

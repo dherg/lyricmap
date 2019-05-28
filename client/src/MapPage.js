@@ -183,6 +183,7 @@ export default class MapPage extends Component {
       this.setState({
         isAddingPin: true,
         showAddPinInstructionAlert: true,
+        showInfoWindow: false,
       });
     } else {
       // show popup saying you have to be logged in
@@ -223,6 +224,7 @@ export default class MapPage extends Component {
   handlePromptForName() {
     this.setState({
       showNamePrompt: true,
+      showInfoWindow: false,
     })
   }
 
@@ -273,7 +275,7 @@ export default class MapPage extends Component {
     });
   }
 
-  // When navBar collapse toggle is clicked on, hide alerts and info window
+  // When navBar collapse toggle is clicked on, hide alerts
   handleToggleNavBarClick() {
     this.setState({
       showPinSubmittedAlert: false,
