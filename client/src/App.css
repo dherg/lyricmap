@@ -236,7 +236,7 @@ div > h3 {
 #Info-Window-Lyrics {
   width: 20vw;
   margin: auto;
-  background-color: rgba(0,0,0,.3);
+  background-color: rgba(0,0,0,.5);
   font-size: small;
   font-style: bold;
   font-weight: bold;
@@ -592,10 +592,48 @@ div > h3 {
   flex-direction: column;
 }
 
-
-@media only screen and (max-width: 767px) {
-    #Search-Bar {
+/*For mobile*/
+@media only screen and (max-width: 768px) {
+    /*#Search-Bar {
       display: none;
+    }*/
+    #InfoWindow {
+      width: 100vw;
+      border-top-right-radius: 0;
+    }
+
+    #Album-Art-And-Lyric-Container {
+      /*background-image: url("https://i.scdn.co/image/82f94e4e0a281aff83f56639f1f9ce01bb62f323");*/
+      background-repeat: no-repeat;/*
+      background-position: center;
+      display: flex;
+      flex-wrap: wrap;*/
+      min-height: 300px;
+      position: relative;
+      overflow: hidden;
+      /*opacity: 0.3;*/
+    }
+
+    #Album-Art {
+      /*position: absolute;*/
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: auto;
+      opacity: 0.3;
+      max-width: 100%;
+      max-height: 100%;
+
+    }
+
+    #Info-Window-Lyrics {
+      width: auto;
+      padding: 5px;
+      border-radius: 1vw;
+      background-color: rgba(0,0,0,.5);
+      color: white;
+      z-index: 10;
     }
 }
 

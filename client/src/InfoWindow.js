@@ -16,6 +16,8 @@ export default class InfoWindow extends Component {
   constructor(props) {
     super(props);
 
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+
     this.state = {
       spotifyID: null,
       title: null,
@@ -27,7 +29,9 @@ export default class InfoWindow extends Component {
       createdByID: null,
       createdByName: null,
       createdDate: null,
-      mediumImageURL: null
+      mediumImageURL: null,
+      viewportWidth: null,
+      viewportHeight: null,
     };
   }  
 
@@ -65,6 +69,16 @@ export default class InfoWindow extends Component {
 
   componentDidMount() {
     fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
+
+  updateWindowDimensions() {
+    this.setState({ viewportWidth: window.innerWidth, viewportHeight: window.innerHeight });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -105,6 +119,27 @@ export default class InfoWindow extends Component {
 
     );
 
+    const albumArtAndLyricContainerMobile = (
+      <div id="Album-Art-And-Lyric-Container">
+        <img id="Album-Art" src={this.state.mediumImageURL} />
+        <div id="Info-Window-Lyrics"> 
+          {this.state.lyrics}
+        </div>
+      </div>
+    );
+
+    const albumArtAndLyricContainerNormal = (
+      <div id="Album-Art-And-Lyric-Container">
+        <img id="Album-Art" src={this.state.mediumImageURL} />
+        <div id="Info-Window-Lyrics"> 
+          {this.state.lyrics}
+        </div>
+      </div>
+    );
+
+    console.log(this.state.viewportWidth, this.state.viewportHeight)
+
+
     const infoWindowContent = (
       <div id="Info-Window-Content">
         <div id="Info-Window-Header">
@@ -119,12 +154,7 @@ export default class InfoWindow extends Component {
           </div>
         </div>
         <div id="Info-Window-Data-Container">
-          <div id="Album-Art-And-Lyric-Container">
-              <img id="Album-Art" src={this.state.mediumImageURL} />
-              <div id="Info-Window-Lyrics"> 
-                {this.state.lyrics}
-              </div>
-          </div>
+          {this.state.viewportWidth > 769 ? albumArtAndLyricContainerNormal : albumArtAndLyricContainerMobile}
           <div id="Song-Info-Container"> 
             <Table id="Song-Info" variant="dark" size="sm">
               <tbody>
