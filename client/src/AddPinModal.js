@@ -77,9 +77,6 @@ export default class AddPinModal extends Component {
         <Modal.Body>
           {this.state.showManualAddPin ? manualAddPin : suggestionSearch}
         </Modal.Body>
-        <Modal.Footer>
-          {this.state.showManualAddPin ? switchToSuggested : switchToManual}
-        </Modal.Footer>
       </Modal>
     );
   }
