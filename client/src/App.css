@@ -655,6 +655,11 @@ div > h3 {
       background-color: white;
       border-radius: 1vw;
     }
+
+    #User-Added-Pin-Display  {
+      width: 80%
+    }
+
 }
 
 html, body {
