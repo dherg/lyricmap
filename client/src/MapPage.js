@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import { fitBounds } from 'google-map-react/utils';
 
+import About from './About';
 import AddPinModal from './AddPinModal';
 import Header from './Header';
 import HeaderAlert from './HeaderAlert';
@@ -39,6 +40,7 @@ export default class MapPage extends Component {
       mapwidth: null,
       mapheight: null,
       isAddingPin: false,
+      onAboutPage: false,
       showAddPinInstructionAlert: false, 
       showAddPinModal: false,
       showInfoWindow: false, 
@@ -60,6 +62,9 @@ export default class MapPage extends Component {
     } else if (path === "/users/:id" && this.props.match.params.id !== "") {
       console.log('got real userID')
       this.state.linkedUser = this.props.match.params.id;
+    } else if (path === "/about") {
+      console.log('on about page')
+      this.state.onAboutPage = true;
     }
 
   }
@@ -77,7 +82,8 @@ export default class MapPage extends Component {
         this.setState({
           linkedPin: null,
           linkedUser: null,
-          isAddingPin: false
+          isAddingPin: false,
+          onAboutPage: false,
         })
         break;
       case "/pins/:id":
@@ -88,6 +94,7 @@ export default class MapPage extends Component {
           this.setState({
             linkedUser: null,
             isAddingPin: false,
+            onAboutPage: false,
           })
           this.fetchPinDetails(pinID);
         }
@@ -101,9 +108,17 @@ export default class MapPage extends Component {
             linkedPin: null,
             linkedUser: userID,
             isAddingPin: false,
+            onAboutPage: false,
           })
         }
         break;
+      case "/about":
+        this.setState({
+          linkedPin: null,
+          linkedUser: null,
+          isAddingPin: false,
+          onAboutPage: true,
+        });
       default:
         break;
     }
@@ -184,6 +199,7 @@ export default class MapPage extends Component {
         isAddingPin: true,
         showAddPinInstructionAlert: true,
         showInfoWindow: false,
+        onAboutPage: false,
       });
     } else {
       // show popup saying you have to be logged in
@@ -241,6 +257,7 @@ export default class MapPage extends Component {
   }
 
   handleRandomClick() {
+    console.log(this.state.pinList)
     if (this.state.pinList === null || this.state.pinList.length === 0 ){
       return;
     }
@@ -288,6 +305,7 @@ export default class MapPage extends Component {
   handleSearchSubmitClick() {
     this.setState({
       showInfoWindow: false,
+      onAboutPage: false,
     });
   }
 
@@ -362,7 +380,29 @@ export default class MapPage extends Component {
       </div>
     );
 
-    if (this.state.linkedUser !== null) {
+    const aboutPage = (
+      <div>
+        <Header changeMapCenter={(g) => this.changeMapCenter(g)} 
+                handleUpdateCurrentUser={this.handleUpdateCurrentUser}
+                handleAddPinButton={this.handleAddPinButton}
+                isAddingPin={this.state.isAddingPin}
+                pinList={this.state.pinList}
+                handlePromptForName={this.handlePromptForName}
+                handleRandomClick={this.handleRandomClick}
+                onToggleNavBarClick={this.handleToggleNavBarClick}
+                onSearchSubmitClick={this.handleSearchSubmitClick}
+                onAboutPage={true}/>
+        <HeaderAlert onClose={this.handleDismissMustBeSignedInAlert}
+                     show={this.state.showMustBeSignedInAlert}
+                     variant="danger"
+                     message="You must be signed in to add a pin."/>
+        <About />
+      </div>
+    );
+
+    if (this.state.onAboutPage) {
+      return(aboutPage)
+    } else if (this.state.linkedUser !== null) {
       return(userPage)
     } else {
       return mapPage

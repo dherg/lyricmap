@@ -136,7 +136,7 @@ export default class Header extends Component {
 
   handleRandomClick() {
     this.handleCollapseNavBar();
-    this.props.handleRandomClick()
+    this.props.handleRandomClick();
   }
 
   handleAddPinButton() {
@@ -159,6 +159,20 @@ export default class Header extends Component {
           <Nav id="Header-Left-Side" className="mr-auto">
             <Nav.Link href="/about">About</Nav.Link>
             <Nav.Link onClick={this.handleRandomClick}>Random Pin</Nav.Link>
+            <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
+            <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar}/>
+          </Nav>
+          <Nav id="Header-Right-Side" className="ml-auto">
+            {userNav}
+            {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
+          </Nav>
+        </Navbar.Collapse>
+      );
+    } else if (this.props.onAboutPage) {
+      navLinks = (
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav id="Header-Left-Side" className="mr-auto">
+            <Nav.Link href="/about">About</Nav.Link>
             <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
             <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar}/>
           </Nav>

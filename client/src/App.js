@@ -174,7 +174,7 @@ class AppRouter extends Component {
       <Router>
         <div>
             <Switch>
-              <Route path="/about" component={About} />
+              <Route path="/about" component={MapPage} />
               <Route path="/users/:id" component={MapPage} />
               <Route exact path="/pins/:id" component={MapPage} />
               <Route exact path="/" component={MapPage} />

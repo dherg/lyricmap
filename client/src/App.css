@@ -178,6 +178,16 @@ div > h3 {
   vertical-align: bottom;
 }
 
+#About-Page-Content {
+  left: 20vw;
+  right: 20vw;
+  margin-top: 10vh;
+  padding: 1vw;
+  position: absolute;
+  background-color: white;
+  border-radius: 1vw;
+}
+
 #InfoWindowUserLink {
   color: white;
   word-break: break-word;
@@ -592,7 +602,7 @@ div > h3 {
   flex-direction: column;
 }
 
-/*For mobile*/
+/*For mobile (smaller than iPad) */
 @media only screen and (max-width: 767px) {
     /*#Search-Bar {
       display: none;
@@ -634,6 +644,16 @@ div > h3 {
       background-color: rgba(0,0,0,.5);
       color: white;
       z-index: 10;
+    }
+
+    #About-Page-Content {
+      left: 5vw;
+      right: 5vw;
+      margin-top: 12vh;
+      padding: 5vw;
+      position: absolute;
+      background-color: white;
+      border-radius: 1vw;
     }
 }
 
