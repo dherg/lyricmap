@@ -13,20 +13,11 @@ services:
       - /etc/letsencrypt/live/lyricmap.com/fullchain.pem:/etc/letsencrypt/live/lyricmap.com/fullchain.pem
       - /etc/letsencrypt/live/lyricmap.com/privkey.pem:/etc/letsencrypt/live/lyricmap.com/privkey.pem
       - /data/letsencrypt:/data/letsencrypt
+      - /var/www/lyricmap:/var/www/lyricmap
     restart: always
     networks:
       - docker-network
-
-  node:
-    depends_on:
-      - reverseproxy
-    image: nodeserver:latest
-    restart: always
-    env_file:
-      - client/env-qa.list
-    networks:
-      - docker-network
-
+      
   golang:
     depends_on:
       - reverseproxy
