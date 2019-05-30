@@ -14,5 +14,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 3000
-CMD [ "npm", "start" ]
+# Copy env file 
+COPY .env .env
+
+# run build 
+CMD ["npm", "run", "build"]
