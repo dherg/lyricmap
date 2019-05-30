@@ -54,7 +54,6 @@ export default class Header extends Component {
       if (res == null) {
         return;
       }
-      console.log(res)
       if (res["DisplayName"] !== null && res["UserID"] !== null) {
         this.updateCurrentUser(res["UserID"], res["DisplayName"])
       }

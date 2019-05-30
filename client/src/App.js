@@ -5,7 +5,6 @@ import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 // my components
-import About from './About';
 import MapPage from './MapPage';
 import NotFound from './NotFound';
 
@@ -44,10 +43,7 @@ export function fetchPinInfo(pinID) {
     }
     // get data for pin 0 (should only be one pin)
     res = res[0]
-    // save info from the request
-    var spotifyID = res["SpotifyID"];
 
-    console.log('return: ')
     var ret = {
       pinID: res["PinID"],
       lat: res["Lat"],

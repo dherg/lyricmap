@@ -119,6 +119,7 @@ export default class MapPage extends Component {
           isAddingPin: false,
           onAboutPage: true,
         });
+        break;
       default:
         break;
     }

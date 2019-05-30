@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 
 import { fetchPinInfo } from './App';
 
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
 import Table from 'react-bootstrap/Table';
 import Spinner from 'react-bootstrap/Spinner';
 
@@ -121,7 +119,7 @@ export default class InfoWindow extends Component {
 
     const albumArtAndLyricContainerMobile = (
       <div id="Album-Art-And-Lyric-Container">
-        <img id="Album-Art" src={this.state.mediumImageURL} />
+        <img id="Album-Art" src={this.state.mediumImageURL} alt={"Album Cover for the album " + this.state.album}/>
         <div id="Info-Window-Lyrics"> 
           {this.state.lyrics}
         </div>
@@ -130,7 +128,7 @@ export default class InfoWindow extends Component {
 
     const albumArtAndLyricContainerNormal = (
       <div id="Album-Art-And-Lyric-Container">
-        <img id="Album-Art" src={this.state.mediumImageURL} />
+        <img id="Album-Art" src={this.state.mediumImageURL} alt={"Album Cover for the album " + this.state.album}/>
         <div id="Info-Window-Lyrics"> 
           {this.state.lyrics}
         </div>
