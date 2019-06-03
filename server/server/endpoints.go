@@ -436,6 +436,9 @@ func main() {
     r.HandleFunc("/api/suggest-tracks", suggestTracksHandler)
     r.HandleFunc("/api/users", UsersHandler)
 
+    r.HandleFunc("/api/playlisterauthentication", setupClient)
+    r.HandleFunc("/api/playlistercallback", completeAuth)
+
     // CORS setup
     headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
     originsOk := handlers.AllowedOrigins([]string{os.Getenv("ALLOWED_ORIGINS")})
