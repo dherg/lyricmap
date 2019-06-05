@@ -169,6 +169,9 @@ func storePin(p Pin) (string, error) {
         log.Println("Error getting spotify metadata: ", err)
     }
 
+    // Attempt to add pin to state playlist
+    go addPinToStatePlaylist(p)
+
     p.PinID = generateID()
 
     creationTime := time.Now()

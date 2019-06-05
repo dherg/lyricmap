@@ -17,7 +17,7 @@ import (
 var redirectURI = os.Getenv("LYRICMAP_API_HOST") + "/api/playlistercallback"
 
 var (
-    auth  = spotify.NewAuthenticator(redirectURI, spotify.ScopeUserReadPrivate)
+    auth  = spotify.NewAuthenticator(redirectURI, spotify.ScopePlaylistModifyPublic)
     ch    = make(chan *spotify.Client)
     state = generateID() // generate random string for oauth state
 )
@@ -27,6 +27,53 @@ var playlisterClient spotify.Client
 
 // Map of state codes -> Spotify playlist IDs
 var statePlaylistsMap map[string]string
+
+// addTrackToPlaylist adds a given Spotify track to a given Spotify playlist
+func addTrackToPlaylist(trackSpotifyID string, playlistSpotifyID string) error {
+
+    if playlisterClient.AutoRetry != true {
+        err := errors.New("playlisterClient not set up before call to addTrackToPlaylist")
+        log.Println("Playlister: ", err)
+        return err
+    }
+
+    _, err := playlisterClient.AddTracksToPlaylist(spotify.ID(playlistSpotifyID), spotify.ID(trackSpotifyID))
+    if err != nil {
+        log.Println("Playlister: Error adding track to playlist: ", err)
+        return err
+    }
+
+    return nil
+
+}
+
+func addPinToStatePlaylist(p Pin) error {
+
+    // Check validity of track ID in pin
+    if p.SpotifyID == "" {
+        err := errors.New("playlister: given pin has no spotifyID set")
+        return err
+    }
+
+    // Reverse geocode to get state abbreviation for pin
+    stateCode, err := geocodeFromLatLng(p.Lat, p.Lng)
+    if err != nil {
+        panic(err)
+        return err
+    }
+
+    // Lookup state playlistID in statePlaylistsMap
+    playlistID := statePlaylistsMap[stateCode]
+    if playlistID == "" {
+        log.Printf("Didn't find stateCode %v in statePlaylistsMap.", stateCode)
+        return nil
+    } else {
+        log.Printf("Found stateCode %v in map with playlistID %v", stateCode, playlistID)
+    }
+
+    err = addTrackToPlaylist(p.SpotifyID, playlistID)
+    return err
+}
 
 // geocodeFromLatLng returns the state abbreviation if found for a given lat/lng 
 func geocodeFromLatLng(lat float32, lng float32) (string, error) {
@@ -39,7 +86,7 @@ func geocodeFromLatLng(lat float32, lng float32) (string, error) {
     // Filter request to only get state-level result
     geocodeResultTypes := []string{"administrative_area_level_1"}
 
-    c, err := maps.NewClient(maps.WithAPIKey("AIzaSyCIO-07Xg3QCEd3acooGm9trpH4kCZ5TTY"))
+    c, err := maps.NewClient(maps.WithAPIKey(os.Getenv("GOOGLE_PLAYLISTER_API_KEY")))
     if err != nil {
         log.Fatalf("fatal error: %s", err)
         return "", err
@@ -66,7 +113,7 @@ func geocodeFromLatLng(lat float32, lng float32) (string, error) {
 }
 
 func loadStatePlaylistsFile() error {
-    statePlaylistsFileName := "../stateplaylists.csv"
+    statePlaylistsFileName := os.Getenv("STATE_PLAYLISTS_PATH")
 
     statePlaylistsMap = make(map[string]string)
 
@@ -102,13 +149,15 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
         log.Println("State mismatch: %s != %s\n", st, state)
     }
     // use the token to get an authenticated client
-    playlisterClient := auth.NewClient(tok)
+    playlisterClient = auth.NewClient(tok)
+    playlisterClient.AutoRetry = true
     fmt.Fprintf(w, "Login Completed!")
     user, err := playlisterClient.CurrentUser()
     if err != nil {
         log.Println(err)
     }
-    fmt.Println("You are logged in as:", user.ID)
+    fmt.Println("playlister authentication: logged in as:", user.ID)
+
     return
 }
 

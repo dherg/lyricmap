@@ -428,6 +428,9 @@ func main() {
     // set up spotify client for future calls
     client = getSpotifyClient()
 
+    // load playlister state code -> playlist mappings
+    loadStatePlaylistsFile()
+
     r := mux.NewRouter()
     r.HandleFunc("/api/pins", PinsHandler)
     r.HandleFunc("/api/login", LoginHandler)
