@@ -16,7 +16,6 @@ window.globalCurrentUser = {
 
 // fetch pin info and update state for given pinID
 export function fetchPinInfo(pinID) {
-  console.log('clicked pin id = ' + pinID)
   // Make request
   var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/pins';
   return fetch(url + '?id=' + String(pinID), {
@@ -60,7 +59,6 @@ export function fetchPinInfo(pinID) {
       smallImageURL: res["SmallImageURL"],
       mediumImageURL: res["MediumImageURL"],
     };
-    console.log(ret)
 
     return(ret);
 

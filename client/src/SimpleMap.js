@@ -42,7 +42,6 @@ export default class SimpleMap extends Component {
   }
 
   handlePinClick(clickedPinID, clickedPinLat, clickedPinLng) {
-    console.log("clickedPinID,clickedPinLat,clickedPinLng ", clickedPinID, clickedPinLat, clickedPinLng);
     // open InfoWindow
     this.props.onPinClick(clickedPinID);
 
@@ -53,9 +52,6 @@ export default class SimpleMap extends Component {
   }
 
   addPin(event) {
-    // console.log(event);
-    // console.log(event.event.nativeEvent);
-    
     // Make sure that this isn't a click on google maps controls 
     // by checking the event target className
     var eventTarget = event.event.nativeEvent.target.className;

@@ -66,6 +66,9 @@ export default class InfoWindow extends Component {
   }
 
   componentDidMount() {
+    if (this.props.clickedPinID === null) {
+      return
+    }
     fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
@@ -84,8 +87,7 @@ export default class InfoWindow extends Component {
     if (this.props.clickedPinID !== prevProps.clickedPinID) {
       fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
     } else if (this.state.createdByID !== prevState.createdByID && this.state.createdByID !== null) {
-      // if we've now fetched pin info, try to fetch display name
-      console.log('fetching display name')
+      // if we've now fetched pin info, try to fetch display name of user who added pin
       this.fetchCreatorDisplayName(this.state.createdByID);
     }
 
@@ -104,9 +106,9 @@ export default class InfoWindow extends Component {
     const loadingPinSpinner = (
       <div>
        <div id="Close-Info-Window-Button">
-          <button type="button" class="close" onClick={this.props.onCloseInfoWindowClick}>
+          <button type="button" className="close" onClick={this.props.onCloseInfoWindowClick}>
             <span aria-hidden="true" id="Close-Info-Window-Button">x</span>
-            <span class="sr-only">Close Info Window</span>
+            <span className="sr-only">Close Info Window</span>
           </button>
         </div>
         <Spinner as="span"
@@ -135,9 +137,6 @@ export default class InfoWindow extends Component {
       </div>
     );
 
-    console.log(this.state.viewportWidth, this.state.viewportHeight)
-
-
     const infoWindowContent = (
       <div id="Info-Window-Content">
         <div id="Info-Window-Header">
@@ -145,9 +144,9 @@ export default class InfoWindow extends Component {
             <h4><b>{this.state.title}</b> by <b>{this.state.artist}</b></h4>
           </div>
           <div id="Close-Info-Window-Button">
-            <button type="button" class="close" onClick={this.props.onCloseInfoWindowClick}>
+            <button type="button" className="close" onClick={this.props.onCloseInfoWindowClick}>
               <span aria-hidden="true" id="Close-Info-Window-Button">x</span>
-              <span class="sr-only">Close Info Window</span>
+              <span className="sr-only">Close Info Window</span>
             </button>
           </div>
         </div>
@@ -189,52 +188,5 @@ export default class InfoWindow extends Component {
           {this.state.lyrics === null ? loadingPinSpinner : infoWindowContent}
         </div>
     );
-
-    // return (
-    //   <div id='InfoWindow'>
-    //     <span className='CloseWindow'
-    //       onClick={() => this.props.onCloseInfoWindowClick()}>X</span>
-    //     <Card className="bg-dark" style={{ width: '18rem' }}>
-    //       <Card.Title>{this.state.title}</Card.Title>
-    //       <Card.Text>
-    //         {this.state.lyrics}
-    //       </Card.Text>
-    //       <Card.Text>
-    //         By {this.state.artist} on {this.state.album} ({this.state.releaseDate})
-    //         {this.state.spotifyembed}
-    //       </Card.Text>
-    //     </Card>
-    //     <div id='PinLyrics'>
-    //       {this.state.lyrics}
-    //     </div>
-    //     <div id='PinTitle'>
-    //       {this.state.title}
-    //     </div>
-    //     <div id='PinArtist'>
-    //       by <b>{this.state.artist}</b>
-    //     </div>
-    //     <div className="PinDetail">
-    //       Album: <b>{this.state.album}</b>
-    //     </div>
-    //     <div className="PinDetail">
-    //       Release Date: <b>{this.state.releaseDate}</b>
-    //     </div>
-    //     <div className="PinDetail">
-    //       Genres: <b>{genres}</b>
-    //     </div>
-    //     <div className="PinDetail">
-    //       PinID: {this.props.clickedPinID}
-    //     </div>
-    //     <div className="PinDetail">
-    //       Added By: <Link id="InfoWindowUserLink" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link>
-    //     </div>
-    //     <div className="PinDetail">
-    //       Added on: {this.state.createdDate}
-    //     </div> 
-    //     <div id='SpotifyEmbed'>
-    //       {this.state.spotifyembed}
-    //     </div>
-    //   </div>
-    // );
   }
 }

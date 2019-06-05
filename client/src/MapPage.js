@@ -57,13 +57,10 @@ export default class MapPage extends Component {
     // check if rendered as part of `/users/:id`
     var path = this.props.match.path;
     if (path === "/pins/:id" && this.props.match.params.id !== "") {
-      console.log('got real pinID. fetching details')
       this.fetchPinDetails(this.props.match.params.id);
     } else if (path === "/users/:id" && this.props.match.params.id !== "") {
-      console.log('got real userID')
       this.state.linkedUser = this.props.match.params.id;
     } else if (path === "/about") {
-      console.log('on about page')
       this.state.onAboutPage = true;
     }
 
@@ -78,7 +75,6 @@ export default class MapPage extends Component {
 
     switch (path) {
       case "/":
-        console.log('reset to root')
         this.setState({
           linkedPin: null,
           linkedUser: null,
@@ -88,9 +84,7 @@ export default class MapPage extends Component {
         break;
       case "/pins/:id":
         var pinID = this.props.match.params.id;
-        console.log('pinID, ', pinID);
         if (typeof pinID !== "undefined" && pinID !== "") {
-          console.log('component updated with real pinID. fetching details')
           this.setState({
             linkedUser: null,
             isAddingPin: false,
@@ -101,9 +95,7 @@ export default class MapPage extends Component {
         break;
       case "/users/:id":
         var userID = this.props.match.params.id;
-        console.log('userID, ', userID);
         if (typeof userID !== "undefined" && userID !== "") {
-          console.log('Real pinID. fetching details')
           this.setState({
             linkedPin: null,
             linkedUser: userID,
@@ -229,7 +221,6 @@ export default class MapPage extends Component {
   }
 
   handlePinSubmittedResponse(response) {
-    console.log('handlePinSubmittedResponse, response = ', response);
     this.setState({
       isAddingPin: false,
       showAddPinModal: false,
@@ -258,7 +249,6 @@ export default class MapPage extends Component {
   }
 
   handleRandomClick() {
-    console.log(this.state.pinList)
     if (this.state.pinList === null || this.state.pinList.length === 0 ){
       return;
     }
