@@ -38,8 +38,8 @@ export default class SuggestionSearch extends Component {
       <div>
         <img src={suggestion.SmallImageURL} alt={suggestion.SpotifyTitle + " album cover"}/>
       </div>
-      <div>
-        <b> {suggestion.SpotifyTitle} </b>
+      <div id="Suggestion-Search-Suggestion-Title">
+        {suggestion.SpotifyTitle}
       </div>
       <div>
         {suggestion.SpotifyArtist}
