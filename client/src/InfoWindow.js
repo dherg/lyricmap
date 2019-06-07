@@ -173,7 +173,7 @@ export default class InfoWindow extends Component {
                 </tr>
                 <tr>
                   <td>Added By</td>
-                  <td><b><Link id="Info-Window-User-Link" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link></b></td>
+                  <td><b><Link id="InfoWindowUserLink" to={userLink}> {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName} </Link></b></td>
                 </tr>
               </tbody>
             </Table>
@@ -184,7 +184,7 @@ export default class InfoWindow extends Component {
     );
 
     return (
-        <div id="Info-Window">
+        <div id="InfoWindow">
           {this.state.lyrics === null ? loadingPinSpinner : infoWindowContent}
         </div>
     );
