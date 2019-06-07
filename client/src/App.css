@@ -315,6 +315,10 @@ div > h3 {
   text-align: center;
 }
 
+#Suggestion-Search-Suggestion-Title {
+  font-weight: bold;
+}
+
 .react-autosuggest__container {
   position: relative;
 }
@@ -323,7 +327,7 @@ div > h3 {
   width: 90%;
   height: 30px;
   padding: 10px 20px;
-  font-family: Helvetica, sans-serif;
+  font-family: Titillium Web, sans-serif;
   font-weight: 300;
   font-size: 16px;
   border: 1px solid #aaa;
@@ -351,7 +355,7 @@ div > h3 {
   position: relative;
   border: 1px solid #aaa;
   background-color: #fff;
-  font-family: Helvetica, sans-serif;
+  font-family: Titillium Web, sans-serif;
   font-weight: 300;
   font-size: 16px;
   border-bottom-left-radius: 4px;
@@ -665,6 +669,7 @@ div > h3 {
 html, body {
   background-color: #edebde;
   height: 100vh;
+  font-family: 'Titillium Web', sans-serif;
 }
 
 @keyframes App-logo-spin {
