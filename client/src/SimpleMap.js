@@ -112,7 +112,7 @@ export default class SimpleMap extends Component {
                         "saturation": -61.8
                     },
                     {
-                        "lightness": 45.599999999999994
+                        "lightness": 0
                     },
                     {
                         "gamma": 1
@@ -129,7 +129,7 @@ export default class SimpleMap extends Component {
                         "saturation": -100
                     },
                     {
-                        "lightness": 51.19999999999999
+                        "lightness": 0
                     },
                     {
                         "gamma": 1
@@ -146,7 +146,7 @@ export default class SimpleMap extends Component {
                         "saturation": -100
                     },
                     {
-                        "lightness": 52
+                        "lightness": 0
                     },
                     {
                         "gamma": 1
