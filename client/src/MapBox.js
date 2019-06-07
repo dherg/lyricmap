@@ -57,7 +57,7 @@ export default class MapBox extends Component {
     );
 
     return (
-      <div id="MapBoxWithInfoWindow"
+      <div id="Map-Box-With-Info-Window"
            ref={ (divElement) => {this.divElement = divElement}}
       >
         {this.props.show ? infoWindow : null}

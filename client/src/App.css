@@ -1,5 +1,4 @@
 .SimpleMap {
-  /*height: 100%;*/
   top: 3.5rem;
   width: 100%;
   bottom: 0;
@@ -11,67 +10,10 @@
   text-align: center;
 }
 
-.App-title {
-  font-size: 1.5em;
-}
-
-#add-pin-button {
-  background-color: white;
-}
-
-#Header-Nonlogo {
-  height: 100%;
-  width: 100%;
-  position: relative;
-}
-
-.Header-link-box {
-  position: absolute;
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end; /* vertical positioning of flex items in div */
-  /*width: 100vw;*/
-  width: 100%;
-  bottom: 0;
-}
-
 #basic-navbar-nav {
   width: 100%;
   flex: 1 1 auto;
   min-width: 0px;
-}
-
-.nav-link {
-  /*width: content;*/
-  /*flex: 1 0 auto;*/
-  white-space: nowrap;
-}
-
-
-
-.Header-link-box > div {
-  padding-left: 2%;
-  font-weight: bold;
-}
-
-/* Links in header box */
-.Header-link-box > div > a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-#User-Header-Link {
-  /*word-wrap: break-word;
-  width: 100%;*/
-  padding-bottom: 0.5rem;
-  padding-top: 0.5rem;
-  padding-left: 0rem;
-  padding-right: 0rem;
-}
-
-#Header-Display-Name-And-Button-Box {
-  /*display: inline-flex;*/
 }
 
 #Header-Bar {
@@ -88,7 +30,6 @@
   flex-flow: nowrap;
   flex: 0 1 auto;
   min-width: 0;
-  /*max-width: 34vw;*/
 }
 
 #Search-Bar > input {
@@ -106,7 +47,6 @@
   min-width: 0px;
   display: flex;
   flex-wrap: nowrap;
-  /*text-overflow: fade;*/
   overflow: hidden;
 }
 
@@ -117,65 +57,9 @@
   overflow: hidden;
 }
 
-/* Location search box */
-#floating-panel {
-  z-index: 5;
-  text-align: center;
-  font-family: 'Roboto','sans-serif';
-}
-
 .submit {
   background-color: #404040;
   color: white;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-#Logo-box {
-  display: flex;
-  position: relative;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  color: white;
-  text-decoration: none;
-  width: 30%;
-  font-size: 7vh;
-}
-
-#Logo-box > a > div {
-  position: absolute;
-  color: white;
-  text-decoration: none;
-  width: 100%;
-  bottom: 0px;
-}
-
-#Sign-In-Box {
-  position: absolute;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end; /* vertical positioning of flex items in div */
-  width: 100%;
-  top: 0;
-}
-
-.Sign-In-Box-Element {
-  padding-left: 2%;
-  color: white;
-  text-decoration: none;
-}
-
-.Sign-In-Box-Element > a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-div > h3 {
-  vertical-align: bottom;
 }
 
 #About-Page-Content {
@@ -188,12 +72,12 @@ div > h3 {
   border-radius: 1vw;
 }
 
-#InfoWindowUserLink {
+#Info-Window-User-Link {
   color: white;
   word-break: break-word;
 }
 
-#MapBoxWithInfoWindow {
+#Map-Box-With-Info-Window {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -204,7 +88,7 @@ div > h3 {
   padding-right: 0.5vw;
 }
 
-#InfoWindow {
+#Info-Window {
   position: relative;
   left: 0px;
   min-width: 250px;
@@ -260,12 +144,6 @@ div > h3 {
   overflow: auto;
 }
 
-#Song-Info-Container {
-  /*flex: 0 1 auto;
-  min-height: 0;
-  overflow: auto;*/
-}
-
 #Song-Info {
   background-color: rgba(0,0,0,.3);
 }
@@ -289,24 +167,6 @@ div > h3 {
   border-radius: 1vw;
 }
 
-#AddPinLyricForm {
-
-}
-
-#AddPinLyricTextArea {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 75%;
-}
-
-#AddPinSubmit {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-}
-
 #Header-Alert {
   position: absolute;
   z-index: 130;
@@ -327,7 +187,6 @@ div > h3 {
   width: 90%;
   height: 30px;
   padding: 10px 20px;
-  font-family: Titillium Web, sans-serif;
   font-weight: 300;
   font-size: 16px;
   border: 1px solid #aaa;
@@ -355,7 +214,6 @@ div > h3 {
   position: relative;
   border: 1px solid #aaa;
   background-color: #fff;
-  font-family: Titillium Web, sans-serif;
   font-weight: 300;
   font-size: 16px;
   border-bottom-left-radius: 4px;
@@ -403,46 +261,7 @@ div > h3 {
   justify-content: space-around;
 }
 
-
-#PinTitle {
-  font-weight: bolder;
-  font-size: 1.25em;
-}
-
-#PinArtist {
-
-}
-
-#Spotify-Embed {
-  width: 100%;
- /* border: none solid solid none;
-  border-color: black;
-  border-bottom-right-radius: 1vw;*/
-  /*position: relative;*/
-  /*bottom: 0;
-  left: 0;
-  height: 80px;*/
-  /*left: 0;*/
-  /*flex: 1 0 auto;*/
-  /*position: relative;*/
-}
-
-#PinLyrics {
-  background: #3d3d3d;
-  white-space: pre-line;
-  font-size: 1.5em;
-  font-style: oblique;
-  padding: 5px;
-}
-
-.PinDetail {
-
-}
-
-
-
 #Close-Info-Window-Button {
-    /*padding: 0.5vw;*/
     float: right;
     font-size: 3rem;
     font-weight: 700;
@@ -450,9 +269,6 @@ div > h3 {
     color: white;
     text-shadow: 0 1px 0 white;
     opacity: 1;
-    /*width: content;*/
-
-
 }
 
 .active {
@@ -461,7 +277,6 @@ div > h3 {
 }
 
 /* Pin css based on https://codepen.io/ptzld/pen/adqLxp */
-
 .Pin-container {
   position: absolute;
   left: -10px;
@@ -490,8 +305,6 @@ div > h3 {
 }
 
 .Pin-container--selected {
-  /*width: 100vw;*/
-  /*height: 100vh;*/
   position: absolute;
   left: -20px;
   top: -50px;
@@ -516,27 +329,6 @@ div > h3 {
   top: 25%;
   left: 25%;
   border-radius: 50%;
-}
-
-#Name-Prompt-Box {
-  z-index: 10000;
-  background-color: rgba(0, 0, 0, 0.8);
-  position: fixed;
-  top: 30%;
-  left: 20%;
-  width: auto;
-  height: auto;
-  color: white;
-  text-align: center;
-  overflow: scroll;
-  padding: 5%;
-  line-height: 2em;
-  border-radius: 10px;
-}
-
-#Name-Prompt-Input {
-  margin-top: 2%;
-  margin-bottom: 2%;
 }
 
 #User-Page {
@@ -595,11 +387,6 @@ div > h3 {
   color: orange;
 }
 
-#User-Added-Pin-List {
-  text-align: left;
-  
-}
-
 #root > div > div {
   height: 100vh;
   display: flex;
@@ -608,28 +395,20 @@ div > h3 {
 
 /*For mobile (smaller than iPad) */
 @media only screen and (max-width: 767px) {
-    /*#Search-Bar {
-      display: none;
-    }*/
-    #InfoWindow {
+
+    #Info-Window {
       width: 100vw;
       border-top-right-radius: 0;
     }
 
     #Album-Art-And-Lyric-Container {
-      /*background-image: url("https://i.scdn.co/image/82f94e4e0a281aff83f56639f1f9ce01bb62f323");*/
-      background-repeat: no-repeat;/*
-      background-position: center;
-      display: flex;
-      flex-wrap: wrap;*/
+      background-repeat: no-repeat;
       min-height: 300px;
       position: relative;
       overflow: hidden;
-      /*opacity: 0.3;*/
     }
 
     #Album-Art {
-      /*position: absolute;*/
       position: absolute;
       left: 0;
       top: 0;
@@ -638,7 +417,6 @@ div > h3 {
       opacity: 0.3;
       max-width: 100%;
       max-height: 100%;
-
     }
 
     #Info-Window-Lyrics {
