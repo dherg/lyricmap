@@ -83,6 +83,7 @@ export default class SimpleMap extends Component {
     return({
       streetViewControl: true, 
       mapTypeControl: true,
+      gestureHandling: 'greedy',
       styles: [
             {
                 "featureType": "landscape",
@@ -191,20 +192,6 @@ export default class SimpleMap extends Component {
   }
 
   render() {
-
-    // var styledMapType = new google.maps.StyledMapType(
-    //   [
-
-    //   ]
-    //   {name: 'Styled Map'});
-
-    // createMapOptions(maps) {
-    //   return({
-    //     streetViewControl: true, 
-    //     mapTypeControl: true
-    //   });
-    // }
-
 
     return (
       <div className="SimpleMap">
