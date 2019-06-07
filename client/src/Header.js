@@ -54,8 +54,13 @@ export default class Header extends Component {
       if (res == null) {
         return;
       }
-      if (res["DisplayName"] !== null && res["UserID"] !== null) {
-        this.updateCurrentUser(res["UserID"], res["DisplayName"])
+      // Check if we need prompt for user to set a display name or just set user as logged in
+      if (res["UserID"] !== null) {
+        if (res["DisplayName"] === "") {
+          this.handlePromptForName(res["UserID"])
+        } else {
+          this.updateCurrentUser(res["UserID"], res["DisplayName"])
+        }
       }
     });
   }
