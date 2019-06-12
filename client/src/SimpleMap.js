@@ -17,7 +17,7 @@ export default class SimpleMap extends Component {
     this.addPin = this.addPin.bind(this);
     this.state = {
       center: {lat: 35.027718, lng: -95.625},
-      zoom: 5,
+      zoom: 4.5,
       pinList: null,
     }
   }
