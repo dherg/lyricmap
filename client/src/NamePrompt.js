@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
-import { putDisplayName } from './App';
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import { putDisplayName } from './App';
 
 // modal to prompt new user to set their display name
 export default class NamePrompt extends Component {
@@ -13,12 +13,11 @@ export default class NamePrompt extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
-      validated: false
+      validated: false,
     };
   }
 
   handleSubmit(event) {
-
     event.preventDefault();
     event.stopPropagation();
 
@@ -30,14 +29,13 @@ export default class NamePrompt extends Component {
     this.setState({ validated: true });
 
     // Put new display name
-    putDisplayName(form.elements.nickname.value)
+    putDisplayName(form.elements.nickname.value);
 
     this.props.closeNamePrompt();
-
   }
 
   render() {
-    return(
+    return (
       <Modal show={this.props.show}>
         <Modal.Header>
           <Modal.Title>What should we call you?</Modal.Title>
@@ -45,7 +43,7 @@ export default class NamePrompt extends Component {
         <Form noValidate validated={this.state.validated} onSubmit={e => this.handleSubmit(e)}>
           <Modal.Body>
             <Form.Group controlId="formNickname">
-              <Form.Control name="nickname" required type="text" placeholder="Enter a nickname." maxLength="32"/>
+              <Form.Control name="nickname" required type="text" placeholder="Enter a nickname." maxLength="32" />
               <Form.Control.Feedback type="invalid">
                 Your nickname can't be blank!
               </Form.Control.Feedback>
@@ -59,7 +57,6 @@ export default class NamePrompt extends Component {
           </Modal.Footer>
         </Form>
       </Modal>
-    )
+    );
   }
-
 }

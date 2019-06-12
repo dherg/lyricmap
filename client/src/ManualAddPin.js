@@ -1,25 +1,23 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
+import Form from 'react-bootstrap/Form';
 import { postPin } from './App';
 import LoadingButton from './LoadingButton';
 
-import Form from 'react-bootstrap/Form'
 
 // Component to add pin when song is not found in spotify search
 export default class ManualAddPin extends Component {
-
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
 
     this.state = {
       isLoadingSubmissionResponse: false,
-      validated: false
+      validated: false,
     };
   }
 
   handleSubmit(event) {
-
     console.log(this.props);
 
     const form = event.currentTarget;
@@ -30,25 +28,24 @@ export default class ManualAddPin extends Component {
       console.log(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value);
       this.setState({ isLoadingSubmissionResponse: true });
       postPin(this.props.lat, this.props.lng, form.elements.title.value, form.elements.artist.value, form.elements.lyric.value)
-        .then(data => {
-            if (data === null) {
-              console.log('error on post')
-            } else {
-              console.log('successfully added:')
-              console.log(data)
-            }
-            this.props.onPinSubmittedResponse(data);
-          })
-        .catch(err => {
+        .then((data) => {
+          if (data === null) {
+            console.log('error on post');
+          } else {
+            console.log('successfully added:');
+            console.log(data);
+          }
+          this.props.onPinSubmittedResponse(data);
+        })
+        .catch((err) => {
           this.props.onPinSubmittedResponse(null);
         });
     }
   }
 
   render() {
-
-    return(
-      <Form 
+    return (
+      <Form
         noValidate
         validated={this.state.validated}
         onSubmit={e => this.handleSubmit(e)}
@@ -69,14 +66,13 @@ export default class ManualAddPin extends Component {
         </Form.Group>
         <Form.Group controlId="formPinLyric">
           <Form.Label>Lyric</Form.Label>
-          <Form.Control required name="lyric" as="textarea" rows="2" placeholder="Enter the location-relevant portion of the lyrics"/>
+          <Form.Control required name="lyric" as="textarea" rows="2" placeholder="Enter the location-relevant portion of the lyrics" />
           <Form.Control.Feedback type="invalid">
             The location lyric is required.
           </Form.Control.Feedback>
         </Form.Group>
-        <LoadingButton isLoading={this.state.isLoadingSubmissionResponse} variant="primary"/>
+        <LoadingButton isLoading={this.state.isLoadingSubmissionResponse} variant="primary" />
       </Form>
     );
-
   }
 }

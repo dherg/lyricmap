@@ -1,14 +1,13 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
-import FormControl from 'react-bootstrap/FormControl'
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
 
-const google = window.google;
+const { google } = window;
 
 // Search bar
 export default class SearchBar extends Component {
-
   constructor(props) {
     super(props);
 
@@ -23,19 +22,19 @@ export default class SearchBar extends Component {
   }
 
   geocodeAddress(address) {
-    var geocoder = new google.maps.Geocoder();
+    const geocoder = new google.maps.Geocoder();
 
-    geocoder.geocode({'address': address}, (results, status) => {
-      console.log('Results: ' + results[0]);
+    geocoder.geocode({ address }, (results, status) => {
+      console.log(`Results: ${results[0]}`);
       if (status === 'OK') {
-        console.log('status OK. results: ' + results[0].formatted_address);
-        console.log('results[0].geometry.location: ' + results[0].geometry.location);
+        console.log(`status OK. results: ${results[0].formatted_address}`);
+        console.log(`results[0].geometry.location: ${results[0].geometry.location}`);
         this.changeMapCenter(results[0].geometry);
       } else {
         console.log('Geocode was not successful.');
-        console.log('Status: ' + status);
+        console.log(`Status: ${status}`);
       }
-    }); 
+    });
   }
 
   // handle clicking the "submit" button
@@ -49,8 +48,7 @@ export default class SearchBar extends Component {
   }
 
   render() {
-
-    return(
+    return (
       <Form inline id="Search-Bar" onSubmit={e => this.handleSubmit(e)}>
         <FormControl name="address" type="text" placeholder="Search for a location" className="mr-sm-2" />
         <Button variant="outline-success" type="submit">Search</Button>

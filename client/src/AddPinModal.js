@@ -1,13 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 // import ManualAddPin from './ManualAddPin';
+import Modal from 'react-bootstrap/Modal';
 import SuggestionSearch from './SuggestionSearch';
-
-import Modal from 'react-bootstrap/Modal'
 
 
 export default class AddPinModal extends Component {
-
   constructor(props) {
     super(props);
     this.onShowSuggestionSearchClick = this.onShowSuggestionSearchClick.bind(this);
@@ -40,7 +38,6 @@ export default class AddPinModal extends Component {
   }
 
   render() {
-
     // const manualAddPin = (
     //   <ManualAddPin onCloseAddPinModalClick={this.props.onCloseAddPinModalClick}
     //                 onPinSubmittedResponse={this.props.onPinSubmittedResponse}
@@ -49,10 +46,12 @@ export default class AddPinModal extends Component {
     // );
 
     const suggestionSearch = (
-      <SuggestionSearch onCloseAddPinModalClick={this.onCloseAddPinModalClick}
-                        onPinSubmittedResponse={this.props.onPinSubmittedResponse}
-                        lat={this.props.lat}
-                        lng={this.props.lng}/>
+      <SuggestionSearch
+        onCloseAddPinModalClick={this.onCloseAddPinModalClick}
+        onPinSubmittedResponse={this.props.onPinSubmittedResponse}
+        lat={this.props.lat}
+        lng={this.props.lng}
+      />
     );
 
     // const switchToManual = (
@@ -67,11 +66,11 @@ export default class AddPinModal extends Component {
     //   </div>
     // );
 
-    return(
+    return (
       <Modal show={this.props.show} onHide={this.props.onCloseAddPinModalClick}>
         <Modal.Header closeButton>
           <Modal.Title id="add-pin-modal-title">
-            Add a Pin 
+            Add a Pin
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

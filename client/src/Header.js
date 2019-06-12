@@ -1,15 +1,14 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
-import SearchBar from './SearchBar';
+
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import Button from 'react-bootstrap/Button';
 import SignInModal from './SignInModal';
-
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
-import Button from 'react-bootstrap/Button'
+import SearchBar from './SearchBar';
 
 // Site header bar
 export default class Header extends Component {
-
   constructor(props) {
     super(props);
     this.updateCurrentUser = this.updateCurrentUser.bind(this);
@@ -24,55 +23,55 @@ export default class Header extends Component {
 
     this.state = {
       currentUser: null,
-      showSignInModal: false, 
+      showSignInModal: false,
       navExpanded: false,
-    }
+    };
   }
 
   componentDidMount() {
     // Check if user is logged in and get display name
-    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/login';
+    const url = `${process.env.REACT_APP_LYRICMAP_API_HOST}/login`;
     fetch(url, {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
       },
     })
-    .then(function(res) {
+      .then((res) => {
         if (res.status === 403) {
-          return(null)
-        } else if (res.status >= 400) {
-          throw new Error("Bad response from server when checking if logged in.");
+          return (null);
+        } if (res.status >= 400) {
+          throw new Error('Bad response from server when checking if logged in.');
         }
         return res.json();
-      }
-    )
-    .then(res => { 
+      })
+      .then((res) => {
       // return null in case of 403
-      if (res == null) {
-        return;
-      }
-      // Check if we need prompt for user to set a display name or just set user as logged in
-      if (res["UserID"] !== null) {
-        if (res["DisplayName"] === "") {
-          this.handlePromptForName(res["UserID"])
-        } else {
-          this.updateCurrentUser(res["UserID"], res["DisplayName"])
+        if (res == null) {
+          return;
         }
-      }
-    });
+        // Check if we need prompt for user to set a display name or just set user as logged in
+        if (res.UserID !== null) {
+          if (res.DisplayName === '') {
+            this.handlePromptForName(res.UserID);
+          } else {
+            this.updateCurrentUser(res.UserID, res.DisplayName);
+          }
+        }
+      });
   }
 
   updateCurrentUser(newUserID, newName) {
     window.globalCurrentUser.userID = newUserID;
     window.globalCurrentUser.displayName = newName;
-    this.setState({currentUser: {
-                                  userID: newUserID,
-                                  displayName: newName
-                                }
-                  }); // set state to same thing - force rerender of displayname after it is updated in signin
+    this.setState({
+      currentUser: {
+        userID: newUserID,
+        displayName: newName,
+      },
+    }); // set state to same thing - force rerender of displayname after it is updated in signin
     if (this.props.handleUpdateCurrentUser) {
       this.props.handleUpdateCurrentUser(this.state.currentUser);
     }
@@ -95,39 +94,39 @@ export default class Header extends Component {
   }
 
   handleSignOutButtonClick() {
-    // sign out of google 
-    window.gapi.load('auth2', 
-      function() { 
-        window.gapi.auth2.init(); 
-        var auth2 = window.gapi.auth2.getAuthInstance();
+    // sign out of google
+    window.gapi.load('auth2',
+      () => {
+        window.gapi.auth2.init();
+        const auth2 = window.gapi.auth2.getAuthInstance();
         console.log('auth2:', auth2);
-        auth2.signOut()
+        auth2.signOut();
       });
 
-     // send request to backend to signout
-    var url = process.env.REACT_APP_LYRICMAP_API_HOST + '/logout';
+    // send request to backend to signout
+    const url = `${process.env.REACT_APP_LYRICMAP_API_HOST}/logout`;
     fetch(url, {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-      }
-    })
+      },
+    });
 
     // set user vars
     this.setState({
       currentUser: null,
-      showSignInModal: false
+      showSignInModal: false,
     });
     window.globalCurrentUser.displayName = null;
-    window.globalCurrentUser.userID = null; 
+    window.globalCurrentUser.userID = null;
   }
 
   toggleNavExpanded() {
     this.setState({
       navExpanded: !this.state.navExpanded,
-    })
+    });
     this.props.onToggleNavBarClick();
   }
 
@@ -149,12 +148,17 @@ export default class Header extends Component {
   }
 
   render() {
-
     // get currently logged in user info
-    const userNav = (window.globalCurrentUser.displayName == null ? null : <Nav.Link id="User-Display-Name-Nav" href={"/users/" + window.globalCurrentUser.userID}> {window.globalCurrentUser.displayName} </Nav.Link>);
+    const userNav = (window.globalCurrentUser.displayName == null ? null : (
+      <Nav.Link id="User-Display-Name-Nav" href={`/users/${window.globalCurrentUser.userID}`}>
+        {' '}
+        {window.globalCurrentUser.displayName}
+        {' '}
+      </Nav.Link>
+    ));
 
-    const signInButton = <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>
-    const signOutButton = <Button variant="primary" onClick={this.handleSignOutButtonClick}> Sign Out </Button>
+    const signInButton = <Button variant="primary" onClick={this.handleSignInButtonClick}> Sign In </Button>;
+    const signOutButton = <Button variant="primary" onClick={this.handleSignOutButtonClick}> Sign Out </Button>;
 
     let navLinks;
     if (this.props.onMapPage) {
@@ -164,7 +168,7 @@ export default class Header extends Component {
             <Nav.Link href="/about">About</Nav.Link>
             <Nav.Link onClick={this.handleRandomClick}>Random Pin</Nav.Link>
             <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
-            <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar}/>
+            <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar} />
           </Nav>
           <Nav id="Header-Right-Side" className="ml-auto">
             {userNav}
@@ -178,7 +182,7 @@ export default class Header extends Component {
           <Nav id="Header-Left-Side" className="mr-auto">
             <Nav.Link href="/about">About</Nav.Link>
             <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
-            <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar}/>
+            <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar} />
           </Nav>
           <Nav id="Header-Right-Side" className="ml-auto">
             {userNav}
@@ -202,21 +206,25 @@ export default class Header extends Component {
 
     return (
       <div id="Header-Bar">
-        <Navbar onSelect={this.handleCollapseNavBar} 
-                expanded={this.state.navExpanded} 
-                onToggle={this.toggleNavExpanded} 
-                expand="lg" 
-                bg="dark" 
-                variant="dark">
+        <Navbar
+          onSelect={this.handleCollapseNavBar}
+          expanded={this.state.navExpanded}
+          onToggle={this.toggleNavExpanded}
+          expand="lg"
+          bg="dark"
+          variant="dark"
+        >
           <Navbar.Brand href="/">Lyric Map</Navbar.Brand>
           <Navbar.Toggle onClick={this.toggleNavExpanded} aria-controls="responsive-navbar-nav" />
           {navLinks}
         </Navbar>
-        <SignInModal show={this.state.showSignInModal} 
-                     updateCurrentUser={this.updateCurrentUser} 
-                     handlePromptForName={this.handlePromptForName}
-                     handleHideModal={this.handleCloseSignInModalClick}
-                     handleSignOutButtonClick={this.handleSignOutButtonClick}/>
+        <SignInModal
+          show={this.state.showSignInModal}
+          updateCurrentUser={this.updateCurrentUser}
+          handlePromptForName={this.handlePromptForName}
+          handleHideModal={this.handleCloseSignInModalClick}
+          handleSignOutButtonClick={this.handleSignOutButtonClick}
+        />
       </div>
     ); // close return
   } // close render()

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import { fitBounds } from 'google-map-react/utils';
 
@@ -14,7 +14,6 @@ import { fetchPinInfo } from './App';
 
 // the header + MapBox
 export default class MapPage extends Component {
-
   constructor(props) {
     super(props);
     this.handleAddPinButton = this.handleAddPinButton.bind(this);
@@ -33,7 +32,7 @@ export default class MapPage extends Component {
     this.handleSearchSubmitClick = this.handleSearchSubmitClick.bind(this);
     this.handleShowInfoWindow = this.handleShowInfoWindow.bind(this);
     this.handleHideInfoWindow = this.handleHideInfoWindow.bind(this);
-    
+
 
     this.state = {
       center: null,
@@ -41,70 +40,68 @@ export default class MapPage extends Component {
       mapheight: null,
       isAddingPin: false,
       onAboutPage: false,
-      showAddPinInstructionAlert: false, 
+      showAddPinInstructionAlert: false,
       showAddPinModal: false,
-      showInfoWindow: false, 
+      showInfoWindow: false,
       showMustBeSignedInAlert: false,
       showNamePrompt: false,
-      showPinSubmittedAlert: false, 
+      showPinSubmittedAlert: false,
       pinList: null,
       pinSubmitResponse: null,
       linkedPin: null,
       linkedUser: null,
       currentUser: null,
-    }
+    };
 
     // check if rendered as part of `/users/:id`
-    var path = this.props.match.path;
-    if (path === "/pins/:id" && this.props.match.params.id !== "") {
+    const { path } = this.props.match;
+    if (path === '/pins/:id' && this.props.match.params.id !== '') {
       this.fetchPinDetails(this.props.match.params.id);
-    } else if (path === "/users/:id" && this.props.match.params.id !== "") {
+    } else if (path === '/users/:id' && this.props.match.params.id !== '') {
       this.state.linkedUser = this.props.match.params.id;
-    } else if (path === "/about") {
+    } else if (path === '/about') {
       this.state.onAboutPage = true;
     }
-
   }
 
   componentDidUpdate(prevProps) {
-
-    var path = this.props.match.path;
+    const { path } = this.props.match;
     if (prevProps.match.path === path && prevProps.match.params.id === this.props.match.params.id) {
       return;
     }
 
     switch (path) {
-      case "/":
+      case '/':
         this.setState({
           linkedPin: null,
           linkedUser: null,
           isAddingPin: false,
           onAboutPage: false,
-        })
+        });
         break;
-      case "/pins/:id":
+      case '/pins/:id':
         var pinID = this.props.match.params.id;
-        if (typeof pinID !== "undefined" && pinID !== "") {
+        if (typeof pinID !== 'undefined' && pinID !== '') {
           this.setState({
             linkedUser: null,
             isAddingPin: false,
             onAboutPage: false,
-          })
+          });
           this.fetchPinDetails(pinID);
         }
         break;
-      case "/users/:id":
+      case '/users/:id':
         var userID = this.props.match.params.id;
-        if (typeof userID !== "undefined" && userID !== "") {
+        if (typeof userID !== 'undefined' && userID !== '') {
           this.setState({
             linkedPin: null,
             linkedUser: userID,
             isAddingPin: false,
             onAboutPage: false,
-          })
+          });
         }
         break;
-      case "/about":
+      case '/about':
         this.setState({
           linkedPin: null,
           linkedUser: null,
@@ -118,11 +115,11 @@ export default class MapPage extends Component {
   }
 
   fetchPinDetails(pinID) {
-    var that = this;
-    fetchPinInfo(pinID).then(function(result) {
+    const that = this;
+    fetchPinInfo(pinID).then((result) => {
       // result will be null in case of 404
       if (result == null) {
-        return
+
       } else {
         that.linkToPin(result.pinID, result.lat, result.lng);
       }
@@ -130,37 +127,36 @@ export default class MapPage extends Component {
   }
 
   linkToPin(pinID, pinLat, pinLng) {
-
-    // close other windows 
+    // close other windows
     this.handleCloseNamePrompt();
     this.handleCloseAddPinModalClick();
 
     // update state with linkedPin and close any alerts
     this.setState({
       linkedPin: {
-                    "PinID" : pinID, 
-                    "Lat" : pinLat, 
-                    "Lng" : pinLng
-                 },
+        PinID: pinID,
+        Lat: pinLat,
+        Lng: pinLng,
+      },
       showAddPinInstructionAlert: false,
       showAddPinModal: false,
       showPinSubmittedAlert: false,
       showMustBeSignedInAlert: false,
-      showInfoWindow: true, 
+      showInfoWindow: true,
     });
-    this.props.history.push('/pins/' + pinID);
+    this.props.history.push(`/pins/${pinID}`);
   }
 
   setMapDimensions(mapwidth, mapheight) {
     this.setState({
-      mapwidth: mapwidth,
-      mapheight: mapheight,
+      mapwidth,
+      mapheight,
     });
   }
 
   changeMapCenter(geometry) {
-    var bounds_ne = geometry.viewport.getNorthEast();
-    var bounds_sw = geometry.viewport.getSouthWest();
+    const bounds_ne = geometry.viewport.getNorthEast();
+    const bounds_sw = geometry.viewport.getSouthWest();
     const bounds = {
       ne: {
         lat: bounds_ne.lat(),
@@ -169,20 +165,20 @@ export default class MapPage extends Component {
       sw: {
         lat: bounds_sw.lat(),
         lng: bounds_sw.lng(),
-      }
-    }
+      },
+    };
 
     const size = {
       width: this.state.mapwidth,
-      height: this.state.mapheight
-    }
+      height: this.state.mapheight,
+    };
 
-    const {center, zoom} = fitBounds(bounds, size)
+    const { center, zoom } = fitBounds(bounds, size);
 
     this.setState({
-      center: center,
-      zoom: zoom,
-    })
+      center,
+      zoom,
+    });
   }
 
   handleAddPinButton() {
@@ -203,7 +199,7 @@ export default class MapPage extends Component {
   }
 
   handleAddPin(lat, lng) {
-    console.log("adding pin at " + lat + ", " + lng);
+    console.log(`adding pin at ${lat}, ${lng}`);
     this.setState({
       isAddingPin: false,
       showAddPinModal: true,
@@ -233,28 +229,28 @@ export default class MapPage extends Component {
     this.setState({
       showNamePrompt: true,
       showInfoWindow: false,
-    })
+    });
   }
 
   handleCloseNamePrompt() {
     this.setState({
-      showNamePrompt: false
-    })
+      showNamePrompt: false,
+    });
   }
 
   handlePinListUpdate(pinList) {
     this.setState({
-      pinList: pinList,
+      pinList,
     });
   }
 
   handleRandomClick() {
-    if (this.state.pinList === null || this.state.pinList.length === 0 ){
+    if (this.state.pinList === null || this.state.pinList.length === 0) {
       return;
     }
 
-    // choose random pin from this.state.pinList 
-    var randomPin = this.state.pinList[Math.floor(Math.random() * this.state.pinList.length)];
+    // choose random pin from this.state.pinList
+    const randomPin = this.state.pinList[Math.floor(Math.random() * this.state.pinList.length)];
 
     this.linkToPin(randomPin.PinID, randomPin.Lat, randomPin.Lng);
   }
@@ -262,7 +258,7 @@ export default class MapPage extends Component {
   handleUpdateCurrentUser(newUser) {
     this.setState({
       currentUser: newUser,
-    })
+    });
   }
 
   handleDismissMustBeSignedInAlert() {
@@ -273,7 +269,7 @@ export default class MapPage extends Component {
 
   handleDismissAddPinInstructionAlert() {
     this.setState({
-      showAddPinInstructionAlert: false, 
+      showAddPinInstructionAlert: false,
     });
   }
 
@@ -313,91 +309,106 @@ export default class MapPage extends Component {
   }
 
   render() {
-
-    var pinAddedSuccessMessage = "Pin added!";
-    var pinAddedErrorMessage = "Error submitting pin, please try again later.";
+    const pinAddedSuccessMessage = 'Pin added!';
+    const pinAddedErrorMessage = 'Error submitting pin, please try again later.';
 
     const mapPage = (
       <div id="Map-Page">
-        <Header onMapPage={true} 
-                changeMapCenter={(g) => this.changeMapCenter(g)} 
-                handleAddPinButton={this.handleAddPinButton} 
-                isAddingPin={this.state.isAddingPin} 
-                handlePromptForName={this.handlePromptForName}
-                handleRandomClick={this.handleRandomClick}
-                pinList={this.state.pinList}
-                onToggleNavBarClick={this.handleToggleNavBarClick}
-                onSearchSubmitClick={this.handleSearchSubmitClick}/>
-        <HeaderAlert onClose={this.handleDismissMustBeSignedInAlert}
-                     show={this.state.showMustBeSignedInAlert}
-                     variant="danger"
-                     message="You must be signed in to add a pin."/>
-        <HeaderAlert onClose={this.handleDismissAddPinInstructionAlert}
-                     show={this.state.showAddPinInstructionAlert}
-                     variant="primary"
-                     message="Click on the map at the exact location the song references to add a pin."/>
-        <HeaderAlert onClose={this.handleDismissPinSubmittedAlert}
-                     show={this.state.showPinSubmittedAlert}
-                     variant={this.state.pinSubmitResponse === null ? "danger" : "info"}
-                     message={this.state.pinSubmitResponse === null ? pinAddedErrorMessage : pinAddedSuccessMessage}/>
-        <MapBox center={this.state.center} 
-                zoom={this.state.zoom}
-                setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
-                isAddingPin={this.state.isAddingPin}
-                handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}
-                handlePinListUpdate={(pinList) => this.handlePinListUpdate(pinList)}
-                linkedPin={this.state.linkedPin}
-                show={this.state.showInfoWindow}
-                showInfoWindow={this.handleShowInfoWindow}
-                hideInfoWindow={this.handleHideInfoWindow}
-                addedPins={this.state.pinSubmitResponse}/>
-        <AddPinModal show={this.state.showAddPinModal} 
-                     onCloseAddPinModalClick={this.handleCloseAddPinModalClick}
-                     onPinSubmittedResponse={this.handlePinSubmittedResponse}
-                     lat={this.state.addingPinLat}
-                     lng={this.state.addingPinLng}/>
-        <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt}/>
+        <Header
+          onMapPage
+          changeMapCenter={g => this.changeMapCenter(g)}
+          handleAddPinButton={this.handleAddPinButton}
+          isAddingPin={this.state.isAddingPin}
+          handlePromptForName={this.handlePromptForName}
+          handleRandomClick={this.handleRandomClick}
+          pinList={this.state.pinList}
+          onToggleNavBarClick={this.handleToggleNavBarClick}
+          onSearchSubmitClick={this.handleSearchSubmitClick}
+        />
+        <HeaderAlert
+          onClose={this.handleDismissMustBeSignedInAlert}
+          show={this.state.showMustBeSignedInAlert}
+          variant="danger"
+          message="You must be signed in to add a pin."
+        />
+        <HeaderAlert
+          onClose={this.handleDismissAddPinInstructionAlert}
+          show={this.state.showAddPinInstructionAlert}
+          variant="primary"
+          message="Click on the map at the exact location the song references to add a pin."
+        />
+        <HeaderAlert
+          onClose={this.handleDismissPinSubmittedAlert}
+          show={this.state.showPinSubmittedAlert}
+          variant={this.state.pinSubmitResponse === null ? 'danger' : 'info'}
+          message={this.state.pinSubmitResponse === null ? pinAddedErrorMessage : pinAddedSuccessMessage}
+        />
+        <MapBox
+          center={this.state.center}
+          zoom={this.state.zoom}
+          setMapDimensions={(mapwidth, mapheight) => this.setMapDimensions(mapwidth, mapheight)}
+          isAddingPin={this.state.isAddingPin}
+          handleAddPin={(lat, lng) => this.handleAddPin(lat, lng)}
+          handlePinListUpdate={pinList => this.handlePinListUpdate(pinList)}
+          linkedPin={this.state.linkedPin}
+          show={this.state.showInfoWindow}
+          showInfoWindow={this.handleShowInfoWindow}
+          hideInfoWindow={this.handleHideInfoWindow}
+          addedPins={this.state.pinSubmitResponse}
+        />
+        <AddPinModal
+          show={this.state.showAddPinModal}
+          onCloseAddPinModalClick={this.handleCloseAddPinModalClick}
+          onPinSubmittedResponse={this.handlePinSubmittedResponse}
+          lat={this.state.addingPinLat}
+          lng={this.state.addingPinLng}
+        />
+        <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt} />
 
       </div>
     );
 
     const userPage = (
       <div>
-        <Header handleUpdateCurrentUser={this.handleUpdateCurrentUser}
-                handlePromptForName={this.handlePromptForName}
-                onToggleNavBarClick={this.handleToggleNavBarClick}/>
-        <UserPage userID={this.state.linkedUser} currentUser={this.state.currentUser}/>
-        <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt}/>
+        <Header
+          handleUpdateCurrentUser={this.handleUpdateCurrentUser}
+          handlePromptForName={this.handlePromptForName}
+          onToggleNavBarClick={this.handleToggleNavBarClick}
+        />
+        <UserPage userID={this.state.linkedUser} currentUser={this.state.currentUser} />
+        <NamePrompt show={this.state.showNamePrompt} closeNamePrompt={this.handleCloseNamePrompt} />
       </div>
     );
 
     const aboutPage = (
       <div>
-        <Header changeMapCenter={(g) => this.changeMapCenter(g)} 
-                handleUpdateCurrentUser={this.handleUpdateCurrentUser}
-                handleAddPinButton={this.handleAddPinButton}
-                isAddingPin={this.state.isAddingPin}
-                pinList={this.state.pinList}
-                handlePromptForName={this.handlePromptForName}
-                handleRandomClick={this.handleRandomClick}
-                onToggleNavBarClick={this.handleToggleNavBarClick}
-                onSearchSubmitClick={this.handleSearchSubmitClick}
-                onAboutPage={true}/>
-        <HeaderAlert onClose={this.handleDismissMustBeSignedInAlert}
-                     show={this.state.showMustBeSignedInAlert}
-                     variant="danger"
-                     message="You must be signed in to add a pin."/>
+        <Header
+          changeMapCenter={g => this.changeMapCenter(g)}
+          handleUpdateCurrentUser={this.handleUpdateCurrentUser}
+          handleAddPinButton={this.handleAddPinButton}
+          isAddingPin={this.state.isAddingPin}
+          pinList={this.state.pinList}
+          handlePromptForName={this.handlePromptForName}
+          handleRandomClick={this.handleRandomClick}
+          onToggleNavBarClick={this.handleToggleNavBarClick}
+          onSearchSubmitClick={this.handleSearchSubmitClick}
+          onAboutPage
+        />
+        <HeaderAlert
+          onClose={this.handleDismissMustBeSignedInAlert}
+          show={this.state.showMustBeSignedInAlert}
+          variant="danger"
+          message="You must be signed in to add a pin."
+        />
         <About />
       </div>
     );
 
     if (this.state.onAboutPage) {
-      return(aboutPage)
-    } else if (this.state.linkedUser !== null) {
-      return(userPage)
-    } else {
-      return mapPage
+      return (aboutPage);
+    } if (this.state.linkedUser !== null) {
+      return (userPage);
     }
-
+    return mapPage;
   }
 }

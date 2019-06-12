@@ -1,23 +1,21 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 export default class Random extends Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
 
-        this.handleClick = this.handleClick.bind(this);
-    }
+  handleClick() {
+    this.props.handleRandomClick();
+  }
 
-    handleClick() {
-        this.props.handleRandomClick();
-    }
-
-    render() {
-
-        return (
-            <div onClick={this.handleClick}>
+  render() {
+    return (
+      <div onClick={this.handleClick}>
                 Random Pin
-            </div>
-        );
-    }
+      </div>
+    );
+  }
 }
