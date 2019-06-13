@@ -32,8 +32,30 @@ export default class InfoWindow extends Component {
     };
   }
 
+  componentDidMount() {
+    if (this.props.clickedPinID === null) {
+      return;
+    }
+    fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Update all the props if pinID has changed
+    if (this.props.clickedPinID !== prevProps.clickedPinID) {
+      fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
+    } else if (this.state.createdByID !== prevState.createdByID && this.state.createdByID !== null) {
+      // If we've now fetched pin info, try to fetch display name of user who added pin
+      this.fetchCreatorDisplayName(this.state.createdByID);
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
+
   fetchCreatorDisplayName(userID) {
-    // get url for environment
     const url = `${process.env.REACT_APP_LYRICMAP_API_HOST}/users`;
     const that = this;
     fetch(`${url}?id=${String(userID)}`, {
@@ -45,9 +67,7 @@ export default class InfoWindow extends Component {
       },
     })
       .then((res) => {
-        if (res.status === 404) {
-          console.log('creator userID not found');
-        } else if (res.status !== 200) {
+        if (res.status !== 200) {
           throw new Error('Not 200 response');
         } else {
           res.json().then((data) => {
@@ -58,37 +78,11 @@ export default class InfoWindow extends Component {
             }
           });
         }
-      })
-      .catch((err) => {
-        console.log(err);
-      }); // end fetch()
-  }
-
-  componentDidMount() {
-    if (this.props.clickedPinID === null) {
-      return;
-    }
-    fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
-    this.updateWindowDimensions();
-    window.addEventListener('resize', this.updateWindowDimensions);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateWindowDimensions);
+      });
   }
 
   updateWindowDimensions() {
     this.setState({ viewportWidth: window.innerWidth, viewportHeight: window.innerHeight });
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // update all the props if pinID has changed
-    if (this.props.clickedPinID !== prevProps.clickedPinID) {
-      fetchPinInfo(this.props.clickedPinID).then(res => this.setState(res));
-    } else if (this.state.createdByID !== prevState.createdByID && this.state.createdByID !== null) {
-      // if we've now fetched pin info, try to fetch display name of user who added pin
-      this.fetchCreatorDisplayName(this.state.createdByID);
-    }
   }
 
   render() {
@@ -181,9 +175,7 @@ by
                   <td>
                     <b>
                       <Link id="Info-Window-User-Link" to={userLink}>
-                        {' '}
                         {this.state.createdByName === null ? this.state.createdByID : this.state.createdByName}
-                        {' '}
                       </Link>
                     </b>
                   </td>

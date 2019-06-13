@@ -48,7 +48,6 @@ export default class Header extends Component {
         return res.json();
       })
       .then((res) => {
-      // return null in case of 403
         if (res == null) {
           return;
         }
@@ -71,7 +70,7 @@ export default class Header extends Component {
         userID: newUserID,
         displayName: newName,
       },
-    }); // set state to same thing - force rerender of displayname after it is updated in signin
+    });
     if (this.props.handleUpdateCurrentUser) {
       this.props.handleUpdateCurrentUser(this.state.currentUser);
     }
@@ -99,11 +98,10 @@ export default class Header extends Component {
       () => {
         window.gapi.auth2.init();
         const auth2 = window.gapi.auth2.getAuthInstance();
-        console.log('auth2:', auth2);
         auth2.signOut();
       });
 
-    // send request to backend to signout
+    // Send request to logout endpoint
     const url = `${process.env.REACT_APP_LYRICMAP_API_HOST}/logout`;
     fetch(url, {
       method: 'POST',
@@ -114,7 +112,6 @@ export default class Header extends Component {
       },
     });
 
-    // set user vars
     this.setState({
       currentUser: null,
       showSignInModal: false,
@@ -148,12 +145,9 @@ export default class Header extends Component {
   }
 
   render() {
-    // get currently logged in user info
     const userNav = (window.globalCurrentUser.displayName == null ? null : (
       <Nav.Link id="User-Display-Name-Nav" href={`/users/${window.globalCurrentUser.userID}`}>
-        {' '}
         {window.globalCurrentUser.displayName}
-        {' '}
       </Nav.Link>
     ));
 
@@ -163,44 +157,34 @@ export default class Header extends Component {
     let navLinks;
     if (this.props.onMapPage) {
       navLinks = (
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav id="Header-Left-Side" className="mr-auto">
-            <Nav.Link href="/about">About</Nav.Link>
-            <Nav.Link onClick={this.handleRandomClick}>Random Pin</Nav.Link>
-            <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
-            <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar} />
-          </Nav>
-          <Nav id="Header-Right-Side" className="ml-auto">
-            {userNav}
-            {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
-          </Nav>
-        </Navbar.Collapse>
+        <Nav id="Header-Left-Side" className="mr-auto">
+          <Nav.Link href="/about">About</Nav.Link>
+          <Nav.Link onClick={this.handleRandomClick}>Random Pin</Nav.Link>
+          <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
+          <SearchBar
+            changeMapCenter={this.props.changeMapCenter}
+            onSearchSubmitClick={this.props.onSearchSubmitClick}
+            closeNavIfExpanded={this.handleCollapseNavBar}
+          />
+        </Nav>
       );
     } else if (this.props.onAboutPage) {
       navLinks = (
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav id="Header-Left-Side" className="mr-auto">
-            <Nav.Link href="/about">About</Nav.Link>
-            <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
-            <SearchBar changeMapCenter={this.props.changeMapCenter} onSearchSubmitClick={this.props.onSearchSubmitClick} closeNavIfExpanded={this.handleCollapseNavBar} />
-          </Nav>
-          <Nav id="Header-Right-Side" className="ml-auto">
-            {userNav}
-            {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
-          </Nav>
-        </Navbar.Collapse>
+        <Nav id="Header-Left-Side" className="mr-auto">
+          <Nav.Link href="/about">About</Nav.Link>
+          <Nav.Link onClick={this.handleAddPinButton}>Add Pin</Nav.Link>
+          <SearchBar
+            changeMapCenter={this.props.changeMapCenter}
+            onSearchSubmitClick={this.props.onSearchSubmitClick}
+            closeNavIfExpanded={this.handleCollapseNavBar}
+          />
+        </Nav>
       );
     } else {
       navLinks = (
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav id="Header-Left-Side" className="mr-auto">
-            <Nav.Link href="/about">About</Nav.Link>
-          </Nav>
-          <Nav id="Header-Right-Side" className="ml-auto">
-            {userNav}
-            {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
-          </Nav>
-        </Navbar.Collapse>
+        <Nav id="Header-Left-Side" className="mr-auto">
+          <Nav.Link href="/about">About</Nav.Link>
+        </Nav>
       );
     }
 
@@ -216,7 +200,13 @@ export default class Header extends Component {
         >
           <Navbar.Brand href="/">Lyric Map</Navbar.Brand>
           <Navbar.Toggle onClick={this.toggleNavExpanded} aria-controls="responsive-navbar-nav" />
-          {navLinks}
+          <Navbar.Collapse id="basic-navbar-nav">
+            {navLinks}
+            <Nav id="Header-Right-Side" className="ml-auto">
+              {userNav}
+              {window.globalCurrentUser.userID == null ? signInButton : signOutButton}
+            </Nav>
+          </Navbar.Collapse>
         </Navbar>
         <SignInModal
           show={this.state.showSignInModal}
@@ -226,6 +216,6 @@ export default class Header extends Component {
           handleSignOutButtonClick={this.handleSignOutButtonClick}
         />
       </div>
-    ); // close return
-  } // close render()
+    );
+  }
 }

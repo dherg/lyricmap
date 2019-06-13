@@ -22,20 +22,6 @@ export default class MapBox extends Component {
     this.props.setMapDimensions(mapwidth, mapheight);
   }
 
-  handlePinClick(clickedPinID) {
-    this.setState({
-      clickedPinID,
-    });
-    this.props.showInfoWindow();
-  }
-
-  handleCloseInfoWindowClick() {
-    this.setState({
-      clickedPinID: null,
-    });
-    this.props.hideInfoWindow();
-  }
-
   componentDidUpdate(prevProps) {
     if (this.props.isAddingPin !== prevProps.isAddingPin && this.props.isAddingPin) {
       this.setState({
@@ -46,6 +32,19 @@ export default class MapBox extends Component {
     }
   }
 
+  handleCloseInfoWindowClick() {
+    this.setState({
+      clickedPinID: null,
+    });
+    this.props.hideInfoWindow();
+  }
+
+  handlePinClick(clickedPinID) {
+    this.setState({
+      clickedPinID,
+    });
+    this.props.showInfoWindow();
+  }
 
   render() {
     const infoWindow = (

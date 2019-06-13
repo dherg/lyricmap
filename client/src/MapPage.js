@@ -71,7 +71,7 @@ export default class MapPage extends Component {
     }
 
     switch (path) {
-      case '/':
+      case '/': {
         this.setState({
           linkedPin: null,
           linkedUser: null,
@@ -79,8 +79,9 @@ export default class MapPage extends Component {
           onAboutPage: false,
         });
         break;
-      case '/pins/:id':
-        var pinID = this.props.match.params.id;
+      }
+      case '/pins/:id': {
+        const pinID = this.props.match.params.id;
         if (typeof pinID !== 'undefined' && pinID !== '') {
           this.setState({
             linkedUser: null,
@@ -90,8 +91,9 @@ export default class MapPage extends Component {
           this.fetchPinDetails(pinID);
         }
         break;
-      case '/users/:id':
-        var userID = this.props.match.params.id;
+      }
+      case '/users/:id': {
+        const userID = this.props.match.params.id;
         if (typeof userID !== 'undefined' && userID !== '') {
           this.setState({
             linkedPin: null,
@@ -101,7 +103,8 @@ export default class MapPage extends Component {
           });
         }
         break;
-      case '/about':
+      }
+      case '/about': {
         this.setState({
           linkedPin: null,
           linkedUser: null,
@@ -109,20 +112,17 @@ export default class MapPage extends Component {
           onAboutPage: true,
         });
         break;
-      default:
+      }
+      default: {
         break;
+      }
     }
   }
 
-  fetchPinDetails(pinID) {
-    const that = this;
-    fetchPinInfo(pinID).then((result) => {
-      // result will be null in case of 404
-      if (result == null) {
-
-      } else {
-        that.linkToPin(result.pinID, result.lat, result.lng);
-      }
+  setMapDimensions(mapwidth, mapheight) {
+    this.setState({
+      mapwidth,
+      mapheight,
     });
   }
 
@@ -147,24 +147,27 @@ export default class MapPage extends Component {
     this.props.history.push(`/pins/${pinID}`);
   }
 
-  setMapDimensions(mapwidth, mapheight) {
-    this.setState({
-      mapwidth,
-      mapheight,
+  fetchPinDetails(pinID) {
+    const that = this;
+    fetchPinInfo(pinID).then((result) => {
+      // result will be null in case of 404
+      if (result !== null) {
+        that.linkToPin(result.pinID, result.lat, result.lng);
+      }
     });
   }
 
   changeMapCenter(geometry) {
-    const bounds_ne = geometry.viewport.getNorthEast();
-    const bounds_sw = geometry.viewport.getSouthWest();
+    const boundsNE = geometry.viewport.getNorthEast();
+    const boundsSW = geometry.viewport.getSouthWest();
     const bounds = {
       ne: {
-        lat: bounds_ne.lat(),
-        lng: bounds_ne.lng(),
+        lat: boundsNE.lat(),
+        lng: boundsNE.lng(),
       },
       sw: {
-        lat: bounds_sw.lat(),
-        lng: bounds_sw.lng(),
+        lat: boundsSW.lat(),
+        lng: boundsSW.lng(),
       },
     };
 
@@ -199,7 +202,6 @@ export default class MapPage extends Component {
   }
 
   handleAddPin(lat, lng) {
-    console.log(`adding pin at ${lat}, ${lng}`);
     this.setState({
       isAddingPin: false,
       showAddPinModal: true,

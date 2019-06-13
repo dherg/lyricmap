@@ -30,35 +30,6 @@ export default class SimpleMap extends Component {
     });
   }
 
-  pinListToComponents(pinList) {
-    if (pinList === null) {
-      return;
-    }
-    return (
-      pinList.map(pin => <Pin key={pin.PinID} pinID={pin.PinID} lat={Number(pin.Lat)} lng={Number(pin.Lng)} text={String(pin.Lat + pin.Lng)} onPinClick={this.handlePinClick} />)
-    );
-  }
-
-  handlePinClick(clickedPinID, clickedPinLat, clickedPinLng) {
-    // open InfoWindow
-    this.props.onPinClick(clickedPinID);
-
-    // set clicked pin to center
-    this.setState({
-      center: { lat: clickedPinLat, lng: clickedPinLng },
-    });
-  }
-
-  addPin(event) {
-    // Make sure that this isn't a click on google maps controls
-    // by checking the event target className
-    const eventTarget = event.event.nativeEvent.target.className;
-
-    if (this.props.isAddingPin && eventTarget !== 'gm-control-active') {
-      this.props.handleAddPin(event.lat, event.lng);
-    }
-  }
-
   componentDidUpdate(prevProps) {
     if (this.props.linkedPin !== prevProps.linkedPin && this.props.linkedPin !== null) {
       this.handlePinClick(this.props.linkedPin.PinID, this.props.linkedPin.Lat, this.props.linkedPin.Lng);
@@ -77,7 +48,45 @@ export default class SimpleMap extends Component {
     }
   }
 
-  createMapOptions(maps) {
+  pinListToComponents(pinList) {
+    if (pinList === null) {
+      return null;
+    }
+    return (
+      pinList.map(pin => (
+        <Pin
+          key={pin.PinID}
+          pinID={pin.PinID}
+          lat={Number(pin.Lat)}
+          lng={Number(pin.Lng)}
+          text={String(pin.Lat + pin.Lng)}
+          onPinClick={this.handlePinClick}
+        />
+      ))
+    );
+  }
+
+  handlePinClick(clickedPinID, clickedPinLat, clickedPinLng) {
+    // open InfoWindow
+    this.props.onPinClick(clickedPinID);
+
+    // Center the clicked pin in the map
+    this.setState({
+      center: { lat: clickedPinLat, lng: clickedPinLng },
+    });
+  }
+
+  addPin(event) {
+    // Make sure that this isn't a click on google maps controls
+    // by checking the event target className
+    const eventTarget = event.event.nativeEvent.target.className;
+
+    if (this.props.isAddingPin && eventTarget !== 'gm-control-active') {
+      this.props.handleAddPin(event.lat, event.lng);
+    }
+  }
+
+  createMapOptions() {
     return ({
       streetViewControl: true,
       mapTypeControl: true,
@@ -190,9 +199,11 @@ export default class SimpleMap extends Component {
   }
 
   render() {
+    
+    const pinComponents = this.pinListToComponents(this.state.pinList);
+
     return (
       <div className="SimpleMap">
-
         <GoogleMapReact
           center={this.state.center}
           zoom={this.state.zoom}
@@ -203,9 +214,8 @@ export default class SimpleMap extends Component {
           onClick={this.addPin}
           options={this.createMapOptions}
         >
-          {this.pinListToComponents(this.state.pinList)}
+          {pinComponents}
         </GoogleMapReact>
-
       </div>
     );
   }

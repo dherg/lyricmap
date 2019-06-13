@@ -25,7 +25,6 @@ export default class UserPage extends Component {
 
     const { userID } = this.props;
     if (typeof userID !== 'undefined' && userID !== '') {
-      console.log('got real userID. fetching display name');
       this.fetchUserDetails(userID);
       this.fetchUserPins(userID);
     }
@@ -35,7 +34,6 @@ export default class UserPage extends Component {
     if (prevProps.userID !== this.props.userID) {
       const { userID } = this.props;
       if (typeof userID !== 'undefined' && userID !== '') {
-        console.log('got real userID. fetching display name');
         this.fetchUserDetails(userID);
         this.fetchUserPins(userID);
       }
@@ -84,10 +82,7 @@ export default class UserPage extends Component {
             });
           });
         }
-      })
-      .catch((err) => {
-        console.log(err);
-      }); // end fetch()
+      });
   }
 
   // PUT new display name for the currently logged in user
@@ -117,18 +112,25 @@ export default class UserPage extends Component {
 
   pinListToComponents(pinList) {
     if (pinList === null) {
-
-    } else {
-      // convert list of pins to useraddedpin components with passed in props
-      const pinArray = [];
-      let i;
-      for (i = 0; i < pinList.length; i++) {
-        const pin = pinList[i];
-        const newComponent = <UserAddedPin index={i + 1} key={pin.PinID} pinID={pin.PinID} pinTitle={pin.Title} pinArtist={pin.Artist} />;
-        pinArray.push(newComponent);
-      }
-      return (pinArray);
+      return null;
     }
+    // convert list of pins to useraddedpin components with passed in props
+    const pinArray = [];
+    let i;
+    for (i = 0; i < pinList.length; i += 1) {
+      const pin = pinList[i];
+      const newComponent = (
+        <UserAddedPin
+          index={i + 1}
+          key={pin.PinID}
+          pinID={pin.PinID}
+          pinTitle={pin.Title}
+          pinArtist={pin.Artist}
+        />
+      );
+      pinArray.push(newComponent);
+    }
+    return (pinArray);
   }
 
 
@@ -178,8 +180,6 @@ You haven't added any pins yet.
     } else {
       pinListTitle = this.state.userFound ? `${this.state.displayName}'s pins` : null;
     }
-
-    console.log('name, display', name, display);
 
     return (
       <div>

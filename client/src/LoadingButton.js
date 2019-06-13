@@ -7,7 +7,7 @@ export default class LoadingButton extends Component {
   render() {
     const normalButton = (
       <Button variant={this.props.variant} type="submit">
-                Submit Pin
+        Submit Pin
       </Button>
     );
 
@@ -20,7 +20,7 @@ export default class LoadingButton extends Component {
           role="status"
           aria-hidden="true"
         />
-                Submitting Pin...
+        Submitting Pin...
       </Button>
     );
 

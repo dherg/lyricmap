@@ -40,26 +40,24 @@ export function fetchPinInfo(pinID) {
         return null;
       }
       // get data for pin 0 (should only be one pin)
-      res = res[0];
+      const pin = res[0];
 
-      const ret = {
-        pinID: res.PinID,
-        lat: res.Lat,
-        lng: res.Lng,
-        spotifyID: res.SpotifyID,
-        title: res.Title,
-        artist: res.Artist,
-        album: res.Album,
-        releaseDate: res.ReleaseDate,
-        lyrics: res.Lyric,
-        genre: res.Genres,
-        createdByID: res.CreatedBy,
-        createdDate: res.CreatedDate,
-        smallImageURL: res.SmallImageURL,
-        mediumImageURL: res.MediumImageURL,
-      };
-
-      return (ret);
+      return ({
+        pinID: pin.PinID,
+        lat: pin.Lat,
+        lng: pin.Lng,
+        spotifyID: pin.SpotifyID,
+        title: pin.Title,
+        artist: pin.Artist,
+        album: pin.Album,
+        releaseDate: pin.ReleaseDate,
+        lyrics: pin.Lyric,
+        genre: pin.Genres,
+        createdByID: pin.CreatedBy,
+        createdDate: pin.CreatedDate,
+        smallImageURL: pin.SmallImageURL,
+        mediumImageURL: pin.MediumImageURL,
+      });
     });
 }
 
@@ -139,24 +137,13 @@ export function putDisplayName(newName) {
   })
     .then(res => res.json())
     .then((res) => {
-      if (res.status === 200 && res.DisplayName !== '') {
-        window.globalCurrentUser.displayName = res.DisplayName;
-        return (newName);
-      }
-    })
-    .catch(error => console.error('Error changing name:', error));
+      window.globalCurrentUser.displayName = res.DisplayName;
+      return (newName);
+    });
   window.location.reload();
 }
 
 class AppRouter extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      loggedInUser: null,
-    };
-  }
-
   render() {
     return (
       <Router>

@@ -10,9 +10,6 @@ export default class GoogleSignIn extends Component {
     window.gapi.load('auth2');
     window.gapi.signin2.render('my-signin2', {
       scope: 'email',
-      // 'width': 80,
-      // 'height': 20,
-      // 'longtitle': false,
       theme: 'dark',
       onsuccess: this.onSignIn,
     });
@@ -20,14 +17,9 @@ export default class GoogleSignIn extends Component {
 
   onSignIn(googleUser) {
     const profile = googleUser.getBasicProfile();
-    console.log(`ID: ${profile.getId()}`); // Do not send to your backend! Use an ID token instead.
-    console.log(`Name: ${profile.getName()}`);
-    console.log(`Image URL: ${profile.getImageUrl()}`);
-    console.log(`Email: ${profile.getEmail()}`); // This is null if the 'email' scope is not present.
 
     // get google ID token
     const { id_token } = googleUser.getAuthResponse();
-    console.log(`id_token: ${id_token}`);
 
     // get url for environment
     const url = `${process.env.REACT_APP_LYRICMAP_API_HOST}/login`;
@@ -46,16 +38,14 @@ export default class GoogleSignIn extends Component {
     })
       .then(res => res.json())
       .then((res) => {
-        console.log(res);
         if (res.DisplayName !== '') {
           this.props.handleUpdateCurrentUser(profile.getId(), res.DisplayName);
         } else if (res.DisplayName === '') {
-          console.log('prompt to set display name');
           this.props.handlePromptForName(profile.getId());
         }
         this.props.handleSignInFinished();
       });
-  } // end onSignIn()
+  }
 
   render() {
     return (
