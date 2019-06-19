@@ -25,6 +25,11 @@ export default class About extends Component {
         </ul>
 
         <p>
+                When a pin is added in the US, it's also added to a playlist for the relevant state.
+          <a href="https://open.spotify.com/user/6zn16q47nwcfj419ndzlio18p?si=5XF98XD_SQqSQ20Rv70reg"> You can listen to those playlists here! </a>
+        </p>
+
+        <p>
                 Feedback/comments/questions are all welcome!
           {' '}
           <a href="https://github.com/dherg/lyricmap"> Check out the code on Github </a>
