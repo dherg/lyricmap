@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+const BANNED_USER_STATUS = "BANNED"
+
 // registerUser registers a new user in the user table with id userID
 func registerUser(userID string) error {
 	log.Printf("registering user %s", userID)
@@ -221,8 +223,9 @@ func handleUserLogIn(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "userID not found", http.StatusForbidden)
 		return
 	}
-	row := db.QueryRow(`SELECT FROM users WHERE id = $1`, userID)
-	err = row.Scan()
+	row := db.QueryRow(`SELECT user_status FROM users WHERE id = $1`, userID)
+    var userStatus sql.NullString
+	err = row.Scan(&userStatus)
 	if err == sql.ErrNoRows { // user is not registered
 		log.Printf("user %s is not registered, registering", userID)
 		// insert user
@@ -232,7 +235,12 @@ func handleUserLogIn(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if err != nil {
 		panic(err)
-	}
+	} else if userStatus.Valid && userStatus.String == BANNED_USER_STATUS {
+        log.Printf("403: User Banned")
+        http.Error(w, "403: Forbidden", http.StatusForbidden)
+        return
+    }
+    log.Printf("userStatus.String = ", userStatus.String)
 
 	// Create session for user
 	err = createUserSession(userID, w, r)
