@@ -18,7 +18,6 @@ var redirectURI = os.Getenv("LYRICMAP_API_HOST") + "/api/playlistercallback"
 
 var (
 	auth  = spotify.NewAuthenticator(redirectURI, spotify.ScopePlaylistModifyPublic)
-	ch    = make(chan *spotify.Client)
 	state = generateID() // generate random string for oauth state
 )
 
@@ -157,7 +156,6 @@ func completeAuth(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 	fmt.Println("playlister authentication: logged in as:", user.ID)
-
 	return
 }
 
