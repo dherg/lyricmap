@@ -80,6 +80,7 @@
 #Map-Box-With-Info-Window {
   display: flex;
   flex-direction: row;
+  overflow-y: auto;
   flex-wrap: nowrap;
   flex: 1; /* set mapbox to grow to fill remaining page */
 }
@@ -102,7 +103,6 @@
   border-style: solid solid solid solid;
   border-color: rgba(0, 0, 0, 0.8);;
   border-top-right-radius: 1vw;
-  /*border-bottom-right-radius: 1vw;*/
 }
 
 #Info-Window-Content {
@@ -399,6 +399,10 @@
     #Info-Window {
       width: 100vw;
       border-top-right-radius: 0;
+    }
+
+    #Info-Window-Content {
+      min-height: -webkit-fill-available;
     }
 
     #Album-Art-And-Lyric-Container {
