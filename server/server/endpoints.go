@@ -372,9 +372,29 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+// HealthHandler handles healthcheck requests by testing DB connection and 
+// Spotify connection
+func HealthHandler(w http.ResponseWriter, r *http.Request) {
 
-func SearchHandler(w http.ResponseWriter, r *http.Request) {
+	// Check DB connection
+	retPins := getPins()
+	if len(retPins) == 0 {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Lyric Map is unable to fetch pins."))
+		return
+	}
 
+	// Check Spotify connection
+	err := checkPlaylisterStatus()
+	if err != nil {
+		w.WriteHeader(http.StatusBadGateway)
+		w.Write([]byte("Lyric Map is unable to connect to Spotify."))
+		return
+	}
+
+	// Return 200
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Lyric Map API is healthy!"))
 }
 
 func (s *MyServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
@@ -433,7 +453,7 @@ func main() {
 	r.HandleFunc("/api/pins", PinsHandler)
 	r.HandleFunc("/api/login", LoginHandler)
 	r.HandleFunc("/api/logout", LogoutHandler)
-	r.HandleFunc("/api/search", SearchHandler)
+	r.HandleFunc("/api/health", HealthHandler)
 	r.HandleFunc("/api/suggest-tracks", suggestTracksHandler)
 	r.HandleFunc("/api/users", UsersHandler)
 

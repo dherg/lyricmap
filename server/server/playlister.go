@@ -27,16 +27,28 @@ var playlisterClient spotify.Client
 // Map of state codes -> Spotify playlist IDs
 var statePlaylistsMap map[string]string
 
-// addTrackToPlaylist adds a given Spotify track to a given Spotify playlist
-func addTrackToPlaylist(trackSpotifyID string, playlistSpotifyID string) error {
+// checkPlaylisterStatus checks whether the playlisterClient is set up
+func checkPlaylisterStatus() error {
 
 	if playlisterClient.AutoRetry != true {
-		err := errors.New("playlisterClient not set up before call to addTrackToPlaylist")
+		err := errors.New("playlisterClient not set up")
 		log.Println("Playlister: ", err)
 		return err
 	}
 
-	_, err := playlisterClient.AddTracksToPlaylist(spotify.ID(playlistSpotifyID), spotify.ID(trackSpotifyID))
+	return nil
+}
+
+// addTrackToPlaylist adds a given Spotify track to a given Spotify playlist
+func addTrackToPlaylist(trackSpotifyID string, playlistSpotifyID string) error {
+
+	// Check that the Spotify auth is set up before attempting to add
+	err := checkPlaylisterStatus()
+	if err != nil {
+		return(err)
+	}
+
+	_, err = playlisterClient.AddTracksToPlaylist(spotify.ID(playlistSpotifyID), spotify.ID(trackSpotifyID))
 	if err != nil {
 		log.Println("Playlister: Error adding track to playlist: ", err)
 		return err
