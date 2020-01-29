@@ -91,7 +91,7 @@ export default class InfoWindow extends Component {
     const userLink = `/users/${String(this.state.createdByID)}`;
 
     const spotifyEmbed = (
-      <iframe src={`https://open.spotify.com/embed/track/${String(this.state.spotifyID)}`} id="Spotify-Embed" height="80" frameBorder="0" allowTransparency="true" allow="encrypted-media" title="Spotify Player" />
+      <iframe src={`https://open.spotify.com/embed/track/${String(this.state.spotifyID)}`} id="Spotify-Embed" height="80" frameBorder="0" allow="encrypted-media" title="Spotify Player" />
     );
 
     const loadingPinSpinner = (
