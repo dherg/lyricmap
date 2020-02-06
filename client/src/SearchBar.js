@@ -25,14 +25,8 @@ export default class SearchBar extends Component {
     const geocoder = new google.maps.Geocoder();
 
     geocoder.geocode({ address }, (results, status) => {
-      console.log(`Results: ${results[0]}`);
       if (status === 'OK') {
-        console.log(`status OK. results: ${results[0].formatted_address}`);
-        console.log(`results[0].geometry.location: ${results[0].geometry.location}`);
         this.changeMapCenter(results[0].geometry);
-      } else {
-        console.log('Geocode was not successful.');
-        console.log(`Status: ${status}`);
       }
     });
   }
